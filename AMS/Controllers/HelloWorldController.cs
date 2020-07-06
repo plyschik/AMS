@@ -4,7 +4,7 @@ namespace AMS.Controllers
 {
     public class HelloWorldController : Controller
     {
-        [Route("/")]
+        [HttpGet("/api/helloworld")]
         public IActionResult Index()
         {
             return Ok(new

@@ -10,6 +10,8 @@ namespace AMS
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSwaggerGen();
         }
 
         public void Configure(IApplicationBuilder application, IWebHostEnvironment environment)
@@ -18,9 +20,17 @@ namespace AMS
             {
                 application.UseDeveloperExceptionPage();
             }
-
+            
             application.UseHttpsRedirection();
 
+            application.UseSwagger();
+
+            application.UseSwaggerUI(configuration =>
+            {
+                configuration.SwaggerEndpoint("/swagger/v1/swagger.json", "AMS v1");
+                configuration.RoutePrefix = string.Empty;
+            });
+            
             application.UseRouting();
 
             application.UseAuthorization();
