@@ -1,4 +1,5 @@
 using AMS.Data;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,8 @@ namespace AMS
             {
                 builder.UseNpgsql(_configuration.GetConnectionString("Default"));
             });
+
+            services.AddAutoMapper(typeof(Startup));
             
             services.AddControllers();
 
