@@ -1,11 +1,13 @@
 using System.Threading.Tasks;
-using AMS.Data.Models;
 using AMS.Data.Requests;
+using AMS.Data.Responses;
 
 namespace AMS.Services
 {
     public interface IMovieService
     {
-        Task<Movie> Create(MovieCreateRequest request);
+        Task<MovieGetResponse> GetById(int id);
+        
+        Task<MovieCreatedResponse> Create(MovieCreateRequest request);
     }
 }

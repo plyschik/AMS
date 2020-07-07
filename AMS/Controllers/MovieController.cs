@@ -16,12 +16,25 @@ namespace AMS.Controllers
             _movieService = movieService;
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var movie = await _movieService.GetById(id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(movie);
+        }
+        
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] MovieCreateRequest request)
         {
-            await _movieService.Create(request);
+            var movie = await _movieService.Create(request);
 
-            return Created(string.Empty, null);
+            return CreatedAtAction(nameof(Get), new { id = movie.Id }, movie);
         }
     }
 }

@@ -5,6 +5,8 @@ namespace AMS.Repositories
 {
     public interface IMovieRepository
     {
+        Task<Movie> GetById(int id);
+        
         Task<Movie> Create(Movie movie);
     }
 }

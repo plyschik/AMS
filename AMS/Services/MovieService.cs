@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using AMS.Data.Models;
 using AMS.Data.Requests;
+using AMS.Data.Responses;
 using AMS.Repositories;
 using AutoMapper;
 
@@ -21,11 +22,18 @@ namespace AMS.Services
             _movieRepository = movieRepository;
         }
 
-        public async Task<Movie> Create(MovieCreateRequest request)
+        public async Task<MovieGetResponse> GetById(int id)
         {
-            var movie = _mapper.Map<Movie>(request);
+            var movie = await _movieRepository.GetById(id);
 
-            return await _movieRepository.Create(movie);
+            return _mapper.Map<MovieGetResponse>(movie);
+        }
+
+        public async Task<MovieCreatedResponse> Create(MovieCreateRequest request)
+        {
+            var movie = await _movieRepository.Create(_mapper.Map<Movie>(request));
+
+            return _mapper.Map<MovieCreatedResponse>(movie);
         }
     }
 }
