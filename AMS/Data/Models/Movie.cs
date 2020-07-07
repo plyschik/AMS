@@ -20,6 +20,6 @@ namespace AMS.Data.Models
         public DateTime ReleaseDate { get; set; }
         
         [Column("duration")]
-        public TimeSpan Duration { get; set; }
+        public long Duration { get; set; }
     }
 }

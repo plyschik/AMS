@@ -32,9 +32,9 @@ namespace AMS.Migrations
                         .HasColumnType("character varying(360)")
                         .HasMaxLength(360);
 
-                    b.Property<TimeSpan>("Duration")
+                    b.Property<long>("Duration")
                         .HasColumnName("duration")
-                        .HasColumnType("interval");
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnName("release_date")

@@ -1,4 +1,6 @@
 using AMS.Data;
+using AMS.Repositories;
+using AMS.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +28,10 @@ namespace AMS
             });
 
             services.AddAutoMapper(typeof(Startup));
+            
+            services.AddScoped<IMovieService, MovieService>();
+            
+            services.AddScoped<IMovieRepository, MovieRepository>();
             
             services.AddControllers();
 

@@ -17,7 +17,7 @@ namespace AMS.Migrations
                     title = table.Column<string>(maxLength: 120, nullable: false),
                     description = table.Column<string>(maxLength: 360, nullable: true),
                     release_date = table.Column<DateTime>(nullable: false),
-                    duration = table.Column<TimeSpan>(nullable: false)
+                    duration = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {

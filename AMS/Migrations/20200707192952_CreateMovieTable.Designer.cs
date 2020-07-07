@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AMS.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200707192524_CreateMovieTable")]
+    [Migration("20200707192952_CreateMovieTable")]
     partial class CreateMovieTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,9 +34,9 @@ namespace AMS.Migrations
                         .HasColumnType("character varying(360)")
                         .HasMaxLength(360);
 
-                    b.Property<TimeSpan>("Duration")
+                    b.Property<long>("Duration")
                         .HasColumnName("duration")
-                        .HasColumnType("interval");
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnName("release_date")

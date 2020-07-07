@@ -1,3 +1,5 @@
+using AMS.Data.Models;
+using AMS.Data.Requests;
 using AutoMapper;
 
 namespace AMS
@@ -6,6 +8,7 @@ namespace AMS
     {
         public AutoMapperProfile()
         {
+            CreateMap<MovieCreateRequest, Movie>();
         }
     }
 }
