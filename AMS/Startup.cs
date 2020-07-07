@@ -1,4 +1,3 @@
-using System;
 using AMS.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace AMS
 {
@@ -23,10 +21,7 @@ namespace AMS
         {
             services.AddDbContext<DatabaseContext>(builder =>
             {
-                builder.UseMySql(_configuration.GetConnectionString("Default"), options =>
-                {
-                    options.ServerVersion(new Version(8, 0, 20), ServerType.MySql);
-                });
+                builder.UseNpgsql(_configuration.GetConnectionString("Default"));
             });
             
             services.AddControllers();
