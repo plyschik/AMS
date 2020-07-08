@@ -1,6 +1,4 @@
 using AMS.Data;
-using AMS.Repositories;
-using AMS.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

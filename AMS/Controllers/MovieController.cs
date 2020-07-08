@@ -16,6 +16,14 @@ namespace AMS.Controllers
             _movieService = movieService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var movies = await _movieService.GetAll();
+            
+            return Ok(movies);
+        }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {

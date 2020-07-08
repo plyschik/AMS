@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AMS.Data.Models;
 using AMS.Data.Requests;
@@ -22,6 +23,13 @@ namespace AMS.Services
             _movieRepository = movieRepository;
         }
 
+        public async Task<IEnumerable<MovieGetResponse>> GetAll()
+        {
+            var movies = await _movieRepository.GetAll();
+
+            return _mapper.Map<IEnumerable<MovieGetResponse>>(movies);
+        }
+        
         public async Task<MovieGetResponse> GetById(int id)
         {
             var movie = await _movieRepository.GetById(id);

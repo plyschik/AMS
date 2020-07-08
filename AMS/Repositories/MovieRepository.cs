@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AMS.Data;
 using AMS.Data.Models;
@@ -14,9 +15,14 @@ namespace AMS.Repositories
             _databaseContext = databaseContext;
         }
 
-        public Task<Movie> GetById(int id)
+        public async Task<IEnumerable<Movie>> GetAll()
         {
-            return _databaseContext.Movies.FirstOrDefaultAsync(movie => movie.Id == id);
+            return await _databaseContext.Movies.ToListAsync();
+        }
+
+        public async Task<Movie> GetById(int id)
+        {
+            return await _databaseContext.Movies.FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
         public async Task<Movie> Create(Movie movie)
