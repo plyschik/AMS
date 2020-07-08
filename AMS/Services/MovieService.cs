@@ -6,6 +6,7 @@ using AMS.Data.Responses;
 using AMS.Exceptions;
 using AMS.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AMS.Services
 {
@@ -59,6 +60,26 @@ namespace AMS.Services
             var movie = await _movieRepository.Update(movieToUpdate);
             
             return _mapper.Map<MovieGetResponse>(_mapper.Map<MovieGetResponse>(movie));
+        }
+
+        public async Task<MovieGetResponse> PartialUpdate(int id, JsonPatchDocument<MovieUpdateRequest> document)
+        {
+            var movie = await _movieRepository.GetById(id);
+            
+            if (movie == null)
+            {
+                throw new MovieNotFound();
+            }
+
+            var movieUpdateRequest = _mapper.Map<MovieUpdateRequest>(movie);
+            
+            document.ApplyTo(movieUpdateRequest);
+
+            _mapper.Map(movieUpdateRequest, movie);
+
+            await _movieRepository.Update(movie);
+
+            return _mapper.Map<MovieGetResponse>(movie);
         }
 
         public async Task Delete(int id)

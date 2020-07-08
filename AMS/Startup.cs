@@ -33,8 +33,9 @@ namespace AMS
                     .AddClasses()
                     .AsMatchingInterface();
             });
-
-            services.AddControllers();
+            
+            services.AddControllers()
+                .AddNewtonsoftJson();
 
             services.AddSwaggerGen();
         }

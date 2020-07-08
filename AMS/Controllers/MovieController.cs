@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using AMS.Data.Requests;
 using AMS.Exceptions;
 using AMS.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers
@@ -53,6 +54,21 @@ namespace AMS.Controllers
             {
                 var movie = await _movieService.Update(id, request);
                 
+                return Ok(movie);
+            }
+            catch (MovieNotFound)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> PartialUpdate(int id, [FromBody] JsonPatchDocument<MovieUpdateRequest> document)
+        {
+            try
+            {
+                var movie = await _movieService.PartialUpdate(id, document);
+
                 return Ok(movie);
             }
             catch (MovieNotFound)

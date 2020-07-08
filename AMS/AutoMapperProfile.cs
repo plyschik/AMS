@@ -10,9 +10,9 @@ namespace AMS
         public AutoMapperProfile()
         {
             CreateMap<MovieCreateRequest, Movie>();
+            CreateMap<MovieUpdateRequest, Movie>().ReverseMap();
             CreateMap<Movie, MovieCreatedResponse>();
             CreateMap<Movie, MovieGetResponse>();
-            CreateMap<MovieUpdateRequest, Movie>();
         }
     }
 }
