@@ -12,5 +12,7 @@ namespace AMS.Services
         Task<MovieGetResponse> GetById(int id);
         
         Task<MovieCreatedResponse> Create(MovieCreateRequest request);
+
+        Task<MovieGetResponse> Update(int id, MovieUpdateRequest request);
     }
 }

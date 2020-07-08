@@ -32,5 +32,13 @@ namespace AMS.Repositories
 
             return movie;
         }
+
+        public async Task<Movie> Update(Movie movie)
+        {
+            _databaseContext.Update(movie);
+            await _databaseContext.SaveChangesAsync();
+
+            return movie;
+        }
     }
 }

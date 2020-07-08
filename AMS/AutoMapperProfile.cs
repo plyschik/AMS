@@ -12,6 +12,7 @@ namespace AMS
             CreateMap<MovieCreateRequest, Movie>();
             CreateMap<Movie, MovieCreatedResponse>();
             CreateMap<Movie, MovieGetResponse>();
+            CreateMap<MovieUpdateRequest, Movie>();
         }
     }
 }

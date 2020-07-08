@@ -11,5 +11,7 @@ namespace AMS.Repositories
         Task<Movie> GetById(int id);
         
         Task<Movie> Create(Movie movie);
+
+        Task<Movie> Update(Movie movie);
     }
 }
