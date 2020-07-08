@@ -27,12 +27,15 @@ namespace AMS
                 builder.UseNpgsql(_configuration.GetConnectionString("Default"));
             });
 
-            services.AddAutoMapper(typeof(Startup));
-            
-            services.AddScoped<IMovieService, MovieService>();
-            
-            services.AddScoped<IMovieRepository, MovieRepository>();
-            
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+
+            services.Scan(scan =>
+            {
+                scan.FromCallingAssembly()
+                    .AddClasses()
+                    .AsMatchingInterface();
+            });
+
             services.AddControllers();
 
             services.AddSwaggerGen();
