@@ -60,5 +60,20 @@ namespace AMS.Controllers
                 return NotFound();
             }
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _movieService.Delete(id);
+                
+                return NoContent();
+            }
+            catch (MovieNotFound)
+            {
+                return NotFound();
+            }
+        }
     }
 }

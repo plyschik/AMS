@@ -13,5 +13,7 @@ namespace AMS.Repositories
         Task<Movie> Create(Movie movie);
 
         Task<Movie> Update(Movie movie);
+
+        Task Delete(Movie movie);
     }
 }

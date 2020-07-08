@@ -27,7 +27,7 @@ namespace AMS.Repositories
 
         public async Task<Movie> Create(Movie movie)
         {
-            await _databaseContext.AddAsync(movie);
+            await _databaseContext.Movies.AddAsync(movie);
             await _databaseContext.SaveChangesAsync();
 
             return movie;
@@ -35,10 +35,16 @@ namespace AMS.Repositories
 
         public async Task<Movie> Update(Movie movie)
         {
-            _databaseContext.Update(movie);
+            _databaseContext.Movies.Update(movie);
             await _databaseContext.SaveChangesAsync();
 
             return movie;
+        }
+
+        public async Task Delete(Movie movie)
+        {
+            _databaseContext.Movies.Remove(movie);
+            await _databaseContext.SaveChangesAsync();
         }
     }
 }

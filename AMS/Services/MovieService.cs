@@ -60,5 +60,17 @@ namespace AMS.Services
             
             return _mapper.Map<MovieGetResponse>(_mapper.Map<MovieGetResponse>(movie));
         }
+
+        public async Task Delete(int id)
+        {
+            var movieToDelete = await _movieRepository.GetById(id);
+
+            if (movieToDelete == null)
+            {
+                throw new MovieNotFound();
+            }
+
+            await _movieRepository.Delete(movieToDelete);
+        }
     }
 }
