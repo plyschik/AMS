@@ -25,9 +25,17 @@ namespace AMS
                 builder.UseNpgsql(_configuration.GetConnectionString("Default"));
             });
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+
+            services.Scan(scan =>
+            {
+                scan.FromCallingAssembly()
+                    .AddClasses()
+                    .AsMatchingInterface();
+            });
             
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson();
 
             services.AddSwaggerGen();
         }

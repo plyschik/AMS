@@ -1,3 +1,4 @@
+using AMS.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AMS.Data
@@ -7,5 +8,7 @@ namespace AMS.Data
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
+        
+        public DbSet<Movie> Movies { get; set; }
     }
 }
