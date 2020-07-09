@@ -2,7 +2,7 @@ using System;
 
 namespace AMS.Data.Responses
 {
-    public class MovieGetResponse
+    public class MovieResponse
     {
         public int Id { get; set; }
         

@@ -12,7 +12,7 @@ namespace AMS.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
-
+        
         public MovieController(IMovieService movieService)
         {
             _movieService = movieService;
@@ -29,14 +29,16 @@ namespace AMS.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            var movie = await _movieService.GetById(id);
+            try
+            {
+                var movie = await _movieService.GetById(id);
 
-            if (movie == null)
+                return Ok(movie);
+            }
+            catch (MovieNotFound)
             {
                 return NotFound();
             }
-            
-            return Ok(movie);
         }
         
         [HttpPost]
@@ -63,13 +65,27 @@ namespace AMS.Controllers
         }
 
         [HttpPatch("{id:int}")]
-        public async Task<IActionResult> PartialUpdate(int id, [FromBody] JsonPatchDocument<MovieUpdateRequest> document)
+        public async Task<IActionResult> PartialUpdate(int id, JsonPatchDocument<MovieUpdateRequest> document)
         {
+            if (document == null)
+            {
+                return BadRequest();
+            }
+            
             try
             {
-                var movie = await _movieService.PartialUpdate(id, document);
+                var movie = await _movieService.GetMovie(id);
+                
+                var mergedMovieUpdateRequest = _movieService.MergeMovieModelWithPatchDocument(movie, document);
 
-                return Ok(movie);
+                if (!TryValidateModel(mergedMovieUpdateRequest))
+                {
+                    return ValidationProblem(ModelState);
+                }
+
+                var movieResponse = await _movieService.UpdatePartial(mergedMovieUpdateRequest);
+            
+                return Ok(movieResponse);
             }
             catch (MovieNotFound)
             {

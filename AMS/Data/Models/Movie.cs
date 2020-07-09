@@ -13,13 +13,13 @@ namespace AMS.Data.Models
         [Column("title"), Required, MinLength(2), MaxLength(120)]
         public string Title { get; set; }
         
-        [Column("description"), MinLength(2), MaxLength(360)]
+        [Column("description"), Required, MinLength(2), MaxLength(360)]
         public string Description { get; set; }
         
-        [Column("release_date")]
-        public DateTime ReleaseDate { get; set; }
+        [Column("release_date"), Required, DataType(DataType.DateTime)]
+        public DateTime? ReleaseDate { get; set; }
         
-        [Column("duration")]
-        public long Duration { get; set; }
+        [Column("duration"), Required, Range(0, long.MaxValue)]
+        public long? Duration { get; set; }
     }
 }

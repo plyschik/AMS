@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AMS.Data;
 using AMS.Data.Models;
@@ -17,7 +18,7 @@ namespace AMS.Repositories
 
         public async Task<IEnumerable<Movie>> GetAll()
         {
-            return await _databaseContext.Movies.ToListAsync();
+            return await _databaseContext.Movies.OrderByDescending(movie => movie.Id).ToListAsync();
         }
 
         public async Task<Movie> GetById(int id)

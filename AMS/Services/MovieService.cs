@@ -25,28 +25,33 @@ namespace AMS.Services
             _movieRepository = movieRepository;
         }
 
-        public async Task<IEnumerable<MovieGetResponse>> GetAll()
+        public async Task<IEnumerable<MovieResponse>> GetAll()
         {
             var movies = await _movieRepository.GetAll();
 
-            return _mapper.Map<IEnumerable<MovieGetResponse>>(movies);
+            return _mapper.Map<IEnumerable<MovieResponse>>(movies);
         }
         
-        public async Task<MovieGetResponse> GetById(int id)
+        public async Task<MovieResponse> GetById(int id)
         {
             var movie = await _movieRepository.GetById(id);
 
-            return _mapper.Map<MovieGetResponse>(movie);
+            if (movie == null)
+            {
+                throw new MovieNotFound();
+            }
+
+            return _mapper.Map<MovieResponse>(movie);
         }
 
-        public async Task<MovieCreatedResponse> Create(MovieCreateRequest request)
+        public async Task<MovieResponse> Create(MovieCreateRequest request)
         {
             var movie = await _movieRepository.Create(_mapper.Map<Movie>(request));
 
-            return _mapper.Map<MovieCreatedResponse>(movie);
+            return _mapper.Map<MovieResponse>(movie);
         }
 
-        public async Task<MovieGetResponse> Update(int id, MovieUpdateRequest request)
+        public async Task<MovieResponse> Update(int id, MovieUpdateRequest request)
         {
             var movieToUpdate = await _movieRepository.GetById(id);
 
@@ -59,27 +64,34 @@ namespace AMS.Services
 
             var movie = await _movieRepository.Update(movieToUpdate);
             
-            return _mapper.Map<MovieGetResponse>(_mapper.Map<MovieGetResponse>(movie));
+            return _mapper.Map<MovieResponse>(movie);
         }
 
-        public async Task<MovieGetResponse> PartialUpdate(int id, JsonPatchDocument<MovieUpdateRequest> document)
+        public async Task<Movie> GetMovie(int id)
         {
             var movie = await _movieRepository.GetById(id);
-            
+
             if (movie == null)
             {
                 throw new MovieNotFound();
             }
 
+            return movie;
+        }
+        
+        public MovieUpdateRequest MergeMovieModelWithPatchDocument(Movie movie, JsonPatchDocument<MovieUpdateRequest> document)
+        {
             var movieUpdateRequest = _mapper.Map<MovieUpdateRequest>(movie);
-            
             document.ApplyTo(movieUpdateRequest);
 
-            _mapper.Map(movieUpdateRequest, movie);
-
-            await _movieRepository.Update(movie);
-
-            return _mapper.Map<MovieGetResponse>(movie);
+            return movieUpdateRequest;
+        }
+        
+        public async Task<MovieResponse> UpdatePartial(MovieUpdateRequest request)
+        {
+            var movie = await _movieRepository.Update(_mapper.Map<Movie>(request));
+            
+            return _mapper.Map<MovieResponse>(movie);
         }
 
         public async Task Delete(int id)
