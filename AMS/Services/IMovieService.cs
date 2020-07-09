@@ -19,10 +19,7 @@ namespace AMS.Services
 
         Task<Movie> GetMovie(int id);
 
-        MovieUpdateRequest MergeMovieModelWithPatchDocument(
-            Movie movie,
-            JsonPatchDocument<MovieUpdateRequest> document
-        );
+        MovieUpdateRequest MergeMovieModelWithPatchDocument(Movie movie, JsonPatchDocument<MovieUpdateRequest> document);
         
         Task<MovieResponse> UpdatePartial(MovieUpdateRequest request);
 

@@ -1,15 +1,11 @@
-using System.Linq;
 using AMS.Data;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 
 namespace AMS
@@ -25,21 +21,20 @@ namespace AMS
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DatabaseContext>(builder =>
-            {
-                builder.UseNpgsql(_configuration.GetConnectionString("Default"));
-            });
-
-            services.AddAutoMapper(typeof(AutoMapperProfile));
-
-            services.Scan(scan =>
-            {
-                scan.FromCallingAssembly()
-                    .AddClasses()
-                    .AsMatchingInterface();
-            });
-            
-            services.AddControllers()
+            services
+                .Scan(scan =>
+                {
+                    scan.FromCallingAssembly()
+                        .AddClasses()
+                        .AsMatchingInterface();
+                })
+                .AddAutoMapper(typeof(AutoMapperProfile))
+                .AddDbContext<DatabaseContext>(builder =>
+                {
+                    builder.UseNpgsql(_configuration.GetConnectionString("Default"));
+                })
+                .AddSwaggerGen()
+                .AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver
@@ -47,8 +42,6 @@ namespace AMS
                         NamingStrategy = new SnakeCaseNamingStrategy()
                     };
                 });
-
-            services.AddSwaggerGen();
         }
 
         public void Configure(IApplicationBuilder application, IWebHostEnvironment environment)
@@ -58,21 +51,15 @@ namespace AMS
                 application.UseDeveloperExceptionPage();
             }
             
-            application.UseHttpsRedirection();
-
-            application.UseSwagger();
-
-            application.UseSwaggerUI(configuration =>
-            {
-                configuration.RoutePrefix = string.Empty;
-                configuration.SwaggerEndpoint("/swagger/v1/swagger.json", "AMS v1");
-            });
-            
-            application.UseRouting();
-
-            application.UseAuthorization();
-
-            application.UseEndpoints(endpoints => endpoints.MapControllers());
+            application
+                .UseRouting()
+                .UseEndpoints(endpoints => endpoints.MapControllers())
+                .UseSwagger()
+                .UseSwaggerUI(configuration =>
+                {
+                    configuration.RoutePrefix = string.Empty;
+                    configuration.SwaggerEndpoint("/swagger/v1/swagger.json", "AMS v1");
+                });
         }
     }
 }
