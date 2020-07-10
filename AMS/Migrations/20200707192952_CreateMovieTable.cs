@@ -15,7 +15,7 @@ namespace AMS.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     title = table.Column<string>(maxLength: 120, nullable: false),
-                    description = table.Column<string>(maxLength: 360, nullable: true),
+                    description = table.Column<string>(maxLength: 360, nullable: false),
                     release_date = table.Column<DateTime>(nullable: false),
                     duration = table.Column<long>(nullable: false)
                 },
