@@ -9,5 +9,7 @@ namespace AMS.Services
         public Task SignUp(SignUpRequest request);
 
         public Task<SignInResponse> SignIn(SignInRequest request);
+
+        public Task<MeResponse> Me(string username);
     }
 }

@@ -1,7 +1,10 @@
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AMS.Data.Requests;
 using AMS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers
@@ -51,6 +54,16 @@ namespace AMS.Controllers
             {
                 return BadRequest(exception.Message);
             }
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> Me()
+        {
+            var username = User.Claims.SingleOrDefault(claim => claim.Type == ClaimTypes.Name)?.Value;
+            var user = await _userService.Me(username);
+            
+            return Ok(user);
         }
     }
 }

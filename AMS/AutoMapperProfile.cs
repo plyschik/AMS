@@ -12,6 +12,7 @@ namespace AMS
             CreateMap<MovieCreateRequest, Movie>();
             CreateMap<MovieUpdateRequest, Movie>().ReverseMap();
             CreateMap<Movie, MovieResponse>();
+            CreateMap<User, MeResponse>();
         }
     }
 }

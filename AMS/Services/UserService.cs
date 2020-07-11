@@ -4,6 +4,7 @@ using AMS.Data.Requests;
 using AMS.Data.Responses;
 using AMS.Exceptions;
 using AMS.Repositories;
+using AutoMapper;
 
 namespace AMS.Services
 {
@@ -13,10 +14,13 @@ namespace AMS.Services
 
         private readonly IJwtTokenService _jwtTokenService;
 
-        public UserService(IUserRepository userRepository, IJwtTokenService jwtTokenService)
+        private readonly IMapper _mapper;
+
+        public UserService(IUserRepository userRepository, IJwtTokenService jwtTokenService, IMapper mapper)
         {
             _userRepository = userRepository;
             _jwtTokenService = jwtTokenService;
+            _mapper = mapper;
         }
 
         public async Task SignUp(SignUpRequest request)
@@ -56,6 +60,13 @@ namespace AMS.Services
             {
                 Token = token
             };
+        }
+
+        public async Task<MeResponse> Me(string username)
+        {
+            var user = await _userRepository.GetByUserName(username);
+
+            return _mapper.Map<MeResponse>(user);
         }
     }
 }
