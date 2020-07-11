@@ -5,7 +5,7 @@ namespace AMS.Data.Requests
     public class SignInRequest
     {
         [Required, MinLength(2), MaxLength(30)]
-        public string UserName { get; set; }
+        public string Username { get; set; }
         
         [Required, MinLength(8)]
         public string Password { get; set; }

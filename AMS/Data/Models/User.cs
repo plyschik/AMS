@@ -10,7 +10,7 @@ namespace AMS.Data.Models
         public int Id { get; set; }
         
         [Column("username"), Required, MinLength(2), MaxLength(30)]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
         [Column("password_hash"), Required]
         public byte[] PasswordHash { get; set; }

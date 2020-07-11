@@ -21,7 +21,7 @@ namespace AMS.Services
 
         public async Task SignUp(SignUpRequest request)
         {
-            if (await _userRepository.IsUserNameAlreadyTaken(request.UserName))
+            if (await _userRepository.IsUserNameAlreadyTaken(request.Username))
             {
                 throw new UserNameAlreadyTaken("Username is already taken!");
             }
@@ -30,7 +30,7 @@ namespace AMS.Services
             
             await _userRepository.Create(new User
             {
-                UserName = request.UserName,
+                Username = request.Username,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt
             });
@@ -38,7 +38,7 @@ namespace AMS.Services
 
         public async Task<SignInResponse> SignIn(SignInRequest request)
         {
-            var user = await _userRepository.GetByUserName(request.UserName);
+            var user = await _userRepository.GetByUserName(request.Username);
 
             if (user == null)
             {

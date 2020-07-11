@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text;
 using AMS.Data;
 using AutoMapper;
@@ -62,7 +61,8 @@ namespace AMS
                             new string[] { }
                         }
                     });
-                });
+                })
+                .AddSwaggerGenNewtonsoftSupport();
             
             services
                 .AddControllers()

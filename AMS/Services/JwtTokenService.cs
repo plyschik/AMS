@@ -32,7 +32,7 @@ namespace AMS.Services
             {
                 Subject = new ClaimsIdentity(new []
                 {
-                    new Claim(ClaimTypes.Name, user.UserName)
+                    new Claim(ClaimTypes.Name, user.Username)
                 }),
                 Expires = DateTime.Now.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(

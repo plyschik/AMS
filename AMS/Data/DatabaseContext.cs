@@ -16,7 +16,7 @@ namespace AMS.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .HasIndex(user => user.UserName)
+                .HasIndex(user => user.Username)
                 .IsUnique();
         }
     }
