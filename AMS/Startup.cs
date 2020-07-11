@@ -1,11 +1,14 @@
+using System.Text;
 using AMS.Data;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 
 namespace AMS
@@ -33,13 +36,38 @@ namespace AMS
                 {
                     builder.UseNpgsql(_configuration.GetConnectionString("Default"));
                 })
-                .AddSwaggerGen()
+                .AddSwaggerGen();
+            
+            services
                 .AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new SnakeCaseNamingStrategy()
+                    };
+                });
+            
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    var key = Encoding.ASCII.GetBytes(
+                        _configuration.GetSection("JwtSettings").GetSection("Secret").Value
+                    );
+                    
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
                     };
                 });
         }
@@ -53,6 +81,8 @@ namespace AMS
             
             application
                 .UseRouting()
+                .UseAuthentication()
+                .UseAuthorization()
                 .UseEndpoints(endpoints => endpoints.MapControllers())
                 .UseSwagger()
                 .UseSwaggerUI(configuration =>

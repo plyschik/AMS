@@ -4,7 +4,6 @@ using AMS.Data.Requests;
 using AMS.Data.Responses;
 using AMS.Exceptions;
 using AMS.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace AMS.Services
 {
@@ -12,9 +11,12 @@ namespace AMS.Services
     {
         private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository)
+        private readonly IJwtTokenService _jwtTokenService;
+
+        public UserService(IUserRepository userRepository, IJwtTokenService jwtTokenService)
         {
             _userRepository = userRepository;
+            _jwtTokenService = jwtTokenService;
         }
 
         public async Task SignUp(SignUpRequest request)
@@ -48,9 +50,11 @@ namespace AMS.Services
                  throw new WrongCredentials("Wrong credentials!");
             }
 
+            var token = _jwtTokenService.GenerateJwtToken(user);
+
             return new SignInResponse()
             {
-                Token = "Token"
+                Token = token
             };
         }
     }
