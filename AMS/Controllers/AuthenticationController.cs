@@ -37,5 +37,20 @@ namespace AMS.Controllers
                 });
             }
         }
+
+        [HttpPost("signin")]
+        public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
+        {
+            try
+            {
+                var response = await _userService.SignIn(request);
+
+                return Ok(response);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+        }
     }
 }

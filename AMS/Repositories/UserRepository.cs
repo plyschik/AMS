@@ -15,15 +15,22 @@ namespace AMS.Repositories
             _databaseContext = databaseContext;
         }
 
-        public async Task<bool> IsUserNameAlreadyTaken(string username)
-        {
-            return await _databaseContext.Users.AnyAsync(user => user.UserName == username);
-        }
-
         public async Task Create(User user)
         {
             await _databaseContext.Users.AddAsync(user);
             await _databaseContext.SaveChangesAsync();
+        }
+
+        public async Task<User> GetByUserName(string username)
+        {
+            return await _databaseContext.Users.FirstOrDefaultAsync(user => user.UserName == username);
+        }
+
+        public async Task<bool> IsUserNameAlreadyTaken(string username)
+        {
+            return await _databaseContext.Users.AnyAsync(
+                user => user.UserName.ToLower().Contains(username.ToLower())
+            );
         }
     }
 }

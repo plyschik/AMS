@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using AMS.Data.Models;
 using AMS.Data.Requests;
+using AMS.Data.Responses;
 using AMS.Exceptions;
 using AMS.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace AMS.Services
 {
@@ -30,6 +32,26 @@ namespace AMS.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt
             });
+        }
+
+        public async Task<SignInResponse> SignIn(SignInRequest request)
+        {
+            var user = await _userRepository.GetByUserName(request.UserName);
+
+            if (user == null)
+            {
+                throw new WrongCredentials("Wrong credentials!");
+            }
+
+            if (!PasswordService.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                 throw new WrongCredentials("Wrong credentials!");
+            }
+
+            return new SignInResponse()
+            {
+                Token = "Token"
+            };
         }
     }
 }
