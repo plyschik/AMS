@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using AMS.Data;
 using AutoMapper;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 
 namespace AMS
@@ -36,7 +38,31 @@ namespace AMS
                 {
                     builder.UseNpgsql(_configuration.GetConnectionString("Default"));
                 })
-                .AddSwaggerGen();
+                .AddSwaggerGen(options =>
+                {
+                    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    {
+                        Description = "JWT authorization header using Bearer scheme",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey
+                    });
+
+                    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme 
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] { }
+                        }
+                    });
+                });
             
             services
                 .AddControllers()
@@ -56,9 +82,8 @@ namespace AMS
                 })
                 .AddJwtBearer(options =>
                 {
-                    var key = Encoding.ASCII.GetBytes(
-                        _configuration.GetSection("JwtSettings").GetSection("Secret").Value
-                    );
+                    var secret = _configuration.GetSection("JwtSettings").GetSection("Secret").Value;
+                    var key = Encoding.ASCII.GetBytes(secret);
                     
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
