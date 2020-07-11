@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using AMS.Data.Requests;
 using AMS.Exceptions;
 using AMS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace AMS.Controllers
             
             return Ok(movies);
         }
-
+        
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -41,6 +42,7 @@ namespace AMS.Controllers
             }
         }
         
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] MovieCreateRequest request)
         {
@@ -49,6 +51,7 @@ namespace AMS.Controllers
             return CreatedAtAction(nameof(Get), new { id = movie.Id }, movie);
         }
 
+        [Authorize]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] MovieUpdateRequest request)
         {
@@ -64,6 +67,7 @@ namespace AMS.Controllers
             }
         }
 
+        [Authorize]
         [HttpPatch("{id:int}")]
         public async Task<IActionResult> PartialUpdate(int id, JsonPatchDocument<MovieUpdateRequest> document)
         {
@@ -93,6 +97,7 @@ namespace AMS.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
