@@ -107,5 +107,21 @@ namespace AMS.Controllers
                 return NotFound();
             }
         }
+        
+        [Authorize]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _genreService.Delete(id);
+                
+                return NoContent();
+            }
+            catch (GenreNotFound)
+            {
+                return NotFound();
+            }
+        }
     }
 }

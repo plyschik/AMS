@@ -18,6 +18,8 @@ namespace AMS.Repositories
 
         public Task<Genre> Update(Genre genre);
 
+        public Task Delete(Genre genre);
+        
         public Task<bool> IsGenreAlreadyExists(string name);
     }
     
@@ -61,6 +63,12 @@ namespace AMS.Repositories
             return await _databaseContext.Genres.AnyAsync(
                 genre => genre.Name.ToLower().Equals(name.ToLower())
             );
+        }
+        
+        public async Task Delete(Genre genre)
+        {
+            _databaseContext.Genres.Remove(genre);
+            await _databaseContext.SaveChangesAsync();
         }
     }
 }
