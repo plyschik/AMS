@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AMS.Data.Models;
 using AMS.Data.Requests;
@@ -10,6 +11,8 @@ namespace AMS.Services
 {
     public interface IGenreService
     {
+        public Task<IEnumerable<GenreResponse>> GetAll();
+        
         public Task<GenreResponse> GetById(int id);
         
         public Task<GenreResponse> Create(GenreCreateRequest request);
@@ -27,6 +30,13 @@ namespace AMS.Services
             _genreRepository = genreRepository;
         }
 
+        public async Task<IEnumerable<GenreResponse>> GetAll()
+        {
+            var genres = await _genreRepository.GetAll();
+
+            return _mapper.Map<IEnumerable<GenreResponse>>(genres);
+        }
+        
         public async Task<GenreResponse> GetById(int id)
         {
             var genre = await _genreRepository.GetById(id);

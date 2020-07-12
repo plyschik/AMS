@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AMS.Data;
 using AMS.Data.Models;
@@ -7,6 +9,8 @@ namespace AMS.Repositories
 {
     public interface IGenreRepository
     {
+        public Task<IEnumerable<Genre>> GetAll();
+        
         public Task<Genre> GetById(int id);
             
         public Task<Genre> Create(Genre genre);
@@ -21,6 +25,11 @@ namespace AMS.Repositories
         public GenreRepository(DatabaseContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<IEnumerable<Genre>> GetAll()
+        {
+            return await _dbContext.Genres.OrderBy(genre => genre.Name).ToListAsync();
         }
 
         public async Task<Genre> GetById(int id)

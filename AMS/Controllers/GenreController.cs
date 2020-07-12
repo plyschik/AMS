@@ -19,6 +19,14 @@ namespace AMS.Controllers
             _genreService = genreService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var genres = await _genreService.GetAll();
+
+            return Ok(genres);
+        }
+        
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
