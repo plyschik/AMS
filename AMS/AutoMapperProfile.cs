@@ -9,10 +9,14 @@ namespace AMS
     {
         public AutoMapperProfile()
         {
+            CreateMap<User, MeResponse>();
+            
             CreateMap<MovieCreateRequest, Movie>();
             CreateMap<MovieUpdateRequest, Movie>().ReverseMap();
             CreateMap<Movie, MovieResponse>();
-            CreateMap<User, MeResponse>();
+            
+            CreateMap<GenreCreateRequest, Genre>();
+            CreateMap<Genre, GenreResponse>();
         }
     }
 }
