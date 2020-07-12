@@ -4,6 +4,7 @@ using AMS.Data.Requests;
 using AMS.Exceptions;
 using AMS.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers
@@ -58,6 +59,52 @@ namespace AMS.Controllers
                 {
                     exception.Message
                 });
+            }
+        }
+
+        [Authorize]
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] GenreUpdateRequest request)
+        {
+            try
+            {
+                var genre = await _genreService.Update(id, request);
+
+                return Ok(genre);
+            }
+            catch (GenreNotFound)
+            {
+                return NotFound();
+            }
+        }
+        
+        [Authorize]
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> PartialUpdate(int id, JsonPatchDocument<GenreUpdateRequest> document)
+        {
+            if (document == null)
+            {
+                return BadRequest();
+            }
+            
+            try
+            {
+                var genre = await _genreService.GetGenre(id);
+                
+                var mergedGenreUpdateRequest = _genreService.MergeGenreModelWithPatchDocument(genre, document);
+
+                if (!TryValidateModel(mergedGenreUpdateRequest))
+                {
+                    return ValidationProblem(ModelState);
+                }
+
+                var genreResponse = await _genreService.UpdatePartial(mergedGenreUpdateRequest);
+            
+                return Ok(genreResponse);
+            }
+            catch (GenreNotFound)
+            {
+                return NotFound();
             }
         }
     }

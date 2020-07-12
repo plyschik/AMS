@@ -16,6 +16,7 @@ namespace AMS
             CreateMap<Movie, MovieResponse>();
             
             CreateMap<GenreCreateRequest, Genre>();
+            CreateMap<GenreUpdateRequest, Genre>().ReverseMap();
             CreateMap<Genre, GenreResponse>();
         }
     }

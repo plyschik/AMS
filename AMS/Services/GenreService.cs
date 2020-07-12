@@ -6,6 +6,7 @@ using AMS.Data.Responses;
 using AMS.Exceptions;
 using AMS.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AMS.Services
 {
@@ -16,6 +17,14 @@ namespace AMS.Services
         public Task<GenreResponse> GetById(int id);
         
         public Task<GenreResponse> Create(GenreCreateRequest request);
+
+        public Task<GenreResponse> Update(int id, GenreUpdateRequest request);
+        
+        public Task<Genre> GetGenre(int id);
+
+        public GenreUpdateRequest MergeGenreModelWithPatchDocument(Genre genre, JsonPatchDocument<GenreUpdateRequest> document);
+        
+        public Task<GenreResponse> UpdatePartial(GenreUpdateRequest request);
     }
     
     public class GenreService : IGenreService
@@ -58,6 +67,49 @@ namespace AMS.Services
             
             var genre = await _genreRepository.Create(_mapper.Map<Genre>(request));
 
+            return _mapper.Map<GenreResponse>(genre);
+        }
+
+        public async Task<GenreResponse> Update(int id, GenreUpdateRequest request)
+        {
+            var genreToUpdate = await _genreRepository.GetById(id);
+
+            if (genreToUpdate == null)
+            {
+                throw new GenreNotFound();
+            }
+
+            _mapper.Map(request, genreToUpdate);
+
+            var genre = await _genreRepository.Update(genreToUpdate);
+
+            return _mapper.Map<GenreResponse>(genre);
+        }
+        
+        public async Task<Genre> GetGenre(int id)
+        {
+            var genre = await _genreRepository.GetById(id);
+
+            if (genre == null)
+            {
+                throw new GenreNotFound();
+            }
+
+            return genre;
+        }
+        
+        public GenreUpdateRequest MergeGenreModelWithPatchDocument(Genre genre, JsonPatchDocument<GenreUpdateRequest> document)
+        {
+            var genreUpdateRequest = _mapper.Map<GenreUpdateRequest>(genre);
+            document.ApplyTo(genreUpdateRequest);
+
+            return genreUpdateRequest;
+        }
+        
+        public async Task<GenreResponse> UpdatePartial(GenreUpdateRequest request)
+        {
+            var genre = await _genreRepository.Update(_mapper.Map<Genre>(request));
+            
             return _mapper.Map<GenreResponse>(genre);
         }
     }
