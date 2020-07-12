@@ -7,6 +7,8 @@ namespace AMS.Repositories
 {
     public interface IGenreRepository
     {
+        public Task<Genre> GetById(int id);
+            
         public Task<Genre> Create(Genre genre);
 
         public Task<bool> IsGenreAlreadyExists(string name);
@@ -19,6 +21,11 @@ namespace AMS.Repositories
         public GenreRepository(DatabaseContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<Genre> GetById(int id)
+        {
+            return await _dbContext.Genres.FirstOrDefaultAsync(genre => genre.Id == id);
         }
 
         public async Task<Genre> Create(Genre genre)

@@ -10,6 +10,8 @@ namespace AMS.Services
 {
     public interface IGenreService
     {
+        public Task<GenreResponse> GetById(int id);
+        
         public Task<GenreResponse> Create(GenreCreateRequest request);
     }
     
@@ -23,6 +25,18 @@ namespace AMS.Services
         {
             _mapper = mapper;
             _genreRepository = genreRepository;
+        }
+
+        public async Task<GenreResponse> GetById(int id)
+        {
+            var genre = await _genreRepository.GetById(id);
+
+            if (genre == null)
+            {
+                throw new GenreNotFound();
+            }
+
+            return _mapper.Map<GenreResponse>(genre);
         }
 
         public async Task<GenreResponse> Create(GenreCreateRequest request)
