@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace AMS.Data.Models
 {
@@ -21,5 +24,12 @@ namespace AMS.Data.Models
         
         [Column("duration"), Required, Range(0, long.MaxValue)]
         public long? Duration { get; set; }
+        
+        [JsonIgnore]
+        public IList<MovieGenre> MovieGenres { get; set; }
+
+        [NotMapped]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public IEnumerable<Genre> Genres => MovieGenres.Select(mg => mg.Genre);
     }
 }

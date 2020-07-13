@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace AMS.Data.Models
 {
@@ -11,5 +13,8 @@ namespace AMS.Data.Models
         
         [Column("name"), Required, MinLength(2), MaxLength(30)]
         public string Name { get; set; }
+        
+        [JsonIgnore]
+        public IList<MovieGenre> MovieGenres { get; set; }
     }
 }

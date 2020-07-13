@@ -11,6 +11,8 @@ namespace AMS.Data
         
         public DbSet<Genre> Genres { get; set; }
         
+        public DbSet<MovieGenre> MovieGenres { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -24,6 +26,19 @@ namespace AMS.Data
             modelBuilder.Entity<Genre>()
                 .HasIndex(genre => genre.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<MovieGenre>()
+                .HasKey(mg => new { mg.MovieId, mg.GenreId });
+
+            modelBuilder.Entity<MovieGenre>()
+                .HasOne<Movie>(mg => mg.Movie)
+                .WithMany(m => m.MovieGenres)
+                .HasForeignKey(mg => mg.MovieId);
+            
+            modelBuilder.Entity<MovieGenre>()
+                .HasOne<Genre>(mg => mg.Genre)
+                .WithMany(g => g.MovieGenres)
+                .HasForeignKey(mg => mg.GenreId);
         }
     }
 }
