@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMS.Data;
 using AMS.Data.Models;
-using AMS.Data.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace AMS.Repositories

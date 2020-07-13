@@ -71,23 +71,21 @@ namespace AMS.Controllers
         [HttpPatch("{id:int}")]
         public async Task<IActionResult> PartialUpdate(int id, JsonPatchDocument<MovieUpdateRequest> document)
         {
-            if (document == null)
-            {
-                return BadRequest();
-            }
-            
             try
             {
-                var movie = await _movieService.GetMovie(id);
+                var movieFromDatabase = await _movieService.GetMovie(id);
                 
-                var mergedMovieUpdateRequest = _movieService.MergeMovieModelWithPatchDocument(movie, document);
+                var movieToPatch = _movieService.MergeMovieModelWithPatchDocument(
+                    movieFromDatabase,
+                    document
+                );
 
-                if (!TryValidateModel(mergedMovieUpdateRequest))
+                if (!TryValidateModel(movieToPatch))
                 {
                     return ValidationProblem(ModelState);
                 }
 
-                var movieResponse = await _movieService.UpdatePartial(mergedMovieUpdateRequest);
+                var movieResponse = await _movieService.UpdatePartial(movieToPatch, movieFromDatabase);
             
                 return Ok(movieResponse);
             }

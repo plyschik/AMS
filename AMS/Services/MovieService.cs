@@ -87,11 +87,13 @@ namespace AMS.Services
             return movieUpdateRequest;
         }
         
-        public async Task<MovieResponse> UpdatePartial(MovieUpdateRequest request)
+        public async Task<MovieResponse> UpdatePartial(MovieUpdateRequest movieToPatch, Movie movieFromDatabase)
         {
-            var movie = await _movieRepository.Update(_mapper.Map<Movie>(request));
+            _mapper.Map(movieToPatch, movieFromDatabase);
             
-            return _mapper.Map<MovieResponse>(movie);
+            await _movieRepository.Update(_mapper.Map<Movie>(movieFromDatabase));
+            
+            return _mapper.Map<MovieResponse>(movieFromDatabase);
         }
 
         public async Task Delete(int id)

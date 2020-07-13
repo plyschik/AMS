@@ -82,23 +82,21 @@ namespace AMS.Controllers
         [HttpPatch("{id:int}")]
         public async Task<IActionResult> PartialUpdate(int id, JsonPatchDocument<GenreUpdateRequest> document)
         {
-            if (document == null)
-            {
-                return BadRequest();
-            }
-            
             try
             {
-                var genre = await _genreService.GetGenre(id);
+                var genreFromDatabase = await _genreService.GetGenre(id);
                 
-                var mergedGenreUpdateRequest = _genreService.MergeGenreModelWithPatchDocument(genre, document);
-
-                if (!TryValidateModel(mergedGenreUpdateRequest))
+                var genreToPatch = _genreService.MergeGenreModelWithPatchDocument(
+                    genreFromDatabase,
+                    document
+                );
+        
+                if (!TryValidateModel(genreToPatch))
                 {
                     return ValidationProblem(ModelState);
                 }
-
-                var genreResponse = await _genreService.UpdatePartial(mergedGenreUpdateRequest);
+        
+                var genreResponse = await _genreService.UpdatePartial(genreToPatch, genreFromDatabase);
             
                 return Ok(genreResponse);
             }
@@ -107,7 +105,7 @@ namespace AMS.Controllers
                 return NotFound();
             }
         }
-        
+
         [Authorize]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)

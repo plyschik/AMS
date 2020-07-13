@@ -24,7 +24,7 @@ namespace AMS.Services
 
         public GenreUpdateRequest MergeGenreModelWithPatchDocument(Genre genre, JsonPatchDocument<GenreUpdateRequest> document);
         
-        public Task<GenreResponse> UpdatePartial(GenreUpdateRequest request);
+        public Task<GenreResponse> UpdatePartial(GenreUpdateRequest genreToPatch, Genre genreFromDatabase);
 
         public Task Delete(int id);
     }
@@ -108,11 +108,13 @@ namespace AMS.Services
             return genreUpdateRequest;
         }
         
-        public async Task<GenreResponse> UpdatePartial(GenreUpdateRequest request)
+        public async Task<GenreResponse> UpdatePartial(GenreUpdateRequest genreToPatch, Genre genreFromDatabase)
         {
-            var genre = await _genreRepository.Update(_mapper.Map<Genre>(request));
+            _mapper.Map(genreToPatch, genreFromDatabase);
             
-            return _mapper.Map<GenreResponse>(genre);
+            await _genreRepository.Update(genreFromDatabase);
+            
+            return _mapper.Map<GenreResponse>(genreFromDatabase);
         }
         
         public async Task Delete(int id)

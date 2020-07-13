@@ -21,7 +21,7 @@ namespace AMS.Services
 
         MovieUpdateRequest MergeMovieModelWithPatchDocument(Movie movie, JsonPatchDocument<MovieUpdateRequest> document);
         
-        Task<MovieResponse> UpdatePartial(MovieUpdateRequest request);
+        Task<MovieResponse> UpdatePartial(MovieUpdateRequest movieToPatch, Movie movieFromDatabase);
 
         Task Delete(int id);
     }
