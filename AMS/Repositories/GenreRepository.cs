@@ -19,7 +19,9 @@ namespace AMS.Repositories
 
         public Task Delete(Genre genre);
         
-        public Task<bool> IsGenreAlreadyExists(string name);
+        public Task<bool> IsGenreExists(int id);
+        
+        public Task<bool> IsGenreExists(string name);
     }
     
     public class GenreRepository : IGenreRepository
@@ -62,8 +64,13 @@ namespace AMS.Repositories
             _databaseContext.Genres.Remove(genre);
             await _databaseContext.SaveChangesAsync();
         }
-        
-        public async Task<bool> IsGenreAlreadyExists(string name)
+
+        public async Task<bool> IsGenreExists(int id)
+        {
+            return await _databaseContext.Genres.AnyAsync(genre => genre.Id == id);
+        }
+
+        public async Task<bool> IsGenreExists(string name)
         {
             return await _databaseContext.Genres.AnyAsync(
                 genre => genre.Name.ToLower().Equals(name.ToLower())

@@ -62,7 +62,7 @@ namespace AMS.Services
 
         public async Task<GenreResponse> Create(GenreCreateRequest request)
         {
-            if (await _genreRepository.IsGenreAlreadyExists(request.Name))
+            if (await _genreRepository.IsGenreExists(request.Name))
             {
                 throw new GenreAlreadyExists("Genre already exists!");
             }

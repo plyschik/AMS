@@ -30,5 +30,37 @@ namespace AMS.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPut("{genreId:int}")]
+        public async Task<IActionResult> AttachGenre(int movieId, int genreId)
+        {
+            try
+            {
+                await _movieGenreService.AttachGenreToMovie(movieId, genreId);
+
+                return Ok();
+            }
+            catch (MovieNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (GenreNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (GenreAlreadyAttachedToMovie exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
     }
 }
