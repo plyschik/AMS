@@ -8,6 +8,15 @@ using AutoMapper;
 
 namespace AMS.Services
 {
+    public interface IUserService
+    {
+        public Task SignUp(SignUpRequest request);
+
+        public Task<SignInResponse> SignIn(SignInRequest request);
+
+        public Task<MeResponse> Me(string username);
+    }
+    
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;

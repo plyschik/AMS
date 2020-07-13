@@ -10,6 +10,25 @@ using Microsoft.AspNetCore.JsonPatch;
 
 namespace AMS.Services
 {
+    public interface IMovieService
+    {
+        public Task<IEnumerable<MovieResponse>> GetAll();
+        
+        public Task<MovieResponse> GetById(int id);
+
+        public Task<MovieResponse> Create(MovieCreateRequest request);
+
+        public Task<MovieResponse> Update(int id, MovieUpdateRequest request);
+
+        public Task<Movie> GetMovie(int id);
+
+        public MovieUpdateRequest MergeMovieModelWithPatchDocument(Movie movie, JsonPatchDocument<MovieUpdateRequest> document);
+        
+        public Task<MovieResponse> UpdatePartial(MovieUpdateRequest movieToPatch, Movie movieFromDatabase);
+
+        public Task Delete(int id);
+    }
+    
     public class MovieService : IMovieService
     {
         private readonly IMapper _mapper;

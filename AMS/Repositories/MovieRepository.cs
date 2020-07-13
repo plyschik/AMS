@@ -7,6 +7,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AMS.Repositories
 {
+    public interface IMovieRepository
+    {
+        public Task<IEnumerable<Movie>> GetAll();
+        
+        public Task<Movie> GetById(int id);
+        
+        public Task<Movie> Create(Movie movie);
+
+        public Task<Movie> Update(Movie movie);
+
+        public Task Delete(Movie movie);
+    }
+    
     public class MovieRepository : IMovieRepository
     {
         private readonly DatabaseContext _databaseContext;
