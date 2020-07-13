@@ -62,5 +62,23 @@ namespace AMS.Controllers
                 });
             }
         }
+
+        [HttpDelete("{genreId:int}")]
+        public async Task<IActionResult> DetachGenre(int movieId, int genreId)
+        {
+            try
+            {
+                await _movieGenreService.DetachGenreFromMovie(movieId, genreId);
+                
+                return NoContent();
+            }
+            catch (MovieGenreNotFound exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
     }
 }

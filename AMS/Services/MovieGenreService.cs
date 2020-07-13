@@ -13,6 +13,8 @@ namespace AMS.Services
         public Task<IEnumerable<GenreResponse>> GetGenresForMovie(int movieId);
 
         public Task AttachGenreToMovie(int movieId, int genreId);
+
+        public Task DetachGenreFromMovie(int movieId, int genreId);
     }
     
     public class MovieGenreService : IMovieGenreService
@@ -72,6 +74,18 @@ namespace AMS.Services
                 MovieId = movieId,
                 GenreId = genreId
             });
+        }
+
+        public async Task DetachGenreFromMovie(int movieId, int genreId)
+        {
+            var movieGenre = await _movieGenreRepository.Get(movieId, genreId);
+
+            if (movieGenre == null)
+            {
+                throw new MovieGenreNotFound("Genre is not attached to this movie.");
+            }
+
+            await _movieGenreRepository.Delete(movieGenre);
         }
     }
 }
