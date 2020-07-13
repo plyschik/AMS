@@ -18,6 +18,10 @@ namespace AMS.Repositories
         public Task<Movie> Update(Movie movie);
 
         public Task Delete(Movie movie);
+        
+        public Task<Movie> GetWithGenres(int id);
+
+        public Task<bool> IsMovieExists(int id);
     }
     
     public class MovieRepository : IMovieRepository
@@ -59,6 +63,21 @@ namespace AMS.Repositories
         {
             _databaseContext.Movies.Remove(movie);
             await _databaseContext.SaveChangesAsync();
+        }
+
+        public async Task<Movie> GetWithGenres(int id)
+        {
+            var movie = await _databaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(m => m.Genre)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            return movie;
+        }
+
+        public async Task<bool> IsMovieExists(int id)
+        {
+            return await _databaseContext.Movies.AnyAsync(movie => movie.Id == id);
         }
     }
 }
