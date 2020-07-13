@@ -57,17 +57,17 @@ namespace AMS.Repositories
             return genre;
         }
 
+        public async Task Delete(Genre genre)
+        {
+            _databaseContext.Genres.Remove(genre);
+            await _databaseContext.SaveChangesAsync();
+        }
+        
         public async Task<bool> IsGenreAlreadyExists(string name)
         {
             return await _databaseContext.Genres.AnyAsync(
                 genre => genre.Name.ToLower().Equals(name.ToLower())
             );
-        }
-        
-        public async Task Delete(Genre genre)
-        {
-            _databaseContext.Genres.Remove(genre);
-            await _databaseContext.SaveChangesAsync();
         }
     }
 }
