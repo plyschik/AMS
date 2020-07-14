@@ -28,6 +28,8 @@ namespace AMS.Services
         );
         
         public Task<PersonResponse> UpdatePartial(PersonUpdateRequest personToPatch, Person personFromDatabase);
+        
+        public Task Delete(int id);
     }
     
     public class PersonService : IPersonService
@@ -125,6 +127,18 @@ namespace AMS.Services
             await _personRepository.Update(personFromDatabase);
             
             return _mapper.Map<PersonResponse>(personFromDatabase);
+        }
+        
+        public async Task Delete(int id)
+        {
+            var person = await _personRepository.GetById(id);
+
+            if (person == null)
+            {
+                throw new PersonNotFound("Person not found!");
+            }
+
+            await _personRepository.Delete(person);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AMS.Data.Requests;
 using AMS.Exceptions;
 using AMS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +46,7 @@ namespace AMS.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PersonCreateRequest request)
         {
@@ -63,6 +65,7 @@ namespace AMS.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] PersonUpdateRequest request)
         {
@@ -88,6 +91,7 @@ namespace AMS.Controllers
             }
         }
         
+        [Authorize]
         [HttpPatch("{id:int}")]
         public async Task<IActionResult> PartialUpdate(int id, JsonPatchDocument<PersonUpdateRequest> document)
         {
@@ -119,6 +123,25 @@ namespace AMS.Controllers
             catch (PersonAlreadyExists exception)
             {
                 return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
+        
+        [Authorize]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _personService.Delete(id);
+                
+                return NoContent();
+            }
+            catch (PersonNotFound exception)
+            {
+                return NotFound(new
                 {
                     exception.Message
                 });

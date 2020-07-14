@@ -16,7 +16,7 @@ namespace AMS.Repositories
 
         public Task<Person> Update(Person person);
 
-        public Task<bool> IsPersonExists(int id);
+        public Task Delete(Person person);
         
         public Task<bool> IsPersonExists(string firstName, string lastName);
     }
@@ -56,9 +56,10 @@ namespace AMS.Repositories
             return person;
         }
 
-        public async Task<bool> IsPersonExists(int id)
+        public async Task Delete(Person person)
         {
-            return await _databaseContext.Persons.AnyAsync(person => person.Id.Equals(id));
+            _databaseContext.Persons.Remove(person);
+            await _databaseContext.SaveChangesAsync();
         }
 
         public async Task<bool> IsPersonExists(string firstName, string lastName)
