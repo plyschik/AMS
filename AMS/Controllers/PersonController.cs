@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using AMS.Exceptions;
 using AMS.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,25 @@ namespace AMS.Controllers
             var persons = await _personService.GetAll();
 
             return Ok(persons);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var person = await _personService.GetById(id);
+
+                return Ok(person);
+            }
+            catch (PersonNotFound exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+            
         }
     }
 }

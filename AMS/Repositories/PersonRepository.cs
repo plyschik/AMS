@@ -9,6 +9,8 @@ namespace AMS.Repositories
     public interface IPersonRepository
     {
         public Task<IEnumerable<Person>> GetAll();
+
+        public Task<Person> GetById(int id);
     }
     
     public class PersonRepository : IPersonRepository
@@ -23,6 +25,11 @@ namespace AMS.Repositories
         public async Task<IEnumerable<Person>> GetAll()
         {
             return await _databaseContext.Persons.ToListAsync();
+        }
+
+        public async Task<Person> GetById(int id)
+        {
+            return await _databaseContext.Persons.FirstOrDefaultAsync(person => person.Id == id);
         }
     }
 }
