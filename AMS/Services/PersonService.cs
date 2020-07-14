@@ -6,6 +6,7 @@ using AMS.Data.Responses;
 using AMS.Exceptions;
 using AMS.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AMS.Services
 {
@@ -18,6 +19,15 @@ namespace AMS.Services
         public Task<PersonResponse> Create(PersonCreateRequest request);
 
         public Task<PersonResponse> Update(int id, PersonUpdateRequest request);
+
+        public Task<Person> GetPerson(int id);
+
+        public PersonUpdateRequest MergePersonModelWithPatchDocument(
+            Person person,
+            JsonPatchDocument<PersonUpdateRequest> document
+        );
+        
+        public Task<PersonResponse> UpdatePartial(PersonUpdateRequest personToPatch, Person personFromDatabase);
     }
     
     public class PersonService : IPersonService
@@ -81,6 +91,40 @@ namespace AMS.Services
             var person = await _personRepository.Update(personToUpdate);
 
             return _mapper.Map<PersonResponse>(person);
+        }
+
+        public async Task<Person> GetPerson(int id)
+        {
+            var person = await _personRepository.GetById(id);
+
+            if (person == null)
+            {
+                throw new PersonNotFound("Person not found!");
+            }
+
+            return person;
+        }
+        
+        public PersonUpdateRequest MergePersonModelWithPatchDocument(Person person, JsonPatchDocument<PersonUpdateRequest> document)
+        {
+            var personUpdateRequest = _mapper.Map<PersonUpdateRequest>(person);
+            document.ApplyTo(personUpdateRequest);
+
+            return personUpdateRequest;
+        }
+        
+        public async Task<PersonResponse> UpdatePartial(PersonUpdateRequest personToPatch, Person personFromDatabase)
+        {
+            if (await _personRepository.IsPersonExists(personToPatch.FirstName, personToPatch.LastName))
+            {
+                throw new PersonAlreadyExists("Person already exists!");
+            }
+            
+            _mapper.Map(personToPatch, personFromDatabase);
+            
+            await _personRepository.Update(personFromDatabase);
+            
+            return _mapper.Map<PersonResponse>(personFromDatabase);
         }
     }
 }

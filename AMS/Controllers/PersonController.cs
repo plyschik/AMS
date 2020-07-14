@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AMS.Data.Requests;
 using AMS.Exceptions;
 using AMS.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers
@@ -71,7 +72,51 @@ namespace AMS.Controllers
 
                 return Ok(person);
             }
-            catch (Exception exception)
+            catch (PersonNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (PersonAlreadyExists exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
+        
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> PartialUpdate(int id, JsonPatchDocument<PersonUpdateRequest> document)
+        {
+            try
+            {
+                var personFromDatabase = await _personService.GetPerson(id);
+
+                var personToPatch = _personService.MergePersonModelWithPatchDocument(
+                    personFromDatabase,
+                    document
+                );
+
+                if (!TryValidateModel(personToPatch))
+                {
+                    return ValidationProblem(ModelState);
+                }
+
+                var personResponse = await _personService.UpdatePartial(personToPatch, personFromDatabase);
+
+                return Ok(personResponse);
+            }
+            catch (PersonNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (PersonAlreadyExists exception)
             {
                 return BadRequest(new
                 {
