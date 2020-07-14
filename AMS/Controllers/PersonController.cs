@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using AMS.Data.Requests;
 using AMS.Exceptions;
 using AMS.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +42,24 @@ namespace AMS.Controllers
                     exception.Message
                 });
             }
-            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] PersonCreateRequest request)
+        {
+            try
+            {
+                var person = await _personService.Create(request);
+
+                return Ok(person);
+            }
+            catch (PersonAlreadyExists exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
         }
     }
 }

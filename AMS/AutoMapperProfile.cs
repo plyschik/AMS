@@ -20,6 +20,7 @@ namespace AMS
             CreateMap<Genre, GenreResponse>();
 
             CreateMap<Person, PersonResponse>();
+            CreateMap<PersonCreateRequest, Person>();
         }
     }
 }

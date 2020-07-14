@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AMS.Data.Models;
+using AMS.Data.Requests;
 using AMS.Data.Responses;
 using AMS.Exceptions;
 using AMS.Repositories;
@@ -12,6 +14,8 @@ namespace AMS.Services
         public Task<IEnumerable<PersonResponse>> GetAll();
 
         public Task<PersonResponse> GetById(int id);
+
+        public Task<PersonResponse> Create(PersonCreateRequest request);
     }
     
     public class PersonService : IPersonService
@@ -40,6 +44,18 @@ namespace AMS.Services
             {
                 throw new PersonNotFound("Person not found!");
             }
+
+            return _mapper.Map<PersonResponse>(person);
+        }
+
+        public async Task<PersonResponse> Create(PersonCreateRequest request)
+        {
+            if (await _personRepository.IsPersonExists(request.FirstName, request.LastName))
+            {
+                throw new PersonAlreadyExists("This person already exists!");
+            }
+            
+            var person = await _personRepository.Create(_mapper.Map<Person>(request));
 
             return _mapper.Map<PersonResponse>(person);
         }
