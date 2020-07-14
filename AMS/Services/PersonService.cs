@@ -16,6 +16,8 @@ namespace AMS.Services
         public Task<PersonResponse> GetById(int id);
 
         public Task<PersonResponse> Create(PersonCreateRequest request);
+
+        public Task<PersonResponse> Update(int id, PersonUpdateRequest request);
     }
     
     public class PersonService : IPersonService
@@ -56,6 +58,27 @@ namespace AMS.Services
             }
             
             var person = await _personRepository.Create(_mapper.Map<Person>(request));
+
+            return _mapper.Map<PersonResponse>(person);
+        }
+
+        public async Task<PersonResponse> Update(int id, PersonUpdateRequest request)
+        {
+            var personToUpdate = await _personRepository.GetById(id);
+
+            if (personToUpdate == null)
+            {
+                throw new PersonNotFound("Person not found!");
+            }
+
+            if (await _personRepository.IsPersonExists(request.FirstName, request.LastName))
+            {
+                throw new PersonAlreadyExists("This person already exists!");
+            }
+
+            _mapper.Map(request, personToUpdate);
+
+            var person = await _personRepository.Update(personToUpdate);
 
             return _mapper.Map<PersonResponse>(person);
         }

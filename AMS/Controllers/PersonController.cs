@@ -61,5 +61,23 @@ namespace AMS.Controllers
                 });
             }
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] PersonUpdateRequest request)
+        {
+            try
+            {
+                var person = await _personService.Update(id, request);
+
+                return Ok(person);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
     }
 }
