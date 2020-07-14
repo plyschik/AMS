@@ -18,6 +18,8 @@ namespace AMS
             CreateMap<GenreCreateRequest, Genre>();
             CreateMap<GenreUpdateRequest, Genre>().ReverseMap();
             CreateMap<Genre, GenreResponse>();
+
+            CreateMap<Person, PersonResponse>();
         }
     }
 }
