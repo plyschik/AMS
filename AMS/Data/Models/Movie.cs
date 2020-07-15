@@ -27,9 +27,16 @@ namespace AMS.Data.Models
         
         [JsonIgnore]
         public IList<MovieGenre> MovieGenres { get; set; }
+        
+        [JsonIgnore]
+        public IList<MoviePersonDirector> MoviePersonDirectors { get; set; }
 
         [NotMapped]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public IEnumerable<Genre> Genres => MovieGenres.Select(mg => mg.Genre);
+        
+        [NotMapped]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public IEnumerable<Person> Directors => MoviePersonDirectors.Select(mpd => mpd.Person);
     }
 }

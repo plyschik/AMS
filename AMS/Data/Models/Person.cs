@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace AMS.Data.Models
 {
@@ -18,5 +20,8 @@ namespace AMS.Data.Models
         
         [Column("date_of_birth", TypeName = "date")]
         public DateTime DateOfBirth { get; set; }
+        
+        [JsonIgnore]
+        public IList<MoviePersonDirector> MoviePersonDirectors { get; set; }
     }
 }
