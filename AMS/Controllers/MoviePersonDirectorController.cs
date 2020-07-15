@@ -33,5 +33,37 @@ namespace AMS.Controllers
                 });
             }
         }
+
+        [HttpPut("{personId:int}")]
+        public async Task<IActionResult> AttachDirector(int movieId, int personId)
+        {
+            try
+            {
+                await _moviePersonDirectorService.AttachDirectorToMovie(movieId, personId);
+
+                return Ok();
+            }
+            catch (MovieNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (PersonNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (DirectorAlreadyAttachedToMovie exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
     }
 }

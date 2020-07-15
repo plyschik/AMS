@@ -18,6 +18,8 @@ namespace AMS.Repositories
 
         public Task Delete(Person person);
         
+        public Task<bool> IsPersonExists(int id);
+        
         public Task<bool> IsPersonExists(string firstName, string lastName);
     }
     
@@ -62,6 +64,11 @@ namespace AMS.Repositories
             await _databaseContext.SaveChangesAsync();
         }
 
+        public async Task<bool> IsPersonExists(int id)
+        {
+            return await _databaseContext.Persons.AnyAsync(person => person.Id.Equals(id));
+        }
+        
         public async Task<bool> IsPersonExists(string firstName, string lastName)
         {
             return await _databaseContext.Persons.AnyAsync(
