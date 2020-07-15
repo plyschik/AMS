@@ -13,6 +13,8 @@ namespace AMS.Services
         public Task<IEnumerable<PersonResponse>> GetDirectorsForMovie(int movieId);
 
         public Task AttachDirectorToMovie(int movieId, int personId);
+
+        public Task DetachDirectorFromMovie(int movieId, int personId);
     }
     
     public class MoviePersonDirectorService : IMoviePersonDirectorService
@@ -69,6 +71,18 @@ namespace AMS.Services
                 MovieId = movieId,
                 PersonId = personId
             });
+        }
+
+        public async Task DetachDirectorFromMovie(int movieId, int personId)
+        {
+            var moviePersonDirector = await _moviePersonDirectorRepository.Get(movieId, personId);
+
+            if (moviePersonDirector == null)
+            {
+                throw new MoviePersonDirectorNotFound("Director is not attached to this movie.");
+            }
+
+            await _moviePersonDirectorRepository.Delete(moviePersonDirector);
         }
     }
 }

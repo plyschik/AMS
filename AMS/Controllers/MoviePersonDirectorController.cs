@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using AMS.Exceptions;
 using AMS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers
@@ -34,6 +35,7 @@ namespace AMS.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{personId:int}")]
         public async Task<IActionResult> AttachDirector(int movieId, int personId)
         {
@@ -58,6 +60,25 @@ namespace AMS.Controllers
                 });
             }
             catch (DirectorAlreadyAttachedToMovie exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("{personId:int}")]
+        public async Task<IActionResult> DetachDirector(int movieId, int personId)
+        {
+            try
+            {
+                await _moviePersonDirectorService.DetachDirectorFromMovie(movieId, personId);
+                
+                return NoContent();
+            }
+            catch (MoviePersonDirectorNotFound exception)
             {
                 return BadRequest(new
                 {
