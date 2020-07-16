@@ -17,6 +17,8 @@ namespace AMS.Data
         
         public DbSet<MoviePersonDirector> MoviePersonDirectors { get; set; }
         
+        public DbSet<MoviePersonWriter> MoviePersonWriters { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -55,11 +57,24 @@ namespace AMS.Data
                 .HasOne<Movie>(mpd => mpd.Movie)
                 .WithMany(m => m.MoviePersonDirectors)
                 .HasForeignKey(mpd => mpd.MovieId);
-            
+
             modelBuilder.Entity<MoviePersonDirector>()
                 .HasOne<Person>(mpd => mpd.Person)
                 .WithMany(p => p.MoviePersonDirectors)
                 .HasForeignKey(mpd => mpd.PersonId);
+
+            modelBuilder.Entity<MoviePersonWriter>()
+                .HasKey(mpw => new { mpw.MovieId, mpw.PersonId });
+
+            modelBuilder.Entity<MoviePersonWriter>()
+                .HasOne<Movie>(mpw => mpw.Movie)
+                .WithMany(m => m.MoviePersonWriters)
+                .HasForeignKey(mpw => mpw.MovieId);
+            
+            modelBuilder.Entity<MoviePersonWriter>()
+                .HasOne<Person>(mpw => mpw.Person)
+                .WithMany(p => p.MoviePersonWriters)
+                .HasForeignKey(mpw => mpw.PersonId);
         }
     }
 }
