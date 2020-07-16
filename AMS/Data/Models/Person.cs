@@ -23,5 +23,8 @@ namespace AMS.Data.Models
         
         [JsonIgnore]
         public IList<MoviePersonDirector> MoviePersonDirectors { get; set; }
+        
+        [JsonIgnore]
+        public IList<MoviePersonWriter> MoviePersonWriters { get; set; }
     }
 }
