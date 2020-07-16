@@ -9,6 +9,10 @@ namespace AMS.Repositories
     {
         public Task Create(MoviePersonWriter moviePersonWriter);
 
+        public Task<MoviePersonWriter> Get(int movieId, int personId);
+
+        public Task Delete(MoviePersonWriter moviePersonWriter);
+
         public Task<bool> IsWriterAlreadyAttachedToMovie(int movieId, int personId);
     }
     
@@ -24,6 +28,19 @@ namespace AMS.Repositories
         public async Task Create(MoviePersonWriter moviePersonWriter)
         {
             await _databaseContext.MoviePersonWriters.AddAsync(moviePersonWriter);
+            await _databaseContext.SaveChangesAsync();
+        }
+
+        public async Task<MoviePersonWriter> Get(int movieId, int personId)
+        {
+            return await _databaseContext.MoviePersonWriters.FirstOrDefaultAsync(
+                mpw => mpw.MovieId.Equals(movieId) && mpw.PersonId.Equals(personId)
+            );
+        }
+
+        public async Task Delete(MoviePersonWriter moviePersonWriter)
+        {
+            _databaseContext.MoviePersonWriters.Remove(moviePersonWriter);
             await _databaseContext.SaveChangesAsync();
         }
 

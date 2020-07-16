@@ -13,6 +13,8 @@ namespace AMS.Services
         public Task<IEnumerable<PersonResponse>> GetWritersForMovie(int movieId);
 
         public Task AttachWriterToMovie(int movieId, int personId);
+
+        public Task DetachWriterFromMovie(int movieId, int personId);
     }
     
     public class MoviePersonWriterService : IMoviePersonWriterService
@@ -69,6 +71,18 @@ namespace AMS.Services
                 MovieId = movieId,
                 PersonId = personId
             });
+        }
+
+        public async Task DetachWriterFromMovie(int movieId, int personId)
+        {
+            var moviePersonWriter = await _moviePersonWriterRepository.Get(movieId, personId);
+
+            if (moviePersonWriter == null)
+            {
+                throw new MoviePersonWriterNotFound("Writer is not attached to this movie.");
+            }
+
+            await _moviePersonWriterRepository.Delete(moviePersonWriter);
         }
     }
 }
