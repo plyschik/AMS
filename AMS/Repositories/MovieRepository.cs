@@ -25,6 +25,8 @@ namespace AMS.Repositories
 
         public Task<Movie> GetWithWriters(int id);
 
+        public Task<Movie> GetWithStars(int id);
+
         public Task<bool> IsMovieExists(int id);
     }
     
@@ -94,6 +96,16 @@ namespace AMS.Repositories
             var movie = await _databaseContext.Movies
                 .Include(m => m.MoviePersonWriters)
                 .ThenInclude(mpw => mpw.Person)
+                .FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+            return movie;
+        }
+
+        public async Task<Movie> GetWithStars(int id)
+        {
+            var movie = await _databaseContext.Movies
+                .Include(m => m.MoviePersonStars)
+                .ThenInclude(mps => mps.Person)
                 .FirstOrDefaultAsync(m => m.Id.Equals(id));
 
             return movie;
