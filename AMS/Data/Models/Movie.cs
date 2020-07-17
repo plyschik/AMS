@@ -33,6 +33,9 @@ namespace AMS.Data.Models
         
         [JsonIgnore]
         public IList<MoviePersonWriter> MoviePersonWriters { get; set; }
+        
+        [JsonIgnore]
+        public IList<MoviePersonStar> MoviePersonStars { get; set; }
 
         [NotMapped]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
@@ -45,5 +48,9 @@ namespace AMS.Data.Models
         [NotMapped]
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public IEnumerable<Person> Writers => MoviePersonWriters.Select(mpw => mpw.Person);
+
+        [NotMapped]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public IEnumerable<Person> Stars => MoviePersonStars.Select(mps => mps.Person);
     }
 }
