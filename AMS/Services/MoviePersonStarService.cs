@@ -13,6 +13,8 @@ namespace AMS.Services
         public Task<IEnumerable<PersonResponse>> GetStarsForMovie(int movieId);
 
         public Task AttachStarToMovie(int movieId, int personId);
+
+        public Task DetachStarFromMovie(int movieId, int personId);
     }
     
     public class MoviePersonStarService : IMoviePersonStarService
@@ -64,6 +66,18 @@ namespace AMS.Services
                 MovieId = movieId,
                 PersonId = personId
             });
+        }
+
+        public async Task DetachStarFromMovie(int movieId, int personId)
+        {
+            var moviePersonStar = await _moviePersonStarRepository.Get(movieId, personId);
+
+            if (moviePersonStar == null)
+            {
+                throw new MoviePersonStarNotFound("Star is not attached to this movie.");
+            }
+
+            await _moviePersonStarRepository.Delete(moviePersonStar);
         }
     }
 }
