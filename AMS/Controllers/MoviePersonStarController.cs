@@ -33,5 +33,37 @@ namespace AMS.Controllers
                 });
             }
         }
+
+        [HttpPut("{personId:int}")]
+        public async Task<IActionResult> AttachWriter(int movieId, int personId)
+        {
+            try
+            {
+                await _moviePersonStarService.AttachStarToMovie(movieId, personId);
+
+                return Ok();
+            }
+            catch (MovieNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (PersonNotFound exception)
+            {
+                return NotFound(new
+                {
+                    exception.Message
+                });
+            }
+            catch (StarAlreadyAttachedToMovie exception)
+            {
+                return BadRequest(new
+                {
+                    exception.Message
+                });
+            }
+        }
     }
 }
