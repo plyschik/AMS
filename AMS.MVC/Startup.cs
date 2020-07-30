@@ -1,6 +1,7 @@
 using AMS.MVC.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,12 +20,15 @@ namespace AMS.MVC
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-            
             services.AddDbContext<DatabaseContext>(builder =>
             {
                 builder.UseNpgsql(_configuration.GetConnectionString("Default"));
             });
+
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<DatabaseContext>();
+            
+            services.AddControllersWithViews();
+            services.AddRazorPages();
         }
 
         public void Configure(IApplicationBuilder application, IWebHostEnvironment environment)
@@ -41,7 +45,10 @@ namespace AMS.MVC
 
             application.UseHttpsRedirection();
             application.UseStaticFiles();
+            
             application.UseRouting();
+            
+            application.UseAuthentication();
             application.UseAuthorization();
 
             application.UseEndpoints(endpoints =>
@@ -50,6 +57,8 @@ namespace AMS.MVC
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
+
+                endpoints.MapRazorPages();
             });
         }
     }
