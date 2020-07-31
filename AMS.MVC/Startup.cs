@@ -1,7 +1,7 @@
 using AMS.MVC.Data;
+using AMS.MVC.Data.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +25,7 @@ namespace AMS.MVC
                 builder.UseNpgsql(_configuration.GetConnectionString("Default"));
             });
 
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<DatabaseContext>();
+            services.AddDefaultIdentity<ApplicationUser>().AddEntityFrameworkStores<DatabaseContext>();
             
             services.AddControllersWithViews();
             services.AddRazorPages();
