@@ -1,11 +1,13 @@
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
+using AMS.MVC.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Vereyon.Web;
 
 namespace AMS.MVC
 {
@@ -29,6 +31,10 @@ namespace AMS.MVC
             
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddFlashMessage();
+            
+            services.AddScoped<IMovieRepository, MovieRepository>();
         }
 
         public void Configure(IApplicationBuilder application, IWebHostEnvironment environment)

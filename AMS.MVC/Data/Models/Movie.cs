@@ -19,6 +19,7 @@ namespace AMS.MVC.Data.Models
         
         [Required]
         [DataType(DataType.Date)]
+        [Display(Name = "Release date")]
         public DateTime ReleaseDate { get; set; }
         
         public ApplicationUser User { get; set; }
