@@ -60,6 +60,7 @@ else
                         </td>
                         <td>
                             <a asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
+                            <a asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>
                         </td>
                     </tr>
                 }

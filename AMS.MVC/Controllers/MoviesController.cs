@@ -33,7 +33,7 @@ namespace AMS.MVC.Controllers
             return View(movies);
         }
         
-        [Route("[controller]/[action]/{id:guid}")]
+        [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Show(Guid id)
         {
             var movie = await _movieRepository.GetById(id);
@@ -69,7 +69,7 @@ namespace AMS.MVC.Controllers
             return View(movie);
         }
         
-        [Route("[controller]/[action]/{id:guid}")]
+        [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var movie = await _movieRepository.GetById(id);
@@ -113,6 +113,35 @@ namespace AMS.MVC.Controllers
             }
 
             return View(movie);
+        }
+
+        [HttpGet("[controller]/[action]/{id:guid}")]
+        public async Task<IActionResult> ConfirmDelete(Guid id)
+        {
+            var movie = await _movieRepository.GetById(id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            
+            return View(movie);
+        }
+
+        [HttpPost("[controller]/[action]/{id:guid}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var movie = await _movieRepository.GetById(id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            await _movieRepository.Delete(movie);
+            
+            return RedirectToAction(nameof(Index));
         }
     }
 }

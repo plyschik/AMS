@@ -17,6 +17,8 @@ namespace AMS.MVC.Repositories
 
         public Task<Movie> Update(Movie movie);
 
+        public Task Delete(Movie movie);
+
         public Task<bool> Exists(Guid id);
     }
     
@@ -53,6 +55,12 @@ namespace AMS.MVC.Repositories
             await _databaseContext.SaveChangesAsync();
 
             return movie;
+        }
+
+        public async Task Delete(Movie movie)
+        {
+            _databaseContext.Movies.Remove(movie);
+            await _databaseContext.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(Guid id)

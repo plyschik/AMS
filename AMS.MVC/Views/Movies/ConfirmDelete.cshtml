@@ -1,0 +1,18 @@
+@model AMS.MVC.Data.Models.Movie
+
+@{
+    ViewData["Title"] = "Movie delete confirmation";
+}
+
+<h2 class="mb-0">Movie delete confirmation</h2>
+
+<hr class="my-4" />
+
+<div class="mb-4">
+    Are you sure that you want to delete movie "@Model.Title"?
+</div>
+
+<form asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.Id">
+    <input class="btn btn-danger" type="submit" value="Delete" />
+    <a class="btn btn-primary" asp-controller="Movies" asp-action="Index">Cancel</a>
+</form>
