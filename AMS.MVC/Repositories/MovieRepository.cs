@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
@@ -9,6 +10,8 @@ namespace AMS.MVC.Repositories
     public interface IMovieRepository
     {
         public Task<IEnumerable<Movie>> GetAll();
+
+        public Task<Movie> GetById(Guid id);
         
         public Task<Movie> Create(Movie movie);
     }
@@ -25,6 +28,11 @@ namespace AMS.MVC.Repositories
         public async Task<IEnumerable<Movie>> GetAll()
         {
             return await _databaseContext.Movies.ToListAsync();
+        }
+
+        public async Task<Movie> GetById(Guid id)
+        {
+            return await _databaseContext.Movies.FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
         public async Task<Movie> Create(Movie movie)

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
@@ -29,6 +30,19 @@ namespace AMS.MVC.Controllers
             var movies = await _movieRepository.GetAll();
             
             return View(movies);
+        }
+        
+        [Route("[controller]/[action]/{id:guid}")]
+        public async Task<IActionResult> Show(Guid id)
+        {
+            var movie = await _movieRepository.GetById(id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            return View(movie);
         }
         
         public IActionResult Create()

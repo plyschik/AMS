@@ -41,7 +41,9 @@ else
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(movies => movie.Id)
+                        <a asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
+                            @Html.DisplayFor(movies => movie.Id)
+                        </a>
                     </td>
                     <td>
                         @Html.DisplayFor(movies => movie.Title)
