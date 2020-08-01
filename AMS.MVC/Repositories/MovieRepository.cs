@@ -14,6 +14,10 @@ namespace AMS.MVC.Repositories
         public Task<Movie> GetById(Guid id);
         
         public Task<Movie> Create(Movie movie);
+
+        public Task<Movie> Update(Movie movie);
+
+        public Task<bool> Exists(Guid id);
     }
     
     public class MovieRepository : IMovieRepository
@@ -41,6 +45,19 @@ namespace AMS.MVC.Repositories
             await _databaseContext.SaveChangesAsync();
 
             return movie;
+        }
+
+        public async Task<Movie> Update(Movie movie)
+        {
+            _databaseContext.Movies.Update(movie);
+            await _databaseContext.SaveChangesAsync();
+
+            return movie;
+        }
+
+        public async Task<bool> Exists(Guid id)
+        {
+            return await _databaseContext.Movies.AnyAsync(movie => movie.Id == id);
         }
     }
 }

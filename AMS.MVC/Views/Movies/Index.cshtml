@@ -19,43 +19,51 @@
 }
 else
 {
-    <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">
-                    @Html.DisplayNameFor(movie => movie.Id)
-                </th>    
-                <th scope="col">
-                    @Html.DisplayNameFor(movie => movie.Title)
-                </th>    
-                <th scope="col">
-                    @Html.DisplayNameFor(movie => movie.Description)
-                </th>
-                <th scope="col">
-                    @Html.DisplayNameFor(movie => movie.ReleaseDate)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var movie in Model)
-            {
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
                 <tr>
-                    <td>
-                        <a asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
-                            @Html.DisplayFor(movies => movie.Id)
-                        </a>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(movies => movie.Title)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(movies => movie.Description)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(movies => movie.ReleaseDate)
-                    </td>
+                    <th scope="col">
+                        @Html.DisplayNameFor(movie => movie.Id)
+                    </th>    
+                    <th scope="col">
+                        @Html.DisplayNameFor(movie => movie.Title)
+                    </th>    
+                    <th scope="col">
+                        @Html.DisplayNameFor(movie => movie.Description)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(movie => movie.ReleaseDate)
+                    </th>
+                    <th>
+                        Actions
+                    </th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var movie in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
+                                @Html.DisplayFor(movies => movie.Id)
+                            </a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(movies => movie.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(movies => movie.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(movies => movie.ReleaseDate)
+                        </td>
+                        <td>
+                            <a asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

@@ -4,6 +4,7 @@ using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
@@ -63,6 +64,52 @@ namespace AMS.MVC.Controllers
                 _flashMessage.Confirmation("Movie has been created.");
                 
                 return RedirectToAction(nameof(Create));
+            }
+
+            return View(movie);
+        }
+        
+        [Route("[controller]/[action]/{id:guid}")]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var movie = await _movieRepository.GetById(id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            return View(movie);
+        }
+
+        [HttpPost("[controller]/[action]/{id:guid}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id, Title, Description, ReleaseDate")] Movie movie)
+        {
+            if (id != movie.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _movieRepository.Update(movie);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _movieRepository.Exists(movie.Id))
+                    {
+                        return NotFound();
+                    }
+
+                    return BadRequest();
+                }
+
+                _flashMessage.Confirmation("Movie has been updated.");
+                
+                return RedirectToAction(nameof(Index));
             }
 
             return View(movie);
