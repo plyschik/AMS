@@ -24,6 +24,13 @@ namespace AMS.MVC.Controllers
             _flashMessage = flashMessage;
         }
 
+        public async Task<IActionResult> Index()
+        {
+            var movies = await _movieRepository.GetAll();
+            
+            return View(movies);
+        }
+        
         public IActionResult Create()
         {
             return View();
