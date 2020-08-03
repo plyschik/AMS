@@ -33,8 +33,16 @@ else
                     @Html.DisplayFor(movies => movie.Description)
                 </p>
                 <a class="card-link" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
-                <a class="card-link" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
-                <a class="card-link" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>
+                
+                @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Edit)).Succeeded)
+                {
+                    <a class="card-link" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
+                }
+                
+                @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Delete)).Succeeded)
+                {
+                    <a class="card-link" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
+                }
             </div>
         </div>   
     }

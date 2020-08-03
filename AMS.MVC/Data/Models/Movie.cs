@@ -23,6 +23,8 @@ namespace AMS.MVC.Data.Models
         [Display(Name = "Release date")]
         public DateTime ReleaseDate { get; set; }
         
+        public string UserId { get; set; }
+        
         public ApplicationUser User { get; set; }
     }
 }

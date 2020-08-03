@@ -1,4 +1,9 @@
 ﻿@using AMS.MVC
 @using AMS.MVC.Models
+@using AMS.MVC.Authorization;
+@using Microsoft.AspNetCore.Authorization
+
+@inject IAuthorizationService AuthorizationService
+
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Vereyon.Web.FlashMessage

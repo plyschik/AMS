@@ -1,6 +1,8 @@
+using AMS.MVC.Authorization;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +40,10 @@ namespace AMS.MVC
             services.AddFlashMessage();
             
             services.AddScoped<IMovieRepository, MovieRepository>();
+            
+            services.AddScoped<IAuthorizationHandler, MovieIsOwnerAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MovieManagerAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MovieAdministratorsAuthorizationHandler>();
         }
 
         public void Configure(IApplicationBuilder application, IWebHostEnvironment environment)

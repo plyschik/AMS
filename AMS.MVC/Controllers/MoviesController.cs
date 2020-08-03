@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using AMS.MVC.Authorization;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +13,19 @@ namespace AMS.MVC.Controllers
 {
     public class MoviesController : Controller
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMovieRepository _movieRepository;
         private readonly IFlashMessage _flashMessage;
 
         public MoviesController(
+            IAuthorizationService authorizationService,
             UserManager<ApplicationUser> userManager,
             IMovieRepository movieRepository,
             IFlashMessage flashMessage
         )
         {
+            _authorizationService = authorizationService; 
             _userManager = userManager;
             _movieRepository = movieRepository;
             _flashMessage = flashMessage;
@@ -79,6 +84,17 @@ namespace AMS.MVC.Controllers
                 return NotFound();
             }
 
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie, 
+                MovieOperations.Edit
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+
             return View(movie);
         }
 
@@ -86,6 +102,17 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id, Title, Description, ReleaseDate")] Movie movie)
         {
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie, 
+                MovieOperations.Edit
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             if (id != movie.Id)
             {
                 return NotFound();
@@ -125,6 +152,17 @@ namespace AMS.MVC.Controllers
                 return NotFound();
             }
             
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie, 
+                MovieOperations.Delete
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             return View(movie);
         }
 
@@ -137,6 +175,17 @@ namespace AMS.MVC.Controllers
             if (movie == null)
             {
                 return NotFound();
+            }
+            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie, 
+                MovieOperations.Delete
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
             }
 
             await _movieRepository.Delete(movie);
