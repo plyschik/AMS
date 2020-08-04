@@ -51,12 +51,14 @@ namespace AMS.MVC.Controllers
             return View(movie);
         }
         
+        [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title, Description, ReleaseDate")] Movie movie)
         {
@@ -75,6 +77,7 @@ namespace AMS.MVC.Controllers
         }
         
         [HttpGet("[controller]/[action]/{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> Edit(Guid id)
         {
             var movie = await _movieRepository.GetById(id);
@@ -99,6 +102,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id, Title, Description, ReleaseDate")] Movie movie)
         {
@@ -143,6 +147,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
             var movie = await _movieRepository.GetById(id);
@@ -151,22 +156,12 @@ namespace AMS.MVC.Controllers
             {
                 return NotFound();
             }
-            
-            var isAuthorized = await _authorizationService.AuthorizeAsync(
-                User,
-                movie, 
-                MovieOperations.Delete
-            );
 
-            if (!isAuthorized.Succeeded)
-            {
-                return Forbid();
-            }
-            
             return View(movie);
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -175,17 +170,6 @@ namespace AMS.MVC.Controllers
             if (movie == null)
             {
                 return NotFound();
-            }
-            
-            var isAuthorized = await _authorizationService.AuthorizeAsync(
-                User,
-                movie, 
-                MovieOperations.Delete
-            );
-
-            if (!isAuthorized.Succeeded)
-            {
-                return Forbid();
             }
 
             await _movieRepository.Delete(movie);

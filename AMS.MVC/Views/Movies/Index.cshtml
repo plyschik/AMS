@@ -6,7 +6,11 @@
 
 <div class="d-flex justify-content-between align-items-center">
     <h2 class="mb-0">Movies list</h2>
-    <a class="btn btn-success" asp-controller="Movies" asp-action="Create">Create movie</a>
+    
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a class="btn btn-success" asp-controller="Movies" asp-action="Create">Create movie</a>
+    }
 </div>
 
 <hr class="my-4" />
@@ -39,7 +43,7 @@ else
                     <a class="card-link" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
                 }
                 
-                @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Delete)).Succeeded)
+                @if (User.IsInRole("Administrator"))
                 {
                     <a class="card-link" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
                 }

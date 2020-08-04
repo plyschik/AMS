@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AMS.MVC.Authorization
 {
-    public class MovieIsOwnerAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Movie>
+    public class MovieEditAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Movie>
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public MovieIsOwnerAuthorizationHandler(UserManager<ApplicationUser> userManager)
+        public MovieEditAuthorizationHandler(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
@@ -29,6 +29,11 @@ namespace AMS.MVC.Authorization
             if (requirement.Name != Constants.EditOperationName)
             {
                 return Task.CompletedTask;
+            }
+
+            if (context.User.IsInRole("Manager") || context.User.IsInRole("Administrator"))
+            {
+                context.Succeed(requirement);
             }
             
             if (resource.UserId == _userManager.GetUserId(context.User))

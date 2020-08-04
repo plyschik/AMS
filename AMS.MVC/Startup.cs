@@ -41,9 +41,7 @@ namespace AMS.MVC
             
             services.AddScoped<IMovieRepository, MovieRepository>();
             
-            services.AddScoped<IAuthorizationHandler, MovieIsOwnerAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, MovieManagerAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, MovieAdministratorsAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MovieEditAuthorizationHandler>();
         }
 
         public void Configure(IApplicationBuilder application, IWebHostEnvironment environment)
