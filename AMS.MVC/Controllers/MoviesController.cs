@@ -89,7 +89,7 @@ namespace AMS.MVC.Controllers
 
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
-                movie, 
+                movie,
                 MovieOperations.Edit
             );
 
@@ -104,11 +104,14 @@ namespace AMS.MVC.Controllers
         [HttpPost("[controller]/[action]/{id:guid}")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id, Title, Description, ReleaseDate")] Movie movie)
+        public async Task<IActionResult> Edit(
+            Guid id,
+            [Bind("Id, Title, Description, ReleaseDate, UserId")] Movie movie
+        )
         {
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
-                movie, 
+                movie,
                 MovieOperations.Edit
             );
 
