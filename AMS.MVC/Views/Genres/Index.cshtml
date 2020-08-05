@@ -28,6 +28,9 @@ else
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
+                <th>
+                    Actions
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +42,9 @@ else
                     </td>
                     <td>
                         @Html.DisplayFor(genres => genre.Name)
+                    </td>
+                    <td>
+                        <a asp-controller="Genres" asp-action="Edit" asp-route-id="@genre.Id">Edit</a>
                     </td>
                 </tr>
             }

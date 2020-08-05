@@ -1,0 +1,28 @@
+@model AMS.MVC.Data.Models.Genre
+
+@{
+    ViewData["Title"] = "Genre movie";
+}
+
+<h2 class="mb-0">Edit genre</h2>
+
+<hr class="my-4" />
+
+<form asp-controller="Genres" asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    
+    <div class="row form-group">
+        <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="d-inline-block mt-1 text-danger"></span>
+        </div>
+    </div>
+    
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <input class="btn btn-primary" type="submit" value="Update" />
+            <a class="btn btn-danger" asp-controller="Genres" asp-action="Index">Cancel</a>
+        </div>
+    </div>
+</form>

@@ -1,3 +1,5 @@
+using System;
+using System.Data;
 using System.Threading.Tasks;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
@@ -44,6 +46,51 @@ namespace AMS.MVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            return View(genre);
+        }
+
+        [HttpGet("[controller]/[action]/{id:guid}")]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var genre = await _genreRepository.GetById(id);
+
+            if (genre == null)
+            {
+                return NotFound();
+            }
+
+            return View(genre);
+        }
+
+        [HttpPost("[controller]/[action]/{id:guid}")]
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id, Name")] Genre genre)
+        {
+            if (id != genre.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _genreRepository.Update(genre);
+                }
+                catch (DBConcurrencyException)
+                {
+                    if (!await _genreRepository.Exists(id))
+                    {
+                        return NotFound();
+                    }
+                    
+                    return BadRequest();
+                }
+                
+                _flashMessage.Confirmation("Genre has been updated.");
+                
+                return RedirectToAction(nameof(Index));
+            }
+            
             return View(genre);
         }
     }
