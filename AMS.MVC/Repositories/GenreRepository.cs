@@ -18,6 +18,8 @@ namespace AMS.MVC.Repositories
 
         public Task<Genre> Update(Genre genre);
 
+        public Task Delete(Genre genre);
+
         public Task<bool> Exists(Guid id);
     }
 
@@ -54,6 +56,12 @@ namespace AMS.MVC.Repositories
             await _databaseContext.SaveChangesAsync();
             
             return genre;
+        }
+
+        public async Task Delete(Genre genre)
+        {
+            _databaseContext.Genres.Remove(genre);
+            await _databaseContext.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(Guid id)

@@ -93,5 +93,34 @@ namespace AMS.MVC.Controllers
             
             return View(genre);
         }
+
+        [HttpGet("[controller]/[action]/{id:guid}")]
+        public async Task<IActionResult> ConfirmDelete(Guid id)
+        {
+            var genre = await _genreRepository.GetById(id);
+
+            if (genre == null)
+            {
+                return NotFound();
+            }
+
+            return View(genre);
+        }
+
+        [HttpPost("[controller]/[action]/{id:guid}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var genre = await _genreRepository.GetById(id);
+
+            if (genre == null)
+            {
+                return NotFound();
+            }
+
+            await _genreRepository.Delete(genre);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

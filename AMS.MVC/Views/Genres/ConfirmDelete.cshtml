@@ -1,0 +1,18 @@
+@model AMS.MVC.Data.Models.Genre
+
+@{
+    ViewData["Title"] = "Genre delete confirmation";
+}
+
+<h2 class="mb-0">Genre delete confirmation</h2>
+
+<hr class="my-4" />
+
+<div class="mb-4">
+    Are you sure that you want to delete genre "@Model.Name"?
+</div>
+
+<form asp-controller="Genres" asp-action="Delete" asp-route-id="@Model.Id">
+    <input class="btn btn-danger" type="submit" value="Delete" />
+    <a class="btn btn-primary" asp-controller="Genres" asp-action="Index">Cancel</a>
+</form>
