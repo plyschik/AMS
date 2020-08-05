@@ -8,6 +8,7 @@ namespace AMS.MVC.Data.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Display(Name = "#")]
         public Guid Id { get; set; }
         
         [Required]

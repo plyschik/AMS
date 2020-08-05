@@ -1,0 +1,44 @@
+@model IEnumerable<AMS.MVC.Data.Models.Genre>
+
+@{
+    ViewData["Title"] = "Genres list";
+}
+
+<h2 class="mb-0">Genres list</h2>
+
+<hr class="my-4" />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        Genres list is empty.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var genre in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(genres => genre.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(genres => genre.Name)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>    
+}
