@@ -10,6 +10,8 @@ namespace AMS.MVC.Data
         
         public DbSet<Movie> Movies { get; set; }
         
+        public DbSet<Genre> Genres { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -22,6 +24,10 @@ namespace AMS.MVC.Data
                 .HasMany(user => user.Movies)
                 .WithOne(movie => movie.User)
                 .IsRequired();
+
+            builder.Entity<Genre>()
+                .HasIndex(genre => genre.Name)
+                .IsUnique();
         }
     }
 }

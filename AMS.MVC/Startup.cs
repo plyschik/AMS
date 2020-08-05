@@ -40,6 +40,7 @@ namespace AMS.MVC
             services.AddFlashMessage();
             
             services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
             
             services.AddScoped<IAuthorizationHandler, MovieEditAuthorizationHandler>();
         }
