@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data.Models;
@@ -16,7 +17,7 @@ namespace AMS.MVC.Data
         {
             await databaseContext.Database.EnsureCreatedAsync();
 
-            if (databaseContext.ApplicationUsers.Any() || databaseContext.Movies.Any())
+            if (databaseContext.ApplicationUsers.Any() || databaseContext.Movies.Any() || databaseContext.Genres.Any())
             {
                 return;
             }
@@ -164,6 +165,19 @@ namespace AMS.MVC.Data
             };
 
             await databaseContext.Movies.AddRangeAsync(movies);
+            await databaseContext.SaveChangesAsync();
+
+            IDictionary<string, Genre> genres = new Dictionary<string, Genre>()
+            {
+                { "drama", new Genre() { Name = "Drama"} },
+                { "crime", new Genre() { Name = "Crime"} },
+                { "action", new Genre() { Name = "Action"} },
+                { "adventure", new Genre() { Name = "Adventure"} },
+                { "sci-fi", new Genre() { Name = "Sci-Fi"} },
+                { "romance", new Genre() { Name = "Romance"} },
+            };
+            
+            await databaseContext.Genres.AddRangeAsync(genres.Values);
             await databaseContext.SaveChangesAsync();
         }
     }
