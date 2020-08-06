@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,5 +27,7 @@ namespace AMS.MVC.Data.Models
         public string UserId { get; set; }
         
         public ApplicationUser User { get; set; }
+        
+        public ICollection<MovieGenre> MovieGenres { get; set; }
     }
 }

@@ -12,6 +12,8 @@ namespace AMS.MVC.Data
         
         public DbSet<Genre> Genres { get; set; }
         
+        public DbSet<MovieGenre> MovieGenres { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -28,6 +30,21 @@ namespace AMS.MVC.Data
             builder.Entity<Genre>()
                 .HasIndex(genre => genre.Name)
                 .IsUnique();
+
+            builder.Entity<MovieGenre>()
+                .HasKey(mg => new { mg.MovieId, mg.GenreId });
+
+            builder.Entity<MovieGenre>()
+                .HasOne(mg => mg.Movie)
+                .WithMany(m => m.MovieGenres)
+                .HasForeignKey(mg => mg.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<MovieGenre>()
+                .HasOne(mg => mg.Genre)
+                .WithMany(g => g.MovieGenres)
+                .HasForeignKey(mg => mg.GenreId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
