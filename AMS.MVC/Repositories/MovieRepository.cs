@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
@@ -10,8 +11,12 @@ namespace AMS.MVC.Repositories
     public interface IMovieRepository
     {
         public Task<IEnumerable<Movie>> GetAll();
+        
+        public Task<IEnumerable<Movie>> GetAllWithGenres();
 
         public Task<Movie> GetById(Guid id);
+        
+        public Task<Movie> GetByIdWithGenres(Guid id);
         
         public Task<Movie> Create(Movie movie);
 
@@ -33,12 +38,31 @@ namespace AMS.MVC.Repositories
 
         public async Task<IEnumerable<Movie>> GetAll()
         {
-            return await _databaseContext.Movies.ToListAsync();
+            return await _databaseContext.Movies
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
+        }
+        
+        public async Task<IEnumerable<Movie>> GetAllWithGenres()
+        {
+            return await _databaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(m => m.Genre)
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
         }
 
         public async Task<Movie> GetById(Guid id)
         {
             return await _databaseContext.Movies.FirstOrDefaultAsync(movie => movie.Id == id);
+        }
+        
+        public async Task<Movie> GetByIdWithGenres(Guid id)
+        {
+            return await _databaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+                .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
         public async Task<Movie> Create(Movie movie)

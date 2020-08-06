@@ -33,7 +33,7 @@ namespace AMS.MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _movieRepository.GetAll();
+            var movies = await _movieRepository.GetAllWithGenres();
             
             return View(movies);
         }
@@ -41,7 +41,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Show(Guid id)
         {
-            var movie = await _movieRepository.GetById(id);
+            var movie = await _movieRepository.GetByIdWithGenres(id);
 
             if (movie == null)
             {
