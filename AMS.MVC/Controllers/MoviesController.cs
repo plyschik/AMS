@@ -1,11 +1,16 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Authorization;
+using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
+using AMS.MVC.ViewModels.MovieViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Vereyon.Web;
 
@@ -16,18 +21,21 @@ namespace AMS.MVC.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMovieRepository _movieRepository;
+        private readonly IGenreRepository _genreRepository;
         private readonly IFlashMessage _flashMessage;
 
         public MoviesController(
             IAuthorizationService authorizationService,
             UserManager<ApplicationUser> userManager,
             IMovieRepository movieRepository,
+            IGenreRepository genreRepository,
             IFlashMessage flashMessage
         )
         {
             _authorizationService = authorizationService; 
             _userManager = userManager;
             _movieRepository = movieRepository;
+            _genreRepository = genreRepository;
             _flashMessage = flashMessage;
         }
 
@@ -52,28 +60,54 @@ namespace AMS.MVC.Controllers
         }
         
         [Authorize]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var genres = await _genreRepository.GetAll();
+
+            var viewModel = new MovieCreateViewModel();
+            foreach (var genre in genres)
+            {
+                viewModel.Genres.Add(new SelectListItem
+                {
+                    Text = genre.Name,
+                    Value = genre.Id.ToString()
+                });
+            }
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title, Description, ReleaseDate")] Movie movie)
+        public async Task<IActionResult> Create(MovieCreateViewModel movieCreateViewModel)
         {
             if (ModelState.IsValid)
             {
-                movie.User = await _userManager.GetUserAsync(HttpContext.User);
+                var movie = new Movie
+                {
+                    Title = movieCreateViewModel.Title,
+                    Description = movieCreateViewModel.Description,
+                    ReleaseDate = movieCreateViewModel.ReleaseDate,
+                    User = await _userManager.GetUserAsync(HttpContext.User) 
+                };
+
+                foreach (var genreId in movieCreateViewModel.SelectedGenres)
+                {
+                    movie.MovieGenres.Add(new MovieGenre
+                    {
+                        GenreId = Guid.Parse(genreId)
+                    });
+                }
 
                 await _movieRepository.Create(movie);
-
+                
                 _flashMessage.Confirmation("Movie has been created.");
                 
-                return RedirectToAction(nameof(Create));
+                return RedirectToAction(nameof(Index));
             }
 
-            return View(movie);
+            return View(movieCreateViewModel);
         }
         
         [HttpGet("[controller]/[action]/{id:guid}")]
