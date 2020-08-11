@@ -36,7 +36,7 @@
     <div class="row form-group">
         <label asp-for="Genres" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
-            <select asp-items="Model.Genres" asp-for="SelectedGenres" class="form-control" multiple="multiple"></select>
+            <select asp-items="Model.Genres" asp-for="SelectedGenres" id="slim-select" multiple="multiple"></select>
         </div>
     </div>
 
@@ -47,3 +47,16 @@
         </div>
     </div>
 </form>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="~/lib/slim-select/slimselect.min.css" />
+    <script type="text/javascript" src="~/lib/slim-select/slimselect.min.js"></script>
+    <script type="text/javascript">
+        new SlimSelect({
+            select: '#slim-select',
+            placeholder: false,
+            hideSelectedOption: true
+        });
+    </script>
+}
