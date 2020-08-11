@@ -9,7 +9,7 @@ namespace AMS.MVC.Data
         
         public IGenreRepository GenreRepository { get; }
         
-        Task SaveChangesAsync();
+        public Task SaveChangesAsync();
     }
     
     public class UnitOfWork : IUnitOfWork

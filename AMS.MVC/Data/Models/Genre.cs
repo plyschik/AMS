@@ -18,6 +18,6 @@ namespace AMS.MVC.Data.Models
         [GenreNameUnique]
         public string Name { get; set; }
 
-        public IList<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
+        public List<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
     }
 }

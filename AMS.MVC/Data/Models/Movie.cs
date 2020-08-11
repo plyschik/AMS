@@ -28,6 +28,6 @@ namespace AMS.MVC.Data.Models
         
         public ApplicationUser User { get; set; }
 
-        public IList<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
+        public List<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
     }
 }

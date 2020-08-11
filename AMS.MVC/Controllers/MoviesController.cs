@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Authorization;
 using AMS.MVC.Data;
@@ -109,7 +111,7 @@ namespace AMS.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(id);
+            var movie = await _unitOfWork.MovieRepository.GetByIdWithGenres(id);
 
             if (movie == null)
             {
@@ -127,17 +129,29 @@ namespace AMS.MVC.Controllers
                 return Forbid();
             }
 
-            return View(movie);
+            var genres = await _unitOfWork.GenreRepository.GetAll();
+
+            return View(new MovieEditViewModel
+            {
+                Title = movie.Title,
+                Description = movie.Description,
+                ReleaseDate = movie.ReleaseDate,
+                Genres = genres.Select(genre => new SelectListItem
+                {
+                    Text = genre.Name,
+                    Value = genre.Id.ToString(),
+                    Selected = movie.MovieGenres.Select(mg => mg.Genre).Contains(genre)
+                }).ToList()
+            });
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            Guid id,
-            [Bind("Id, Title, Description, ReleaseDate, UserId")] Movie movie
-        )
+        public async Task<IActionResult> Edit(Guid id, MovieEditViewModel movieEditViewModel)
         {
+            var movie = await _unitOfWork.MovieRepository.GetByIdWithGenres(id);
+            
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
                 movie,
@@ -148,17 +162,33 @@ namespace AMS.MVC.Controllers
             {
                 return Forbid();
             }
-            
-            if (id != movie.Id)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _unitOfWork.MovieRepository.Update(movie);
+                    movie.Title = movieEditViewModel.Title;
+                    movie.Description = movieEditViewModel.Description;
+                    movie.ReleaseDate = movieEditViewModel.ReleaseDate;
+                    
+                    var attachedGenreIds = movie.MovieGenres.Select(mg => mg.GenreId.ToString()).ToArray();
+                    var selectedGenreIds = movieEditViewModel.SelectedGenres ??= new string[] {};
+                    var genresIdsToAttach = selectedGenreIds.Except(attachedGenreIds).ToArray();
+                    var genresIdsToDetach = attachedGenreIds.Except(selectedGenreIds).ToArray();
+
+                    movie.MovieGenres = movie.MovieGenres.Where(
+                        mg => !genresIdsToDetach.Contains(mg.GenreId.ToString())
+                    ).ToList();
+                    
+                    foreach (var genreId in genresIdsToAttach)
+                    {
+                        movie.MovieGenres.Add(new MovieGenre
+                        {
+                            MovieId = movie.Id,
+                            GenreId = Guid.Parse(genreId)
+                        });
+                    }
+                    
                     await _unitOfWork.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -173,10 +203,19 @@ namespace AMS.MVC.Controllers
 
                 _flashMessage.Confirmation("Movie has been updated.");
                 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Show), new { id = movie.Id });
             }
 
-            return View(movie);
+            var genres = await _unitOfWork.GenreRepository.GetAll();
+
+            movieEditViewModel.Genres = genres.Select(genre => new SelectListItem
+            {
+                Text = genre.Name,
+                Value = genre.Id.ToString(),
+                Selected = movie.MovieGenres.Select(mg => mg.Genre).Contains(genre)
+            }).ToList();
+            
+            return View(movieEditViewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
