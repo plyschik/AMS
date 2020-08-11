@@ -27,7 +27,7 @@ namespace AMS.MVC.Data.Models
         public string UserId { get; set; }
         
         public ApplicationUser User { get; set; }
-        
-        public ICollection<MovieGenre> MovieGenres { get; set; } = new HashSet<MovieGenre>();
+
+        public IList<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
     }
 }

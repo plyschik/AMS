@@ -5,6 +5,6 @@ namespace AMS.MVC.Data.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public ICollection<Movie> Movies { get; set; }
+        public IList<Movie> Movies { get; set; } = new List<Movie>();
     }
 }

@@ -10,7 +10,7 @@ namespace AMS.MVC.Repositories
 {
     public interface IGenreRepository
     {
-        public Task<IEnumerable<Genre>> GetAll();
+        public Task<IList<Genre>> GetAll();
 
         public Task<Genre> GetById(Guid id);
 
@@ -32,7 +32,7 @@ namespace AMS.MVC.Repositories
             _databaseContext = databaseContext;
         }
 
-        public async Task<IEnumerable<Genre>> GetAll()
+        public async Task<IList<Genre>> GetAll()
         {
             return await _databaseContext.Genres.OrderBy(genre => genre.Name).ToListAsync();
         }

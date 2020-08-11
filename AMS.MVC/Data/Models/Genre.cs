@@ -17,7 +17,7 @@ namespace AMS.MVC.Data.Models
         [StringLength(30, MinimumLength = 2)]
         [GenreNameUnique]
         public string Name { get; set; }
-        
-        public ICollection<MovieGenre> MovieGenres { get; set; }
+
+        public IList<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
     }
 }
