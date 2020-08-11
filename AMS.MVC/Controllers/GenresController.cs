@@ -1,8 +1,8 @@
 using System;
 using System.Data;
 using System.Threading.Tasks;
+using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
-using AMS.MVC.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vereyon.Web;
@@ -12,18 +12,18 @@ namespace AMS.MVC.Controllers
     [Authorize(Roles = "Administrator")]
     public class GenresController : Controller
     {
-        private readonly IGenreRepository _genreRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFlashMessage _flashMessage;
 
-        public GenresController(IGenreRepository genreRepository, IFlashMessage flashMessage)
+        public GenresController(IUnitOfWork unitOfWork, IFlashMessage flashMessage)
         {
-            _genreRepository = genreRepository;
+            _unitOfWork = unitOfWork;
             _flashMessage = flashMessage;
         }
 
         public async Task<IActionResult> Index()
         {
-            var genres = await _genreRepository.GetAll();
+            var genres = await _unitOfWork.GenreRepository.GetAll();
             
             return View(genres);
         }
@@ -39,7 +39,8 @@ namespace AMS.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _genreRepository.Create(genre);
+                _unitOfWork.GenreRepository.Create(genre);
+                await _unitOfWork.SaveChangesAsync();
                 
                 _flashMessage.Confirmation("Genre has been created.");
 
@@ -52,7 +53,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var genre = await _genreRepository.GetById(id);
+            var genre = await _unitOfWork.GenreRepository.GetById(id);
 
             if (genre == null)
             {
@@ -74,11 +75,12 @@ namespace AMS.MVC.Controllers
             {
                 try
                 {
-                    await _genreRepository.Update(genre);
+                    _unitOfWork.GenreRepository.Update(genre);
+                    await _unitOfWork.SaveChangesAsync();
                 }
                 catch (DBConcurrencyException)
                 {
-                    if (!await _genreRepository.Exists(id))
+                    if (!await _unitOfWork.GenreRepository.Exists(id))
                     {
                         return NotFound();
                     }
@@ -97,7 +99,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
-            var genre = await _genreRepository.GetById(id);
+            var genre = await _unitOfWork.GenreRepository.GetById(id);
 
             if (genre == null)
             {
@@ -111,14 +113,15 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var genre = await _genreRepository.GetById(id);
+            var genre = await _unitOfWork.GenreRepository.GetById(id);
 
             if (genre == null)
             {
                 return NotFound();
             }
 
-            await _genreRepository.Delete(genre);
+            _unitOfWork.GenreRepository.Delete(genre);
+            await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

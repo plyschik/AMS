@@ -27,6 +27,18 @@
                                     <a class="dropdown-item" asp-controller="Movies" asp-action="Create">Create</a>
                                 </div>
                             </li>
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Genres
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" asp-controller="Genres" asp-action="Index">List</a>
+                                        <a class="dropdown-item" asp-controller="Genres" asp-action="Create">Create</a>
+                                    </div>
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>

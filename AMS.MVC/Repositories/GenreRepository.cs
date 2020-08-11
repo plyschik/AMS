@@ -14,11 +14,11 @@ namespace AMS.MVC.Repositories
 
         public Task<Genre> GetById(Guid id);
 
-        public Task<Genre> Create(Genre genre);
+        public void Create(Genre genre);
 
-        public Task<Genre> Update(Genre genre);
+        public void Update(Genre genre);
 
-        public Task Delete(Genre genre);
+        public void Delete(Genre genre);
 
         public Task<bool> Exists(Guid id);
     }
@@ -42,26 +42,19 @@ namespace AMS.MVC.Repositories
             return await _databaseContext.Genres.FirstOrDefaultAsync(genre => genre.Id == id);
         }
 
-        public async Task<Genre> Create(Genre genre)
+        public void Create(Genre genre)
         {
-            await _databaseContext.Genres.AddAsync(genre);
-            await _databaseContext.SaveChangesAsync();
-
-            return genre;
+            _databaseContext.Genres.Add(genre);
         }
 
-        public async Task<Genre> Update(Genre genre)
+        public void Update(Genre genre)
         {
             _databaseContext.Genres.Update(genre);
-            await _databaseContext.SaveChangesAsync();
-            
-            return genre;
         }
 
-        public async Task Delete(Genre genre)
+        public void Delete(Genre genre)
         {
             _databaseContext.Genres.Remove(genre);
-            await _databaseContext.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(Guid id)

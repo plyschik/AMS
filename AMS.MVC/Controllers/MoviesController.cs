@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Authorization;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
-using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,30 +15,27 @@ namespace AMS.MVC.Controllers
 {
     public class MoviesController : Controller
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthorizationService _authorizationService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IMovieRepository _movieRepository;
-        private readonly IGenreRepository _genreRepository;
         private readonly IFlashMessage _flashMessage;
 
         public MoviesController(
+            IUnitOfWork unitOfWork,
             IAuthorizationService authorizationService,
             UserManager<ApplicationUser> userManager,
-            IMovieRepository movieRepository,
-            IGenreRepository genreRepository,
             IFlashMessage flashMessage
         )
         {
-            _authorizationService = authorizationService; 
+            _unitOfWork = unitOfWork;
+            _authorizationService = authorizationService;
             _userManager = userManager;
-            _movieRepository = movieRepository;
-            _genreRepository = genreRepository;
             _flashMessage = flashMessage;
         }
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _movieRepository.GetAllWithGenres();
+            var movies = await _unitOfWork.MovieRepository.GetAllWithGenres();
             
             return View(movies);
         }
@@ -49,7 +43,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Show(Guid id)
         {
-            var movie = await _movieRepository.GetByIdWithGenres(id);
+            var movie = await _unitOfWork.MovieRepository.GetByIdWithGenres(id);
 
             if (movie == null)
             {
@@ -62,7 +56,7 @@ namespace AMS.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> Create()
         {
-            var genres = await _genreRepository.GetAll();
+            var genres = await _unitOfWork.GenreRepository.GetAll();
 
             var viewModel = new MovieCreateViewModel();
             foreach (var genre in genres)
@@ -100,7 +94,8 @@ namespace AMS.MVC.Controllers
                     });
                 }
 
-                await _movieRepository.Create(movie);
+                _unitOfWork.MovieRepository.Create(movie);
+                await _unitOfWork.SaveChangesAsync();
                 
                 _flashMessage.Confirmation("Movie has been created.");
                 
@@ -114,7 +109,7 @@ namespace AMS.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var movie = await _movieRepository.GetById(id);
+            var movie = await _unitOfWork.MovieRepository.GetById(id);
 
             if (movie == null)
             {
@@ -163,11 +158,12 @@ namespace AMS.MVC.Controllers
             {
                 try
                 {
-                    await _movieRepository.Update(movie);
+                    _unitOfWork.MovieRepository.Update(movie);
+                    await _unitOfWork.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _movieRepository.Exists(movie.Id))
+                    if (!await _unitOfWork.MovieRepository.Exists(movie.Id))
                     {
                         return NotFound();
                     }
@@ -187,7 +183,7 @@ namespace AMS.MVC.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
-            var movie = await _movieRepository.GetById(id);
+            var movie = await _unitOfWork.MovieRepository.GetById(id);
 
             if (movie == null)
             {
@@ -202,14 +198,15 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var movie = await _movieRepository.GetById(id);
+            var movie = await _unitOfWork.MovieRepository.GetById(id);
 
             if (movie == null)
             {
                 return NotFound();
             }
 
-            await _movieRepository.Delete(movie);
+            _unitOfWork.MovieRepository.Delete(movie);
+            await _unitOfWork.SaveChangesAsync();
             
             return RedirectToAction(nameof(Index));
         }

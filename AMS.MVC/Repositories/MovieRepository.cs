@@ -18,11 +18,11 @@ namespace AMS.MVC.Repositories
         
         public Task<Movie> GetByIdWithGenres(Guid id);
         
-        public Task<Movie> Create(Movie movie);
+        public void Create(Movie movie);
 
-        public Task<Movie> Update(Movie movie);
+        public void Update(Movie movie);
 
-        public Task Delete(Movie movie);
+        public void Delete(Movie movie);
 
         public Task<bool> Exists(Guid id);
     }
@@ -65,26 +65,19 @@ namespace AMS.MVC.Repositories
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
-        public async Task<Movie> Create(Movie movie)
+        public void Create(Movie movie)
         {
-            await _databaseContext.Movies.AddAsync(movie);
-            await _databaseContext.SaveChangesAsync();
-
-            return movie;
+            _databaseContext.Movies.Add(movie);
         }
 
-        public async Task<Movie> Update(Movie movie)
+        public void Update(Movie movie)
         {
             _databaseContext.Movies.Update(movie);
-            await _databaseContext.SaveChangesAsync();
-
-            return movie;
         }
 
-        public async Task Delete(Movie movie)
+        public void Delete(Movie movie)
         {
             _databaseContext.Movies.Remove(movie);
-            await _databaseContext.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(Guid id)
