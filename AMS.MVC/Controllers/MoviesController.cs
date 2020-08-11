@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Authorization;
@@ -60,17 +59,14 @@ namespace AMS.MVC.Controllers
         {
             var genres = await _unitOfWork.GenreRepository.GetAll();
 
-            var viewModel = new MovieCreateViewModel();
-            foreach (var genre in genres)
+            return View(new MovieCreateViewModel
             {
-                viewModel.Genres.Add(new SelectListItem
+                Genres = genres.Select(genre => new SelectListItem
                 {
                     Text = genre.Name,
                     Value = genre.Id.ToString()
-                });
-            }
-
-            return View(viewModel);
+                }).ToList()
+            });
         }
 
         [HttpPost]
@@ -85,7 +81,7 @@ namespace AMS.MVC.Controllers
                     Title = movieCreateViewModel.Title,
                     Description = movieCreateViewModel.Description,
                     ReleaseDate = movieCreateViewModel.ReleaseDate,
-                    User = await _userManager.GetUserAsync(HttpContext.User) 
+                    User = await _userManager.GetUserAsync(HttpContext.User)
                 };
 
                 foreach (var genreId in movieCreateViewModel.SelectedGenres)
@@ -104,6 +100,15 @@ namespace AMS.MVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            var genres = await _unitOfWork.GenreRepository.GetAll();
+            
+            movieCreateViewModel.Genres = genres.Select(genre => new SelectListItem
+            {
+                Text = genre.Name,
+                Value = genre.Id.ToString(),
+                Selected = movieCreateViewModel.SelectedGenres.Contains(genre.Id.ToString())
+            }).ToList();
+            
             return View(movieCreateViewModel);
         }
         
@@ -184,7 +189,6 @@ namespace AMS.MVC.Controllers
                     {
                         movie.MovieGenres.Add(new MovieGenre
                         {
-                            MovieId = movie.Id,
                             GenreId = Guid.Parse(genreId)
                         });
                     }

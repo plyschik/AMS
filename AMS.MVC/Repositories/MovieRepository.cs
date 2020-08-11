@@ -10,9 +10,9 @@ namespace AMS.MVC.Repositories
 {
     public interface IMovieRepository
     {
-        public Task<IList<Movie>> GetAll();
+        public Task<ICollection<Movie>> GetAll();
         
-        public Task<IList<Movie>> GetAllWithGenres();
+        public Task<ICollection<Movie>> GetAllWithGenres();
 
         public Task<Movie> GetById(Guid id);
         
@@ -36,14 +36,14 @@ namespace AMS.MVC.Repositories
             _databaseContext = databaseContext;
         }
 
-        public async Task<IList<Movie>> GetAll()
+        public async Task<ICollection<Movie>> GetAll()
         {
             return await _databaseContext.Movies
                 .OrderByDescending(m => m.ReleaseDate)
                 .ToListAsync();
         }
         
-        public async Task<IList<Movie>> GetAllWithGenres()
+        public async Task<ICollection<Movie>> GetAllWithGenres()
         {
             return await _databaseContext.Movies
                 .Include(m => m.MovieGenres)
