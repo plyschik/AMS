@@ -17,7 +17,7 @@ namespace AMS.MVC.Data
         {
             await databaseContext.Database.EnsureCreatedAsync();
 
-            if (databaseContext.ApplicationUsers.Any() || databaseContext.Movies.Any() || databaseContext.Genres.Any())
+            if (databaseContext.ApplicationUsers.Any())
             {
                 return;
             }
@@ -356,6 +356,103 @@ namespace AMS.MVC.Data
             };
 
             await databaseContext.MovieGenres.AddRangeAsync(movieGenres);
+            await databaseContext.SaveChangesAsync();
+
+            IDictionary<string, Person> persons = new Dictionary<string, Person>
+            {
+                {
+                    "morgan_freeman",
+                    new Person
+                    {
+                        FirstName = "Morgan",
+                        LastName = "Freeman",
+                        DateOfBirth = DateTime.Parse("01-06-1937")
+                    }
+                },
+                {
+                    "tim_robbins",
+                    new Person
+                    {
+                        FirstName = "Tim",
+                        LastName = "Robbins",
+                        DateOfBirth = DateTime.Parse("16-10-1958")
+                    }
+                },
+                {
+                    "al_pacino",
+                    new Person
+                    {
+                        FirstName = "Al",
+                        LastName = "Pacino",
+                        DateOfBirth = DateTime.Parse("25-04-1940")
+                    }
+                },
+                {
+                    "james_caan",
+                    new Person
+                    {
+                        FirstName = "James",
+                        LastName = "Caan",
+                        DateOfBirth = DateTime.Parse("26-03-1940")
+                    }
+                },
+                {
+                    "christian_bale",
+                    new Person
+                    {
+                        FirstName = "Christian",
+                        LastName = "Bale",
+                        DateOfBirth = DateTime.Parse("30-01-1974")
+                    }
+                },
+                {
+                    "michael_caine",
+                    new Person
+                    {
+                        FirstName = "Michael",
+                        LastName = "Caine",
+                        DateOfBirth = DateTime.Parse("14-03-1933")
+                    }
+                },
+                {
+                    "maggie_gyllenhaal",
+                    new Person
+                    {
+                        FirstName = "Maggie",
+                        LastName = "Gyllenhaal",
+                        DateOfBirth = DateTime.Parse("16-11-1977")
+                    }
+                },
+                {
+                    "ali_astin",
+                    new Person
+                    {
+                        FirstName = "Ali",
+                        LastName = "Astin",
+                        DateOfBirth = DateTime.Parse("27-11-1996")
+                    }
+                },
+                {
+                    "orlando_bloom",
+                    new Person
+                    {
+                        FirstName = "Orlando",
+                        LastName = "Bloom",
+                        DateOfBirth = DateTime.Parse("13-01-1977")
+                    }
+                },
+                {
+                    "tom_hanks",
+                    new Person
+                    {
+                        FirstName = "Tom",
+                        LastName = "Hanks",
+                        DateOfBirth = DateTime.Parse("09-07-1956")
+                    }
+                }
+            };
+            
+            await databaseContext.Persons.AddRangeAsync(persons.Values);
             await databaseContext.SaveChangesAsync();
         }
     }

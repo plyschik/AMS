@@ -14,6 +14,8 @@ namespace AMS.MVC.Data
         
         public DbSet<MovieGenre> MovieGenres { get; set; }
         
+        public DbSet<Person> Persons { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -45,6 +47,10 @@ namespace AMS.MVC.Data
                 .WithMany(g => g.MovieGenres)
                 .HasForeignKey(mg => mg.GenreId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Person>()
+                .HasIndex(p => new { p.FirstName, p.LastName })
+                .IsUnique();
         }
     }
 }
