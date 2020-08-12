@@ -8,6 +8,8 @@ namespace AMS.MVC.Data
         public IMovieRepository MovieRepository { get; }
         
         public IGenreRepository GenreRepository { get; }
+
+        public IPersonRepository PersonRepository { get; }
         
         public Task SaveChangesAsync();
     }
@@ -20,15 +22,19 @@ namespace AMS.MVC.Data
         
         public IGenreRepository GenreRepository { get; }
 
+        public IPersonRepository PersonRepository { get; }
+
         public UnitOfWork(
             DatabaseContext databaseContext,
             IMovieRepository movieRepository,
-            IGenreRepository genreRepository
+            IGenreRepository genreRepository,
+            IPersonRepository personRepository
         )
         {
             _databaseContext = databaseContext;
             MovieRepository = movieRepository;
             GenreRepository = genreRepository;
+            PersonRepository = personRepository;
         }
 
         public async Task SaveChangesAsync()
