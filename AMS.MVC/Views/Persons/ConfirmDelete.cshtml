@@ -1,0 +1,18 @@
+@model AMS.MVC.Data.Models.Person
+
+@{
+    ViewData["Title"] = "Person delete confirmation";
+}
+
+<h2 class="mb-0">Person delete confirmation</h2>
+
+<hr class="my-4" />
+
+<div class="mb-4">
+    Are you sure that you want to delete person: @($"{Model.FirstName} {Model.LastName}")?
+</div>
+
+<form asp-controller="Persons" asp-action="Delete" asp-route-id="@Model.Id">
+    <input class="btn btn-danger" type="submit" value="Delete" />
+    <a class="btn btn-primary" asp-controller="Persons" asp-action="Index">Cancel</a>
+</form>
