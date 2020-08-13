@@ -1,0 +1,42 @@
+@model AMS.MVC.ViewModels.PersonViewModels.PersonEditViewModel
+
+@{
+    ViewData["Title"] = "Edit person";
+}
+
+<h2 class="mb-0">Edit person</h2>
+
+<hr class="my-4" />
+
+<form asp-controller="Persons" asp-action="Edit">
+    <div class="row form-group">
+        <label asp-for="FirstName" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="d-inline-block mt-1 text-danger"></span>
+        </div>
+    </div>
+    
+    <div class="row form-group">
+        <label asp-for="LastName" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="d-inline-block mt-1 text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <label asp-for="DateOfBirth" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="DateOfBirth" class="form-control" />
+            <span asp-validation-for="DateOfBirth" class="d-inline-block mt-1 text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <input class="btn btn-primary" type="submit" value="Create" />
+            <a class="btn btn-danger" asp-controller="Persons" asp-action="Index">Cancel</a>
+        </div>
+    </div>
+</form>

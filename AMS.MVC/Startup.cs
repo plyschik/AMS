@@ -41,6 +41,7 @@ namespace AMS.MVC
             
             services.AddScoped<IMovieRepository, MovieRepository>();
             services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
