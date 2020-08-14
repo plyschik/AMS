@@ -3,8 +3,10 @@ using System.Data;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
+using AMS.MVC.ViewModels.GenreViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
@@ -35,10 +37,15 @@ namespace AMS.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name")] Genre genre)
+        public async Task<IActionResult> Create(GenreCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
+                var genre = new Genre
+                {
+                    Name = viewModel.Name
+                };
+                
                 _unitOfWork.GenreRepository.Create(genre);
                 await _unitOfWork.SaveChangesAsync();
                 
@@ -47,7 +54,7 @@ namespace AMS.MVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(genre);
+            return View(viewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
@@ -60,40 +67,35 @@ namespace AMS.MVC.Controllers
                 return NotFound();
             }
 
-            return View(genre);
+            return View(new GenreEditViewModel
+            {
+                Name = genre.Name
+            });
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id, Name")] Genre genre)
+        public async Task<IActionResult> Edit(Guid id, GenreEditViewModel viewModel)
         {
-            if (id != genre.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
+                var genre = await _unitOfWork.GenreRepository.GetById(id);
+
+                if (genre == null)
                 {
-                    _unitOfWork.GenreRepository.Update(genre);
-                    await _unitOfWork.SaveChangesAsync();
+                    return NotFound();
                 }
-                catch (DBConcurrencyException)
-                {
-                    if (!await _unitOfWork.GenreRepository.Exists(id))
-                    {
-                        return NotFound();
-                    }
-                    
-                    return BadRequest();
-                }
-                
+
+                genre.Name = viewModel.Name;
+            
+                _unitOfWork.GenreRepository.Update(genre);
+                await _unitOfWork.SaveChangesAsync();
+                                
                 _flashMessage.Confirmation("Genre has been updated.");
                 
                 return RedirectToAction(nameof(Index));
             }
             
-            return View(genre);
+            return View(viewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]

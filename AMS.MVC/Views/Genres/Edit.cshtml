@@ -1,4 +1,4 @@
-@model AMS.MVC.Data.Models.Genre
+@model AMS.MVC.ViewModels.GenreViewModels.GenreEditViewModel
 
 @{
     ViewData["Title"] = "Genre movie";
@@ -9,8 +9,6 @@
 <hr class="my-4" />
 
 <form asp-controller="Genres" asp-action="Edit">
-    <input type="hidden" asp-for="Id" />
-    
     <div class="row form-group">
         <label asp-for="Name" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
