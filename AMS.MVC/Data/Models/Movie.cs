@@ -29,5 +29,7 @@ namespace AMS.MVC.Data.Models
         public ApplicationUser User { get; set; }
 
         public ICollection<MovieGenre> MovieGenres { get; set; }
+        
+        public ICollection<MovieDirector> MovieDirectors { get; set; }
     }
 }
