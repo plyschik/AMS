@@ -58,6 +58,7 @@ namespace AMS.MVC.Controllers
         public async Task<IActionResult> Create()
         {
             var genres = await _unitOfWork.GenreRepository.GetAll();
+            var persons = await _unitOfWork.PersonRepository.GetAll();
 
             return View(new MovieCreateViewModel
             {
@@ -65,6 +66,11 @@ namespace AMS.MVC.Controllers
                 {
                     Text = genre.Name,
                     Value = genre.Id.ToString()
+                }).ToList(),
+                Persons = persons.Select(person => new SelectListItem
+                {
+                    Text = person.FullName,
+                    Value = person.Id.ToString()
                 }).ToList()
             });
         }
@@ -84,6 +90,8 @@ namespace AMS.MVC.Controllers
                     User = await _userManager.GetUserAsync(HttpContext.User)
                 };
 
+                _unitOfWork.MovieRepository.Create(movie);
+                
                 foreach (var genreId in movieCreateViewModel.SelectedGenres)
                 {
                     movie.MovieGenres.Add(new MovieGenre
@@ -92,7 +100,14 @@ namespace AMS.MVC.Controllers
                     });
                 }
 
-                _unitOfWork.MovieRepository.Create(movie);
+                foreach (var personId in movieCreateViewModel.SelectedDirectors)
+                {
+                    movie.MovieDirectors.Add(new MovieDirector
+                    {
+                        PersonId = Guid.Parse(personId)
+                    });
+                }
+                
                 await _unitOfWork.SaveChangesAsync();
                 
                 _flashMessage.Confirmation("Movie has been created.");
