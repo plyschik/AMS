@@ -16,6 +16,8 @@ namespace AMS.MVC.Data
         
         public DbSet<Person> Persons { get; set; }
         
+        public DbSet<MovieDirector> MovieDirectors { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }

@@ -4,6 +4,7 @@
     ViewData["Title"] = "Movie details";
 
     var genres = Model.MovieGenres.Select(mg => mg.Genre).ToList();
+    var directors = Model.MovieDirectors.Select(md => md.Person).ToList();
 }
 
 <div class="d-flex justify-content-between align-items-center">
@@ -46,7 +47,17 @@
         </dt>
         <dd class="col-sm-10">
             @string.Join(", ", genres.Select(genre => genre.Name))
-        </dd>   
+        </dd>
+    }
+    
+    @if (genres.Any())
+    {
+        <dt class="col-sm-2">
+            Directors
+        </dt>
+        <dd class="col-sm-10">
+            @string.Join(", ", directors.Select(person => person.FullName))
+        </dd>
     }
 </dl>
 
