@@ -20,7 +20,13 @@ namespace AMS.MVC.ViewModels.MovieViewModels
         public DateTime ReleaseDate { get; set; } = DateTime.Now;
         
         public IList<SelectListItem> Genres { get; set; } = new List<SelectListItem>();
+
+        public IList<SelectListItem> Directors { get; set; } = new List<SelectListItem>();
         
+        [Display(Name = "Genres")]
         public string[] SelectedGenres { get; set; }
+        
+        [Display(Name = "Directors")]
+        public string[] SelectedDirectors { get; set; }
     }
 }
