@@ -16,6 +16,8 @@ namespace AMS.MVC.Data
         
         public DbSet<Person> Persons { get; set; }
         
+        public DbSet<MovieDirector> MovieDirectors { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -51,6 +53,21 @@ namespace AMS.MVC.Data
             builder.Entity<Person>()
                 .HasIndex(p => new { p.FirstName, p.LastName })
                 .IsUnique();
+
+            builder.Entity<MovieDirector>()
+                .HasKey(md => new { md.MovieId, md.PersonId });
+
+            builder.Entity<MovieDirector>()
+                .HasOne(md => md.Movie)
+                .WithMany(m => m.MovieDirectors)
+                .HasForeignKey(md => md.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Entity<MovieDirector>()
+                .HasOne(md => md.Person)
+                .WithMany(p => p.MovieDirectors)
+                .HasForeignKey(md => md.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

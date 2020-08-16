@@ -12,11 +12,11 @@ namespace AMS.MVC.Repositories
     {
         public Task<ICollection<Movie>> GetAll();
         
-        public Task<ICollection<Movie>> GetAllWithGenres();
-
+        public Task<ICollection<Movie>> GetAllWithRelations();
+        
         public Task<Movie> GetById(Guid id);
         
-        public Task<Movie> GetByIdWithGenres(Guid id);
+        public Task<Movie> GetByIdWithRelations(Guid id);
         
         public void Create(Movie movie);
 
@@ -43,11 +43,13 @@ namespace AMS.MVC.Repositories
                 .ToListAsync();
         }
         
-        public async Task<ICollection<Movie>> GetAllWithGenres()
+        public async Task<ICollection<Movie>> GetAllWithRelations()
         {
             return await _databaseContext.Movies
                 .Include(m => m.MovieGenres)
-                .ThenInclude(m => m.Genre)
+                .ThenInclude(mg => mg.Genre)
+                .Include(m => m.MovieDirectors)
+                .ThenInclude(md => md.Person)
                 .OrderByDescending(m => m.ReleaseDate)
                 .ToListAsync();
         }
@@ -57,11 +59,13 @@ namespace AMS.MVC.Repositories
             return await _databaseContext.Movies.FirstOrDefaultAsync(movie => movie.Id == id);
         }
         
-        public async Task<Movie> GetByIdWithGenres(Guid id)
+        public async Task<Movie> GetByIdWithRelations(Guid id)
         {
             return await _databaseContext.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)
+                .Include(m => m.MovieDirectors)
+                .ThenInclude(md => md.Person)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 

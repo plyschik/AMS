@@ -36,7 +36,7 @@ namespace AMS.MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _unitOfWork.MovieRepository.GetAllWithGenres();
+            var movies = await _unitOfWork.MovieRepository.GetAllWithRelations();
             
             return View(movies);
         }
@@ -44,7 +44,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Show(Guid id)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdWithGenres(id);
+            var movie = await _unitOfWork.MovieRepository.GetByIdWithRelations(id);
 
             if (movie == null)
             {
@@ -58,6 +58,7 @@ namespace AMS.MVC.Controllers
         public async Task<IActionResult> Create()
         {
             var genres = await _unitOfWork.GenreRepository.GetAll();
+            var persons = await _unitOfWork.PersonRepository.GetAll();
 
             return View(new MovieCreateViewModel
             {
@@ -65,6 +66,11 @@ namespace AMS.MVC.Controllers
                 {
                     Text = genre.Name,
                     Value = genre.Id.ToString()
+                }).ToList(),
+                Persons = persons.Select(person => new SelectListItem
+                {
+                    Text = person.FullName,
+                    Value = person.Id.ToString()
                 }).ToList()
             });
         }
@@ -84,6 +90,8 @@ namespace AMS.MVC.Controllers
                     User = await _userManager.GetUserAsync(HttpContext.User)
                 };
 
+                _unitOfWork.MovieRepository.Create(movie);
+                
                 foreach (var genreId in movieCreateViewModel.SelectedGenres)
                 {
                     movie.MovieGenres.Add(new MovieGenre
@@ -92,7 +100,14 @@ namespace AMS.MVC.Controllers
                     });
                 }
 
-                _unitOfWork.MovieRepository.Create(movie);
+                foreach (var personId in movieCreateViewModel.SelectedDirectors)
+                {
+                    movie.MovieDirectors.Add(new MovieDirector
+                    {
+                        PersonId = Guid.Parse(personId)
+                    });
+                }
+                
                 await _unitOfWork.SaveChangesAsync();
                 
                 _flashMessage.Confirmation("Movie has been created.");
@@ -116,7 +131,7 @@ namespace AMS.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdWithGenres(id);
+            var movie = await _unitOfWork.MovieRepository.GetByIdWithRelations(id);
 
             if (movie == null)
             {
@@ -135,6 +150,7 @@ namespace AMS.MVC.Controllers
             }
 
             var genres = await _unitOfWork.GenreRepository.GetAll();
+            var persons = await _unitOfWork.PersonRepository.GetAll();
 
             return View(new MovieEditViewModel
             {
@@ -146,6 +162,12 @@ namespace AMS.MVC.Controllers
                     Text = genre.Name,
                     Value = genre.Id.ToString(),
                     Selected = movie.MovieGenres.Select(mg => mg.Genre).Contains(genre)
+                }).ToList(),
+                Directors = persons.Select(person => new SelectListItem
+                {
+                    Text = person.FullName,
+                    Value = person.Id.ToString(),
+                    Selected = movie.MovieDirectors.Select(md => md.Person).Contains(person)
                 }).ToList()
             });
         }
@@ -155,7 +177,7 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, MovieEditViewModel movieEditViewModel)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdWithGenres(id);
+            var movie = await _unitOfWork.MovieRepository.GetByIdWithRelations(id);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
@@ -190,6 +212,23 @@ namespace AMS.MVC.Controllers
                         movie.MovieGenres.Add(new MovieGenre
                         {
                             GenreId = Guid.Parse(genreId)
+                        });
+                    }
+                    
+                    var attachedDirectorsIds = movie.MovieDirectors.Select(md => md.PersonId.ToString()).ToArray();
+                    var selectedDirectorsIds = movieEditViewModel.SelectedDirectors ??= new string[] {};
+                    var directorsIdsToAttach = selectedDirectorsIds.Except(attachedDirectorsIds).ToArray();
+                    var directorsIdsToDetach = attachedDirectorsIds.Except(selectedDirectorsIds).ToArray();
+
+                    movie.MovieDirectors = movie.MovieDirectors.Where(
+                        md => !directorsIdsToDetach.Contains(md.PersonId.ToString())
+                    ).ToList();
+                    
+                    foreach (var personId in directorsIdsToAttach)
+                    {
+                        movie.MovieDirectors.Add(new MovieDirector()
+                        {
+                            PersonId = Guid.Parse(personId)
                         });
                     }
                     

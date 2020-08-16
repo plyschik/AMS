@@ -34,9 +34,16 @@
     </div>
     
     <div class="row form-group">
-        <label asp-for="Genres" class="col-sm-2 col-form-label"></label>
+        <label asp-for="SelectedGenres" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
-            <select asp-items="Model.Genres" asp-for="SelectedGenres" id="slim-select" multiple="multiple"></select>
+            <select asp-items="Model.Genres" asp-for="SelectedGenres" id="genres-slim-select" multiple="multiple"></select>
+        </div>
+    </div>
+    
+    <div class="row form-group">
+        <label asp-for="SelectedDirectors" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <select asp-items="Model.Directors" asp-for="SelectedDirectors" id="directors-slim-select" multiple="multiple"></select>
         </div>
     </div>
 
@@ -53,10 +60,18 @@
     <link rel="stylesheet" href="~/lib/slim-select/slimselect.min.css" />
     <script type="text/javascript" src="~/lib/slim-select/slimselect.min.js"></script>
     <script type="text/javascript">
-        new SlimSelect({
-            select: '#slim-select',
-            placeholder: false,
-            hideSelectedOption: true
-        });
+        (function () {
+            new SlimSelect({
+                select: '#genres-slim-select',
+                placeholder: false,
+                hideSelectedOption: true
+            });
+            
+            new SlimSelect({
+                select: '#directors-slim-select',
+                placeholder: false,
+                hideSelectedOption: true
+            });
+        })();
     </script>
 }

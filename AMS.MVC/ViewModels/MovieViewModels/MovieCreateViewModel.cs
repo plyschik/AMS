@@ -21,6 +21,12 @@ namespace AMS.MVC.ViewModels.MovieViewModels
 
         public IList<SelectListItem> Genres { get; set; } = new List<SelectListItem>();
 
+        public IList<SelectListItem> Persons { get; set; } = new List<SelectListItem>();
+
+        [Display(Name = "Genres")]
         public string[] SelectedGenres { get; set; } = {};
+
+        [Display(Name = "Directors")]
+        public string[] SelectedDirectors { get; set; } = {};
     }
 }

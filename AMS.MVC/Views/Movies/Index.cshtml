@@ -25,7 +25,8 @@ else
 {
     @foreach (var movie in Model)
     {
-        var genres= movie.MovieGenres.Select(mg => mg.Genre).ToList();
+        var genres = movie.MovieGenres.Select(mg => mg.Genre).ToList();
+        var directors = movie.MovieDirectors.Select(md => md.Person).ToList();
 
         <div class="card mb-4">
             <div class="card-body">
@@ -37,6 +38,13 @@ else
                 {
                     <h6 class="card-subtitle mb-3">
                         <i>Genres:</i> @string.Join(", ", genres.Select(genre => genre.Name))
+                    </h6>    
+                }
+                
+                @if (directors.Any())
+                {
+                    <h6 class="card-subtitle mb-3">
+                        <i>Directors:</i> @string.Join(", ", directors.Select(person => person.FullName))
                     </h6>    
                 }
                 

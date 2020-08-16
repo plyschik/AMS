@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,5 +25,9 @@ namespace AMS.MVC.Data.Models
         [DataType(DataType.Date)]
         [Display(Name = "Date of birth")]
         public DateTime DateOfBirth { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
+        
+        public ICollection<MovieDirector> MovieDirectors { get; set; } = new List<MovieDirector>();
     }
 }
