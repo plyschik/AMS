@@ -43,7 +43,14 @@
     <div class="row form-group">
         <label asp-for="SelectedDirectors" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
-            <select asp-items="Model.Directors" asp-for="SelectedDirectors" id="directors-slim-select" multiple="multiple"></select>
+            <select asp-items="Model.Persons" asp-for="SelectedDirectors" id="directors-slim-select" multiple="multiple"></select>
+        </div>
+    </div>
+    
+    <div class="row form-group">
+        <label asp-for="SelectedWriters" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <select asp-items="Model.Persons" asp-for="SelectedWriters" id="writers-slim-select" multiple="multiple"></select>
         </div>
     </div>
 
@@ -69,6 +76,12 @@
             
             new SlimSelect({
                 select: '#directors-slim-select',
+                placeholder: false,
+                hideSelectedOption: true
+            });
+            
+            new SlimSelect({
+                select: '#writers-slim-select',
                 placeholder: false,
                 hideSelectedOption: true
             });
