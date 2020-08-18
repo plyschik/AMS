@@ -33,5 +33,7 @@ namespace AMS.MVC.Data.Models
         public ICollection<MovieDirector> MovieDirectors { get; set; } = new List<MovieDirector>();
 
         public ICollection<MovieWriter> MovieWriters { get; set; } = new List<MovieWriter>();
+
+        public ICollection<MovieStar> MovieStars { get; set; } = new List<MovieStar>();
     }
 }
