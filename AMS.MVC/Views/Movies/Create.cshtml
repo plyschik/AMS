@@ -48,6 +48,13 @@
     </div>
     
     <div class="row form-group">
+        <label asp-for="SelectedWriters" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <select asp-for="SelectedWriters" asp-items="Model.Persons" multiple="multiple" id="writers-slim-select"></select>
+        </div>
+    </div>
+    
+    <div class="row form-group">
         <div class="col-sm-12">
             <input class="btn btn-primary" type="submit" value="Create" />
             <a class="btn btn-danger" asp-controller="Movies" asp-action="Index">Cancel</a>
@@ -69,6 +76,12 @@
             
             new SlimSelect({
                 select: '#directors-slim-select',
+                placeholder: false,
+                hideSelectedOption: true
+            });
+            
+            new SlimSelect({
+                select: '#writers-slim-select',
                 placeholder: false,
                 hideSelectedOption: true
             });

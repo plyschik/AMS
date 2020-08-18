@@ -108,6 +108,14 @@ namespace AMS.MVC.Controllers
                     });
                 }
                 
+                foreach (var personId in movieCreateViewModel.SelectedWriters)
+                {
+                    movie.MovieWriters.Add(new MovieWriter
+                    {
+                        PersonId = Guid.Parse(personId)
+                    });
+                }
+                
                 await _unitOfWork.SaveChangesAsync();
                 
                 _flashMessage.Confirmation("Movie has been created.");
@@ -116,12 +124,18 @@ namespace AMS.MVC.Controllers
             }
 
             var genres = await _unitOfWork.GenreRepository.GetAll();
+            var persons = await _unitOfWork.PersonRepository.GetAll();
             
             movieCreateViewModel.Genres = genres.Select(genre => new SelectListItem
             {
                 Text = genre.Name,
-                Value = genre.Id.ToString(),
-                Selected = movieCreateViewModel.SelectedGenres.Contains(genre.Id.ToString())
+                Value = genre.Id.ToString()
+            }).ToList();
+            
+            movieCreateViewModel.Persons = persons.Select(person => new SelectListItem
+            {
+                Text = person.FullName,
+                Value = person.Id.ToString()
             }).ToList();
             
             return View(movieCreateViewModel);
