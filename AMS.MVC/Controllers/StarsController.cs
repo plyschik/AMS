@@ -87,6 +87,7 @@ namespace AMS.MVC.Controllers
         }
         
         [HttpPost("[controller]/[action]/{movieId:guid}/{personId:guid}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid movieId, Guid personId, MovieStatEditViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -105,6 +106,36 @@ namespace AMS.MVC.Controllers
             }
             
             return View(viewModel);
+        }
+        
+        [HttpGet("[controller]/[action]/{movieId:guid}/{personId:guid}")]
+        public async Task<IActionResult> ConfirmDelete(Guid movieId, Guid personId)
+        {
+            var movieStar = await _databaseContext.MovieStars
+                .Include(ms => ms.Person)
+                .FirstOrDefaultAsync(
+                    ms => ms.MovieId == movieId && ms.PersonId == personId
+                );
+            
+            return View(movieStar);
+        }
+        
+        [HttpPost("[controller]/[action]/{movieId:guid}/{personId:guid}")]
+        public async Task<IActionResult> Delete(Guid movieId, Guid personId)
+        {
+            var movieStar = await _databaseContext.MovieStars.FirstOrDefaultAsync(
+                ms => ms.MovieId == movieId && ms.PersonId == personId
+            );
+
+            if (movieStar == null)
+            {
+                return NotFound();
+            }
+            
+            _databaseContext.MovieStars.Remove(movieStar);
+            await _databaseContext.SaveChangesAsync();
+
+            return RedirectToAction("Show", "Movies", new { id = movieId });
         }
     }
 }

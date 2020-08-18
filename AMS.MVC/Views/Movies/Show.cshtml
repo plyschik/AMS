@@ -102,20 +102,21 @@ else
 {
     <table class="table">
         <thead class="thead-dark">
-            <tr>
-                <th>Actor</th>    
-                <th>Character</th>
-                <th></th>
+            <tr class="d-flex">
+                <th class="col-5">Actor</th>    
+                <th class="col-5">Character</th>
+                <th class="col-2"></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var star in Model.MovieStars)
             {
-                <tr>
-                    <td>@star.Person.FullName</td>
-                    <td>@star.Character</td>
-                    <td>
-                        <a asp-controller="Stars" asp-action="Edit" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId" class="btn btn-primary">Edit</a>
+                <tr class="d-flex">
+                    <td class="col-5 d-flex align-items-center">@star.Person.FullName</td>
+                    <td class="col-5 d-flex align-items-center">@star.Character</td>
+                    <td class="col-2 d-flex align-items-center justify-content-end">
+                        <a asp-controller="Stars" asp-action="Edit" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId" class="btn btn-primary mr-1">Edit</a>
+                        <a asp-controller="Stars" asp-action="ConfirmDelete" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>
             }
