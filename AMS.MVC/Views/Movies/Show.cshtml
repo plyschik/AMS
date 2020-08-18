@@ -82,8 +82,14 @@
     }
 </dl>
 
-<h2 class="mb-0">Stars</h2>
-    
+
+<div class="d-flex justify-content-between align-items-center">
+    <h2 class="mb-0">Stars</h2>
+    <div>
+        <a class="btn btn-success" asp-controller="Stars" asp-action="Create" asp-route-id="@Model.Id">Create</a>
+    </div>
+</div>
+
 <hr class="my-4" />
 
 @if (!Model.MovieStars.Any())

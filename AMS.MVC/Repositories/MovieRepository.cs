@@ -17,6 +17,8 @@ namespace AMS.MVC.Repositories
         public Task<Movie> GetById(Guid id);
         
         public Task<Movie> GetByIdWithRelations(Guid id);
+
+        public Task<ICollection<Person>> GetStars(Guid movieId);
         
         public void Create(Movie movie);
 
@@ -73,6 +75,16 @@ namespace AMS.MVC.Repositories
                 .Include(ms => ms.MovieStars)
                 .ThenInclude(ms => ms.Person)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
+        }
+
+        public async Task<ICollection<Person>> GetStars(Guid movieId)
+        {
+            var movie = await _databaseContext.Movies
+                .Include(m => m.MovieStars)
+                .ThenInclude(ms => ms.Person)
+                .FirstOrDefaultAsync(m => m.Id == movieId);
+
+            return movie.MovieStars.Select(ms => ms.Person).ToList();
         }
 
         public void Create(Movie movie)
