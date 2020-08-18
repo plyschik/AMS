@@ -104,7 +104,8 @@ else
         <thead class="thead-dark">
             <tr>
                 <th>Actor</th>    
-                <th>Character</th>    
+                <th>Character</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -113,6 +114,9 @@ else
                 <tr>
                     <td>@star.Person.FullName</td>
                     <td>@star.Character</td>
+                    <td>
+                        <a asp-controller="Stars" asp-action="Edit" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId" class="btn btn-primary">Edit</a>
+                    </td>
                 </tr>
             }
         </tbody>

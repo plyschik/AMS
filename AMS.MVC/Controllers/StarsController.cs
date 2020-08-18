@@ -6,6 +6,7 @@ using AMS.MVC.Data.Models;
 using AMS.MVC.ViewModels.MovieStarViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
@@ -13,11 +14,13 @@ namespace AMS.MVC.Controllers
     public class StarsController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly DatabaseContext _databaseContext;
         private readonly IFlashMessage _flashMessage;
 
-        public StarsController(IUnitOfWork unitOfWork, IFlashMessage flashMessage)
+        public StarsController(IUnitOfWork unitOfWork, DatabaseContext databaseContext, IFlashMessage flashMessage)
         {
             _unitOfWork = unitOfWork;
+            _databaseContext = databaseContext;
             _flashMessage = flashMessage;
         }
 
@@ -67,6 +70,40 @@ namespace AMS.MVC.Controllers
                 Value = person.Id.ToString()
             }).ToList();
 
+            return View(viewModel);
+        }
+        
+        [HttpGet("[controller]/[action]/{movieId:guid}/{personId:guid}")]
+        public async Task<IActionResult> Edit(Guid movieId, Guid personId)
+        {
+            var movieStar = await _databaseContext.MovieStars.FirstOrDefaultAsync(
+                ms => ms.MovieId == movieId && ms.PersonId == personId
+            );
+            
+            return View(new MovieStatEditViewModel
+            {
+                Character = movieStar.Character 
+            });
+        }
+        
+        [HttpPost("[controller]/[action]/{movieId:guid}/{personId:guid}")]
+        public async Task<IActionResult> Edit(Guid movieId, Guid personId, MovieStatEditViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var movieStar = await _databaseContext.MovieStars.FirstOrDefaultAsync(
+                    ms => ms.MovieId == movieId && ms.PersonId == personId
+                );
+
+                movieStar.Character = viewModel.Character;
+
+                await _databaseContext.SaveChangesAsync();
+
+                _flashMessage.Confirmation("Movie character has been updated.");
+                
+                return RedirectToAction("Show", "Movies", new { id = movieId });
+            }
+            
             return View(viewModel);
         }
     }
