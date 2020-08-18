@@ -70,6 +70,8 @@ namespace AMS.MVC.Repositories
                 .ThenInclude(md => md.Person)
                 .Include(mw => mw.MovieWriters)
                 .ThenInclude(mw => mw.Person)
+                .Include(ms => ms.MovieStars)
+                .ThenInclude(ms => ms.Person)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 

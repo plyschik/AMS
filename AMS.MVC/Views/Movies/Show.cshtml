@@ -10,7 +10,17 @@
 
 <div class="d-flex justify-content-between align-items-center">
     <h2 class="mb-0">Movie details</h2>
-    <a class="btn btn-primary" asp-controller="Movies" asp-action="Index">Go back to list</a>
+    <div>
+        @if ((await AuthorizationService.AuthorizeAsync(User, Model, MovieOperations.Edit)).Succeeded)
+        {
+            <a class="btn btn-success" asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>   
+        }
+        
+        @if (User.IsInRole("Administrator"))
+        {
+            <a class="btn btn-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@Model.Id">Delete</a>   
+        }
+    </div>
 </div>
 
 <hr class="my-4" />
@@ -72,12 +82,33 @@
     }
 </dl>
 
-@if ((await AuthorizationService.AuthorizeAsync(User, Model, MovieOperations.Edit)).Succeeded)
-{
-    <a class="btn btn-success" asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>   
-}
+<h2 class="mb-0">Stars</h2>
+    
+<hr class="my-4" />
 
-@if (User.IsInRole("Administrator"))
+@if (!Model.MovieStars.Any())
 {
-    <a class="btn btn-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@Model.Id">Delete</a>   
+    <div class="alert alert-info" role="alert">
+        Stars list is empty.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>Actor</th>    
+                <th>Character</th>    
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var star in Model.MovieStars)
+            {
+                <tr>
+                    <td>@star.Person.FullName</td>
+                    <td>@star.Character</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
