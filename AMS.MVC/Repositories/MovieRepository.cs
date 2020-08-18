@@ -50,6 +50,8 @@ namespace AMS.MVC.Repositories
                 .ThenInclude(mg => mg.Genre)
                 .Include(m => m.MovieDirectors)
                 .ThenInclude(md => md.Person)
+                .Include(mw => mw.MovieWriters)
+                .ThenInclude(mw => mw.Person)
                 .OrderByDescending(m => m.ReleaseDate)
                 .ToListAsync();
         }
@@ -66,6 +68,8 @@ namespace AMS.MVC.Repositories
                 .ThenInclude(mg => mg.Genre)
                 .Include(m => m.MovieDirectors)
                 .ThenInclude(md => md.Person)
+                .Include(mw => mw.MovieWriters)
+                .ThenInclude(mw => mw.Person)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 

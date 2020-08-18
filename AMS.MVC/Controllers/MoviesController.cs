@@ -108,6 +108,14 @@ namespace AMS.MVC.Controllers
                     });
                 }
                 
+                foreach (var personId in movieCreateViewModel.SelectedWriters)
+                {
+                    movie.MovieWriters.Add(new MovieWriter
+                    {
+                        PersonId = Guid.Parse(personId)
+                    });
+                }
+                
                 await _unitOfWork.SaveChangesAsync();
                 
                 _flashMessage.Confirmation("Movie has been created.");
@@ -116,12 +124,18 @@ namespace AMS.MVC.Controllers
             }
 
             var genres = await _unitOfWork.GenreRepository.GetAll();
+            var persons = await _unitOfWork.PersonRepository.GetAll();
             
             movieCreateViewModel.Genres = genres.Select(genre => new SelectListItem
             {
                 Text = genre.Name,
-                Value = genre.Id.ToString(),
-                Selected = movieCreateViewModel.SelectedGenres.Contains(genre.Id.ToString())
+                Value = genre.Id.ToString()
+            }).ToList();
+            
+            movieCreateViewModel.Persons = persons.Select(person => new SelectListItem
+            {
+                Text = person.FullName,
+                Value = person.Id.ToString()
             }).ToList();
             
             return View(movieCreateViewModel);
@@ -161,14 +175,15 @@ namespace AMS.MVC.Controllers
                 {
                     Text = genre.Name,
                     Value = genre.Id.ToString(),
-                    Selected = movie.MovieGenres.Select(mg => mg.Genre).Contains(genre)
                 }).ToList(),
-                Directors = persons.Select(person => new SelectListItem
+                Persons = persons.Select(person => new SelectListItem
                 {
                     Text = person.FullName,
                     Value = person.Id.ToString(),
-                    Selected = movie.MovieDirectors.Select(md => md.Person).Contains(person)
-                }).ToList()
+                }).ToList(),
+                SelectedGenres = movie.MovieGenres.Select(mg => mg.GenreId.ToString()).ToArray(),
+                SelectedDirectors = movie.MovieDirectors.Select(md => md.PersonId.ToString()).ToArray(),
+                SelectedWriters = movie.MovieWriters.Select(mw => mw.PersonId.ToString()).ToArray()
             });
         }
 
@@ -226,7 +241,24 @@ namespace AMS.MVC.Controllers
                     
                     foreach (var personId in directorsIdsToAttach)
                     {
-                        movie.MovieDirectors.Add(new MovieDirector()
+                        movie.MovieDirectors.Add(new MovieDirector
+                        {
+                            PersonId = Guid.Parse(personId)
+                        });
+                    }
+                    
+                    var attachedWritersIds = movie.MovieWriters.Select(md => md.PersonId.ToString()).ToArray();
+                    var selectedWritersIds = movieEditViewModel.SelectedWriters ??= new string[] {};
+                    var writersIdsToAttach = selectedWritersIds.Except(attachedWritersIds).ToArray();
+                    var writersIdsToDetach = attachedWritersIds.Except(selectedWritersIds).ToArray();
+
+                    movie.MovieWriters = movie.MovieWriters.Where(
+                        md => !writersIdsToDetach.Contains(md.PersonId.ToString())
+                    ).ToList();
+                    
+                    foreach (var personId in writersIdsToAttach)
+                    {
+                        movie.MovieWriters.Add(new MovieWriter
                         {
                             PersonId = Guid.Parse(personId)
                         });
@@ -250,12 +282,18 @@ namespace AMS.MVC.Controllers
             }
 
             var genres = await _unitOfWork.GenreRepository.GetAll();
+            var persons = await _unitOfWork.PersonRepository.GetAll();
 
             movieEditViewModel.Genres = genres.Select(genre => new SelectListItem
             {
                 Text = genre.Name,
                 Value = genre.Id.ToString(),
-                Selected = movie.MovieGenres.Select(mg => mg.Genre).Contains(genre)
+            }).ToList();
+            
+            movieEditViewModel.Persons = persons.Select(genre => new SelectListItem
+            {
+                Text = genre.FullName,
+                Value = genre.Id.ToString(),
             }).ToList();
             
             return View(movieEditViewModel);

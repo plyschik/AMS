@@ -29,5 +29,7 @@ namespace AMS.MVC.Data.Models
         public string FullName => $"{FirstName} {LastName}";
         
         public ICollection<MovieDirector> MovieDirectors { get; set; } = new List<MovieDirector>();
+        
+        public ICollection<MovieWriter> MovieWriters { get; set; } = new List<MovieWriter>();
     }
 }

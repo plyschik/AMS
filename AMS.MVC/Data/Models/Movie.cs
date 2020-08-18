@@ -31,5 +31,7 @@ namespace AMS.MVC.Data.Models
         public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
         
         public ICollection<MovieDirector> MovieDirectors { get; set; } = new List<MovieDirector>();
+
+        public ICollection<MovieWriter> MovieWriters { get; set; } = new List<MovieWriter>();
     }
 }
