@@ -18,6 +18,8 @@ namespace AMS.MVC.Data
         
         public DbSet<MovieDirector> MovieDirectors { get; set; }
         
+        public DbSet<MovieWriter> MovieWriters { get; set; }
+        
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -67,6 +69,21 @@ namespace AMS.MVC.Data
                 .HasOne(md => md.Person)
                 .WithMany(p => p.MovieDirectors)
                 .HasForeignKey(md => md.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<MovieWriter>()
+                .HasKey(mw => new { mw.MovieId, mw.PersonId });
+
+            builder.Entity<MovieWriter>()
+                .HasOne(mw => mw.Movie)
+                .WithMany(m => m.MovieWriters)
+                .HasForeignKey(mw => mw.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<MovieWriter>()
+                .HasOne(mw => mw.Person)
+                .WithMany(p => p.MovieWriters)
+                .HasForeignKey(mw => mw.PersonId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
