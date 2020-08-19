@@ -7,6 +7,7 @@ using AMS.MVC.ViewModels.GenreViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
@@ -42,17 +43,26 @@ namespace AMS.MVC.Controllers
         public async Task<IActionResult> Show(Guid genreId)
         {
             var genre = await _databaseContext.Genres
-                .Include(g => g.MovieGenres)
-                .ThenInclude(mg => mg.Movie)
                 .Where(g => g.Id == genreId)
                 .FirstOrDefaultAsync();
 
+            var movies = await _databaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+                .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId))
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
+            
             if (genre == null)
             {
                 return NotFound();
             }
             
-            return View(genre);
+            return View(new GenreShowViewModel
+            {
+                Genre = genre,
+                Movies = movies
+            });
         }
         
         public IActionResult Create()

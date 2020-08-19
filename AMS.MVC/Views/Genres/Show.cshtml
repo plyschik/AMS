@@ -1,26 +1,48 @@
-@model AMS.MVC.Data.Models.Genre
+@model AMS.MVC.ViewModels.GenreViewModels.GenreShowViewModel
 
 @{
     ViewData["Title"] = "Genre movies";
 }
 
-<h2 class="mb-0">Movies from genre: @Model.Name</h2>
+<h2 class="mb-0">Movies from genre: @Model.Genre.Name</h2>
 
 <hr class="my-4" />
 
-@foreach (var movie in Model.MovieGenres.Select(mg => mg.Movie))
+@foreach (var movie in Model.Movies)
 {
+    var genres = movie.MovieGenres.Select(mg => mg.Genre).ToList();
+
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title mb-3 text">
                 @Html.DisplayFor(movies => movie.Title)
             </h5>
-            <h6 class="card-subtitle mb-2">
-                <i>@Html.DisplayNameFor(movies => movie.ReleaseDate):</i> @Html.DisplayFor(movies => movie.ReleaseDate)
-            </h6>
+                
+            @if (genres.Any())
+            {
+                <h6 class="card-subtitle mb-3">
+                    @foreach (var genre in genres)
+                    {
+                        <a asp-controller="Genres" asp-action="Show" asp-route-genreId="@genre.Id" class="badge badge-primary">@genre.Name</a>
+                    }
+                </h6>
+            }
+                
             <p class="card-text">
-                <i>@Html.DisplayNameFor(movies => movie.Description):</i> @Html.DisplayFor(movies => movie.Description)
+                <i>@Html.DisplayFor(movies => movie.Description)</i>
             </p>
+                
+            <a class="card-link" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
+                
+            @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Edit)).Succeeded)
+            {
+                <a class="card-link" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
+            }
+                
+            @if (User.IsInRole("Administrator"))
+            {
+                <a class="card-link" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
+            }
         </div>
     </div>   
 }
