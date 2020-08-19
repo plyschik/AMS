@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.ViewModels.GenreViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
@@ -13,11 +15,17 @@ namespace AMS.MVC.Controllers
     public class GenresController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly DatabaseContext _databaseContext;
         private readonly IFlashMessage _flashMessage;
 
-        public GenresController(IUnitOfWork unitOfWork, IFlashMessage flashMessage)
+        public GenresController(
+            IUnitOfWork unitOfWork,
+            DatabaseContext databaseContext,
+            IFlashMessage flashMessage
+        )
         {
             _unitOfWork = unitOfWork;
+            _databaseContext = databaseContext;
             _flashMessage = flashMessage;
         }
 
@@ -27,6 +35,24 @@ namespace AMS.MVC.Controllers
             var genres = await _unitOfWork.GenreRepository.GetAll();
             
             return View(genres);
+        }
+
+        [HttpGet("[controller]/[action]/{genreId:guid}")]
+        [Authorize]
+        public async Task<IActionResult> Show(Guid genreId)
+        {
+            var genre = await _databaseContext.Genres
+                .Include(g => g.MovieGenres)
+                .ThenInclude(mg => mg.Movie)
+                .Where(g => g.Id == genreId)
+                .FirstOrDefaultAsync();
+
+            if (genre == null)
+            {
+                return NotFound();
+            }
+            
+            return View(genre);
         }
         
         public IActionResult Create()

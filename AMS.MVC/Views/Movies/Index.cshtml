@@ -26,8 +26,6 @@ else
     @foreach (var movie in Model)
     {
         var genres = movie.MovieGenres.Select(mg => mg.Genre).ToList();
-        var directors = movie.MovieDirectors.Select(md => md.Person).ToList();
-        var writers = movie.MovieWriters.Select(mw => mw.Person).ToList();
 
         <div class="card mb-4">
             <div class="card-body">
@@ -38,30 +36,17 @@ else
                 @if (genres.Any())
                 {
                     <h6 class="card-subtitle mb-3">
-                        <i>Genres:</i> @string.Join(", ", genres.Select(genre => genre.Name))
-                    </h6>    
-                }
-                
-                @if (directors.Any())
-                {
-                    <h6 class="card-subtitle mb-3">
-                        <i>Directors:</i> @string.Join(", ", directors.Select(person => person.FullName))
-                    </h6>    
-                }
-                
-                @if (writers.Any())
-                {
-                    <h6 class="card-subtitle mb-3">
-                        <i>Writers:</i> @string.Join(", ", writers.Select(person => person.FullName))
+                        @foreach (var genre in genres)
+                        {
+                            <a asp-controller="Genres" asp-action="Show" asp-route-genreId="@genre.Id" class="badge badge-primary">@genre.Name</a>
+                        }
                     </h6>
                 }
                 
-                <h6 class="card-subtitle mb-2">
-                    <i>@Html.DisplayNameFor(model => model.ReleaseDate):</i> @Html.DisplayFor(movies => movie.ReleaseDate)
-                </h6>
                 <p class="card-text">
-                    <i>@Html.DisplayNameFor(model => model.Description):</i> @Html.DisplayFor(movies => movie.Description)
+                    <i>@Html.DisplayFor(movies => movie.Description)</i>
                 </p>
+                
                 <a class="card-link" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
                 
                 @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Edit)).Succeeded)

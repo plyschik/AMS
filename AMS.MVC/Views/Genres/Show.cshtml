@@ -1,0 +1,26 @@
+@model AMS.MVC.Data.Models.Genre
+
+@{
+    ViewData["Title"] = "Genre movies";
+}
+
+<h2 class="mb-0">Movies from genre: @Model.Name</h2>
+
+<hr class="my-4" />
+
+@foreach (var movie in Model.MovieGenres.Select(mg => mg.Movie))
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3 text">
+                @Html.DisplayFor(movies => movie.Title)
+            </h5>
+            <h6 class="card-subtitle mb-2">
+                <i>@Html.DisplayNameFor(movies => movie.ReleaseDate):</i> @Html.DisplayFor(movies => movie.ReleaseDate)
+            </h6>
+            <p class="card-text">
+                <i>@Html.DisplayNameFor(movies => movie.Description):</i> @Html.DisplayFor(movies => movie.Description)
+            </p>
+        </div>
+    </div>   
+}

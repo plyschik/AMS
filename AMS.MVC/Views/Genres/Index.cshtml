@@ -46,7 +46,9 @@ else
             {
                 <tr>
                     <td class="align-middle">
-                        @Html.DisplayFor(genres => genre.Id)
+                        <a asp-controller="Genres" asp-action="Show" asp-route-genreId="@genre.Id">
+                            @Html.DisplayFor(genres => genre.Id)
+                        </a>
                     </td>
                     <td class="align-middle">
                         @Html.DisplayFor(genres => genre.Name)
