@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.ViewModels.PersonViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vereyon.Web;
 
@@ -26,12 +27,14 @@ namespace AMS.MVC.Controllers
             return View(persons);
         }
 
+        [Authorize(Roles = "Manager, Administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Manager, Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PersonCreateViewModel viewModel)
         {
@@ -56,6 +59,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Manager, Administrator")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var person = await _unitOfWork.PersonRepository.GetById(id);
@@ -74,6 +78,7 @@ namespace AMS.MVC.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = "Manager, Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, PersonEditViewModel viewModel)
         {
@@ -100,6 +105,7 @@ namespace AMS.MVC.Controllers
         }
         
         [HttpGet("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
             var person = await _unitOfWork.PersonRepository.GetById(id);
@@ -113,6 +119,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {

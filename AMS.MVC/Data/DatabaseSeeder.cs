@@ -70,15 +70,35 @@ namespace AMS.MVC.Data
             await userManager.CreateAsync(user3, "P4ssword!");
             await userManager.AddToRoleAsync(user3, "User");
 
-            var manager = new ApplicationUser
+            var manager1 = new ApplicationUser
             {
-                Email = "manager@ams.ams",
-                UserName = "manager@ams.ams",
+                Email = "manager1@ams.ams",
+                UserName = "manager1@ams.ams",
                 EmailConfirmed = true
             };
             
-            await userManager.CreateAsync(manager, "P4ssword!");
-            await userManager.AddToRoleAsync(manager, "Manager");
+            await userManager.CreateAsync(manager1, "P4ssword!");
+            await userManager.AddToRoleAsync(manager1, "Manager");
+            
+            var manager2 = new ApplicationUser
+            {
+                Email = "manager2@ams.ams",
+                UserName = "manager2@ams.ams",
+                EmailConfirmed = true
+            };
+            
+            await userManager.CreateAsync(manager2, "P4ssword!");
+            await userManager.AddToRoleAsync(manager2, "Manager");
+            
+            var manager3 = new ApplicationUser
+            {
+                Email = "manager3@ams.ams",
+                UserName = "manager3@ams.ams",
+                EmailConfirmed = true
+            };
+            
+            await userManager.CreateAsync(manager3, "P4ssword!");
+            await userManager.AddToRoleAsync(manager3, "Manager");
 
             var administrator = new ApplicationUser
             {
@@ -99,7 +119,7 @@ namespace AMS.MVC.Data
                         Title = "The Shawshank Redemption",
                         Description = "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
                         ReleaseDate = DateTime.Parse("13-09-1994"),
-                        User = user2
+                        User = manager2
                     }
                 },
                 {
@@ -109,7 +129,7 @@ namespace AMS.MVC.Data
                         Title = "The Godfather",
                         Description = "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
                         ReleaseDate = DateTime.Parse("14-03-1972"),
-                        User = user3
+                        User = manager3
                     }
                 },
                 {
@@ -119,7 +139,7 @@ namespace AMS.MVC.Data
                         Title = "The Dark Knight",
                         Description = "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
                         ReleaseDate = DateTime.Parse("14-07-2008"),
-                        User = user3
+                        User = manager3
                     }
                 },
                 {
@@ -129,7 +149,7 @@ namespace AMS.MVC.Data
                         Title = "The Lord of the Rings: The Return of the King",
                         Description = "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.",
                         ReleaseDate = DateTime.Parse("03-12-2003"),
-                        User = user1
+                        User = manager1
                     }
                 },
                 {
@@ -139,7 +159,7 @@ namespace AMS.MVC.Data
                         Title = "Pulp Fiction",
                         Description = "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
                         ReleaseDate = DateTime.Parse("23-09-1994"),
-                        User = user1
+                        User = manager1
                     }
                 },
                 {
@@ -149,7 +169,7 @@ namespace AMS.MVC.Data
                         Title = "12 Angry Men",
                         Description = "A jury holdout attempts to prevent a miscarriage of justice by forcing his colleagues to reconsider the evidence.",
                         ReleaseDate = DateTime.Parse("10-04-1957"),
-                        User = user3
+                        User = manager3
                     }
                 },
                 {
@@ -159,7 +179,7 @@ namespace AMS.MVC.Data
                         Title = "Inception",
                         Description = "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
                         ReleaseDate = DateTime.Parse("13-07-2010"),
-                        User = user2
+                        User = manager2
                     }
                 },
                 {
@@ -169,7 +189,7 @@ namespace AMS.MVC.Data
                         Title = "Fight Club",
                         Description = "An insomniac office worker and a devil-may-care soapmaker form an underground fight club that evolves into something much, much more.",
                         ReleaseDate = DateTime.Parse("21-09-1999"),
-                        User = user1
+                        User = manager1
                     }
                 },
                 {
@@ -179,7 +199,7 @@ namespace AMS.MVC.Data
                         Title = "Forrest Gump",
                         Description = "The presidencies of Kennedy and Johnson, the events of Vietnam, Watergate and other historical events unfold through the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.",
                         ReleaseDate = DateTime.Parse("23-06-1994"),
-                        User = user1
+                        User = manager1
                     }
                 },
                 {
@@ -189,7 +209,7 @@ namespace AMS.MVC.Data
                         Title = "Matrix",
                         Description = "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
                         ReleaseDate = DateTime.Parse("24-03-1999"),
-                        User = user2
+                        User = manager2
                     }
                 }
             };

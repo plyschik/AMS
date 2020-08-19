@@ -41,7 +41,9 @@ namespace AMS.MVC.Controllers
             return View(movies);
         }
         
+        
         [HttpGet("[controller]/[action]/{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> Show(Guid id)
         {
             var movie = await _unitOfWork.MovieRepository.GetByIdWithRelations(id);
@@ -54,7 +56,7 @@ namespace AMS.MVC.Controllers
             return View(movie);
         }
         
-        [Authorize]
+        [Authorize(Roles = "Manager, Administrator")]
         public async Task<IActionResult> Create()
         {
             var genres = await _unitOfWork.GenreRepository.GetAll();
@@ -76,7 +78,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Manager, Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MovieCreateViewModel movieCreateViewModel)
         {

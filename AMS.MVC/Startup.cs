@@ -46,6 +46,9 @@ namespace AMS.MVC
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IAuthorizationHandler, MovieEditAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MovieStarCreateAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MovieStarEditAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, MovieStarDeleteAuthorizationHandler>();
         }
 
         public void Configure(IApplicationBuilder application, IWebHostEnvironment environment)

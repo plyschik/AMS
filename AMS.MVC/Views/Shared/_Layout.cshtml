@@ -24,7 +24,11 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" asp-controller="Movies" asp-action="Index">List</a>
-                                    <a class="dropdown-item" asp-controller="Movies" asp-action="Create">Create</a>
+                                    
+                                    @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
+                                    {
+                                        <a class="dropdown-item" asp-controller="Movies" asp-action="Create">Create</a>   
+                                    }
                                 </div>
                             </li>
                             @if (User.IsInRole("Administrator"))
@@ -45,7 +49,11 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" asp-controller="Persons" asp-action="Index">List</a>
-                                    <a class="dropdown-item" asp-controller="Persons" asp-action="Create">Create</a>
+                                    
+                                    @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
+                                    {
+                                        <a class="dropdown-item" asp-controller="Persons" asp-action="Create">Create</a>   
+                                    }
                                 </div>
                             </li>
                         </ul>

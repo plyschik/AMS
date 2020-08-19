@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AMS.MVC.Authorization;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.ViewModels.MovieStarViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,18 +17,38 @@ namespace AMS.MVC.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DatabaseContext _databaseContext;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IFlashMessage _flashMessage;
 
-        public StarsController(IUnitOfWork unitOfWork, DatabaseContext databaseContext, IFlashMessage flashMessage)
+        public StarsController(
+            IUnitOfWork unitOfWork,
+            DatabaseContext databaseContext,
+            IAuthorizationService authorizationService,
+            IFlashMessage flashMessage
+        )
         {
             _unitOfWork = unitOfWork;
             _databaseContext = databaseContext;
+            _authorizationService = authorizationService;
             _flashMessage = flashMessage;
         }
 
         [HttpGet("[controller]/[action]/{movieId:guid}")]
         public async Task<IActionResult> Create(Guid movieId)
         {
+            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie,
+                MovieStarOperations.Create
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             var movieStars = await _unitOfWork.MovieRepository.GetStars(movieId);
             var persons = await _unitOfWork.PersonRepository.GetAll();
             
@@ -44,10 +66,21 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Guid movieId, MovieStarCreateViewModel viewModel)
         {
+            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie,
+                MovieStarOperations.Create
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             if (ModelState.IsValid)
             {
-                var movie = await _unitOfWork.MovieRepository.GetById(movieId);
-                
                 movie.MovieStars.Add(new MovieStar
                 {
                     PersonId = Guid.Parse(viewModel.SelectedPerson),
@@ -76,6 +109,19 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{movieId:guid}/{personId:guid}")]
         public async Task<IActionResult> Edit(Guid movieId, Guid personId)
         {
+            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie,
+                MovieStarOperations.Edit
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             var movieStar = await _databaseContext.MovieStars.FirstOrDefaultAsync(
                 ms => ms.MovieId == movieId && ms.PersonId == personId
             );
@@ -90,6 +136,19 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid movieId, Guid personId, MovieStatEditViewModel viewModel)
         {
+            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie,
+                MovieStarOperations.Edit
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             if (ModelState.IsValid)
             {
                 var movieStar = await _databaseContext.MovieStars.FirstOrDefaultAsync(
@@ -111,6 +170,19 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{movieId:guid}/{personId:guid}")]
         public async Task<IActionResult> ConfirmDelete(Guid movieId, Guid personId)
         {
+            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie,
+                MovieStarOperations.Delete
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             var movieStar = await _databaseContext.MovieStars
                 .Include(ms => ms.Person)
                 .FirstOrDefaultAsync(
@@ -123,6 +195,19 @@ namespace AMS.MVC.Controllers
         [HttpPost("[controller]/[action]/{movieId:guid}/{personId:guid}")]
         public async Task<IActionResult> Delete(Guid movieId, Guid personId)
         {
+            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                movie,
+                MovieStarOperations.Delete
+            );
+
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+            
             var movieStar = await _databaseContext.MovieStars.FirstOrDefaultAsync(
                 ms => ms.MovieId == movieId && ms.PersonId == personId
             );
