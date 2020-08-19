@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AMS.MVC.Authorization
 {
-    public class MovieEditAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Movie>
+    public class MovieStarEditAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Movie>
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public MovieEditAuthorizationHandler(UserManager<ApplicationUser> userManager)
+        public MovieStarEditAuthorizationHandler(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }

@@ -1,12 +1,10 @@
 using System;
-using System.Data;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.ViewModels.GenreViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
@@ -23,6 +21,7 @@ namespace AMS.MVC.Controllers
             _flashMessage = flashMessage;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var genres = await _unitOfWork.GenreRepository.GetAll();
