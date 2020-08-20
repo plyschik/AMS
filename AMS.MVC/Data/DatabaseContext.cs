@@ -29,79 +29,79 @@ namespace AMS.MVC.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            
+
             builder.Entity<ApplicationUser>()
-                .HasMany(user => user.Movies)
-                .WithOne(movie => movie.User)
+                .HasMany(au => au.Movies)
+                .WithOne(m => m.User)
                 .IsRequired();
 
             builder.Entity<Genre>()
-                .HasIndex(genre => genre.Name)
+                .HasIndex(g => g.Name)
                 .IsUnique();
 
-            builder.Entity<MovieGenre>()
-                .HasKey(mg => new { mg.MovieId, mg.GenreId });
+            builder.Entity<MovieGenre>(entity =>
+            {
+                entity.HasKey(mg => new { mg.MovieId, mg.GenreId });
 
-            builder.Entity<MovieGenre>()
-                .HasOne(mg => mg.Movie)
-                .WithMany(m => m.MovieGenres)
-                .HasForeignKey(mg => mg.MovieId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<MovieGenre>()
-                .HasOne(mg => mg.Genre)
-                .WithMany(g => g.MovieGenres)
-                .HasForeignKey(mg => mg.GenreId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+                entity.HasOne(mg => mg.Movie)
+                    .WithMany(m => m.MovieGenres)
+                    .HasForeignKey(mg => mg.MovieId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne(mg => mg.Genre)
+                    .WithMany(g => g.MovieGenres)
+                    .HasForeignKey(mg => mg.GenreId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            
             builder.Entity<Person>()
                 .HasIndex(p => new { p.FirstName, p.LastName })
                 .IsUnique();
 
-            builder.Entity<MovieDirector>()
-                .HasKey(md => new { md.MovieId, md.PersonId });
+            builder.Entity<MovieDirector>(entity =>
+            {
+                entity.HasKey(md => new { md.MovieId, md.PersonId });
+                
+                entity.HasOne(md => md.Movie)
+                    .WithMany(m => m.MovieDirectors)
+                    .HasForeignKey(md => md.MovieId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne(md => md.Person)
+                    .WithMany(p => p.MovieDirectors)
+                    .HasForeignKey(md => md.PersonId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
-            builder.Entity<MovieDirector>()
-                .HasOne(md => md.Movie)
-                .WithMany(m => m.MovieDirectors)
-                .HasForeignKey(md => md.MovieId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            builder.Entity<MovieDirector>()
-                .HasOne(md => md.Person)
-                .WithMany(p => p.MovieDirectors)
-                .HasForeignKey(md => md.PersonId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<MovieWriter>(entity =>
+            {
+                entity.HasKey(mw => new { mw.MovieId, mw.PersonId });
+                
+                entity.HasOne(mw => mw.Movie)
+                    .WithMany(m => m.MovieWriters)
+                    .HasForeignKey(mw => mw.MovieId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne(mw => mw.Person)
+                    .WithMany(p => p.MovieWriters)
+                    .HasForeignKey(mw => mw.PersonId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
-            builder.Entity<MovieWriter>()
-                .HasKey(mw => new { mw.MovieId, mw.PersonId });
-
-            builder.Entity<MovieWriter>()
-                .HasOne(mw => mw.Movie)
-                .WithMany(m => m.MovieWriters)
-                .HasForeignKey(mw => mw.MovieId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<MovieWriter>()
-                .HasOne(mw => mw.Person)
-                .WithMany(p => p.MovieWriters)
-                .HasForeignKey(mw => mw.PersonId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<MovieStar>()
-                .HasKey(ms => new { ms.MovieId, ms.PersonId });
-            
-            builder.Entity<MovieStar>()
-                .HasOne(ms => ms.Movie)
-                .WithMany(m => m.MovieStars)
-                .HasForeignKey(ms => ms.MovieId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<MovieStar>()
-                .HasOne(ms => ms.Person)
-                .WithMany(p => p.MovieStars)
-                .HasForeignKey(ms => ms.PersonId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<MovieStar>(entity =>
+            {
+                entity.HasKey(ms => new { ms.MovieId, ms.PersonId });
+                
+                entity.HasOne(ms => ms.Movie)
+                    .WithMany(m => m.MovieStars)
+                    .HasForeignKey(ms => ms.MovieId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne(ms => ms.Person)
+                    .WithMany(p => p.MovieStars)
+                    .HasForeignKey(ms => ms.PersonId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
