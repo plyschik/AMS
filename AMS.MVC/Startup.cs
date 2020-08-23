@@ -38,12 +38,8 @@ namespace AMS.MVC
             services.AddRazorPages();
 
             services.AddFlashMessage();
-            
-            services.AddScoped<IMovieRepository, MovieRepository>();
-            services.AddScoped<IGenreRepository, GenreRepository>();
-            services.AddScoped<IPersonRepository, PersonRepository>();
 
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IAuthorizationHandler, MovieEditAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, MovieStarCreateAuthorizationHandler>();
