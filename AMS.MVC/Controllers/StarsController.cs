@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AMS.MVC.Authorization;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
+using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieStarViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,28 +16,28 @@ namespace AMS.MVC.Controllers
 {
     public class StarsController : Controller
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly DatabaseContext _databaseContext;
-        private readonly IAuthorizationService _authorizationService;
         private readonly IFlashMessage _flashMessage;
 
         public StarsController(
+            IAuthorizationService authorizationService,
             IUnitOfWork unitOfWork,
             DatabaseContext databaseContext,
-            IAuthorizationService authorizationService,
             IFlashMessage flashMessage
         )
         {
+            _authorizationService = authorizationService;
             _unitOfWork = unitOfWork;
             _databaseContext = databaseContext;
-            _authorizationService = authorizationService;
             _flashMessage = flashMessage;
         }
 
         [HttpGet("[controller]/[action]/{movieId:guid}")]
         public async Task<IActionResult> Create(Guid movieId)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
@@ -49,8 +50,8 @@ namespace AMS.MVC.Controllers
                 return Forbid();
             }
             
-            var movieStars = await _unitOfWork.MovieRepository.GetStars(movieId);
-            var persons = await _unitOfWork.PersonRepository.GetAll();
+            var movieStars = await _unitOfWork.Movies.GetStars(movieId);
+            var persons = _unitOfWork.Persons.GetAll().ToList();
             
             return View(new MovieStarCreateViewModel
             {
@@ -66,7 +67,7 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Guid movieId, MovieStarCreateViewModel viewModel)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
@@ -87,15 +88,15 @@ namespace AMS.MVC.Controllers
                     Character = viewModel.Character
                 });
 
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.Save();
                 
                 _flashMessage.Confirmation("Star has been attached to movie as character.");
 
                 return RedirectToAction("Show", "Movies", new { id = movieId });
             }
             
-            var movieStars = await _unitOfWork.MovieRepository.GetStars(movieId);
-            var persons = await _unitOfWork.PersonRepository.GetAll();
+            var movieStars = await _unitOfWork.Movies.GetStars(movieId);
+            var persons = _unitOfWork.Persons.GetAll();
 
             viewModel.Persons = persons.Except(movieStars).Select(person => new SelectListItem
             {
@@ -109,7 +110,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{movieId:guid}/{personId:guid}")]
         public async Task<IActionResult> Edit(Guid movieId, Guid personId)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
@@ -136,7 +137,7 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid movieId, Guid personId, MovieStatEditViewModel viewModel)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
@@ -170,7 +171,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{movieId:guid}/{personId:guid}")]
         public async Task<IActionResult> ConfirmDelete(Guid movieId, Guid personId)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
@@ -195,7 +196,7 @@ namespace AMS.MVC.Controllers
         [HttpPost("[controller]/[action]/{movieId:guid}/{personId:guid}")]
         public async Task<IActionResult> Delete(Guid movieId, Guid personId)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(movieId);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,

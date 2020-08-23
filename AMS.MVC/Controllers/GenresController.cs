@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
+using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.GenreViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
@@ -31,9 +31,9 @@ namespace AMS.MVC.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var genres = await _unitOfWork.GenreRepository.GetAll();
+            var genres = _unitOfWork.Genres.GetAll();
             
             return View(genres);
         }
@@ -81,8 +81,8 @@ namespace AMS.MVC.Controllers
                     Name = viewModel.Name
                 };
                 
-                _unitOfWork.GenreRepository.Create(genre);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.Genres.Create(genre);
+                await _unitOfWork.Save();
                 
                 _flashMessage.Confirmation("Genre has been created.");
 
@@ -95,7 +95,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var genre = await _unitOfWork.GenreRepository.GetById(id);
+            var genre = await _unitOfWork.Genres.GetBy(g => g.Id == id);
 
             if (genre == null)
             {
@@ -113,7 +113,7 @@ namespace AMS.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var genre = await _unitOfWork.GenreRepository.GetById(id);
+                var genre = await _unitOfWork.Genres.GetBy(g => g.Id == id);
 
                 if (genre == null)
                 {
@@ -122,8 +122,8 @@ namespace AMS.MVC.Controllers
 
                 genre.Name = viewModel.Name;
             
-                _unitOfWork.GenreRepository.Update(genre);
-                await _unitOfWork.SaveChangesAsync();
+                _unitOfWork.Genres.Update(genre);
+                await _unitOfWork.Save();
                                 
                 _flashMessage.Confirmation("Genre has been updated.");
                 
@@ -136,7 +136,7 @@ namespace AMS.MVC.Controllers
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
-            var genre = await _unitOfWork.GenreRepository.GetById(id);
+            var genre = await _unitOfWork.Genres.GetBy(g => g.Id == id);
 
             if (genre == null)
             {
@@ -150,15 +150,15 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var genre = await _unitOfWork.GenreRepository.GetById(id);
+            var genre = await _unitOfWork.Genres.GetBy(g => g.Id == id);
 
             if (genre == null)
             {
                 return NotFound();
             }
 
-            _unitOfWork.GenreRepository.Delete(genre);
-            await _unitOfWork.SaveChangesAsync();
+            _unitOfWork.Genres.Delete(genre);
+            await _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
         }
