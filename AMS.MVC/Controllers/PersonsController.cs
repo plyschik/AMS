@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
+using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.PersonViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +18,20 @@ namespace AMS.MVC.Controllers
         private readonly DatabaseContext _databaseContext;
         private readonly IFlashMessage _flashMessage;
 
-        public PersonsController(IUnitOfWork unitOfWork, DatabaseContext databaseContext, IFlashMessage flashMessage)
+        public PersonsController(
+            IUnitOfWork unitOfWork,
+            DatabaseContext databaseContext,
+            IFlashMessage flashMessage
+        )
         {
             _unitOfWork = unitOfWork;
             _databaseContext = databaseContext;
             _flashMessage = flashMessage;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var persons = await _unitOfWork.PersonRepository.GetAll();
+            var persons = _unitOfWork.Persons.GetAll().ToList();
             
             return View(persons);
         }
@@ -88,8 +93,8 @@ namespace AMS.MVC.Controllers
                     DateOfBirth = viewModel.DateOfBirth
                 };
             
-                _unitOfWork.PersonRepository.Create(person);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.Persons.Create(person);
+                await _unitOfWork.Save();
 
                 _flashMessage.Confirmation("Person has been created.");
                 
@@ -103,7 +108,7 @@ namespace AMS.MVC.Controllers
         [Authorize(Roles = "Manager, Administrator")]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var person = await _unitOfWork.PersonRepository.GetById(id);
+            var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
 
             if (person == null)
             {
@@ -125,7 +130,7 @@ namespace AMS.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var person = await _unitOfWork.PersonRepository.GetById(id);
+                var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
 
                 if (person == null)
                 {
@@ -136,8 +141,8 @@ namespace AMS.MVC.Controllers
                 person.LastName = viewModel.LastName;
                 person.DateOfBirth = viewModel.DateOfBirth;
                 
-                _unitOfWork.PersonRepository.Update(person);
-                await _unitOfWork.SaveChangesAsync();
+                _unitOfWork.Persons.Update(person);
+                await _unitOfWork.Save();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -149,7 +154,7 @@ namespace AMS.MVC.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
-            var person = await _unitOfWork.PersonRepository.GetById(id);
+            var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
 
             if (person == null)
             {
@@ -164,15 +169,15 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var person = await _unitOfWork.PersonRepository.GetById(id);
+            var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
 
             if (person == null)
             {
                 return NotFound();
             }
 
-            _unitOfWork.PersonRepository.Delete(person);
-            await _unitOfWork.SaveChangesAsync();
+            _unitOfWork.Persons.Delete(person);
+            await _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
         }

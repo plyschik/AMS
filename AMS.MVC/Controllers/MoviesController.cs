@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Authorization;
-using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
+using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,27 +16,27 @@ namespace AMS.MVC.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthorizationService _authorizationService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFlashMessage _flashMessage;
 
         public MoviesController(
-            IUnitOfWork unitOfWork,
             IAuthorizationService authorizationService,
             UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork,
             IFlashMessage flashMessage
         )
         {
-            _unitOfWork = unitOfWork;
             _authorizationService = authorizationService;
             _userManager = userManager;
+            _unitOfWork = unitOfWork;
             _flashMessage = flashMessage;
         }
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _unitOfWork.MovieRepository.GetAllWithRelations();
+            var movies = await _unitOfWork.Movies.GetAllWithRelations();
             
             return View(movies);
         }
@@ -46,7 +46,7 @@ namespace AMS.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> Show(Guid id)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdWithRelations(id);
+            var movie = await _unitOfWork.Movies.GetByIdWithRelations(id);
 
             if (movie == null)
             {
@@ -57,10 +57,10 @@ namespace AMS.MVC.Controllers
         }
         
         [Authorize(Roles = "Manager, Administrator")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            var genres = await _unitOfWork.GenreRepository.GetAll();
-            var persons = await _unitOfWork.PersonRepository.GetAll();
+            var genres = _unitOfWork.Genres.GetAll();
+            var persons = _unitOfWork.Persons.GetAll();
 
             return View(new MovieCreateViewModel
             {
@@ -92,7 +92,7 @@ namespace AMS.MVC.Controllers
                     User = await _userManager.GetUserAsync(HttpContext.User)
                 };
 
-                _unitOfWork.MovieRepository.Create(movie);
+                await _unitOfWork.Movies.Create(movie);
                 
                 foreach (var genreId in movieCreateViewModel.SelectedGenres)
                 {
@@ -118,15 +118,15 @@ namespace AMS.MVC.Controllers
                     });
                 }
                 
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.Save();
                 
                 _flashMessage.Confirmation("Movie has been created.");
                 
                 return RedirectToAction(nameof(Index));
             }
 
-            var genres = await _unitOfWork.GenreRepository.GetAll();
-            var persons = await _unitOfWork.PersonRepository.GetAll();
+            var genres = _unitOfWork.Genres.GetAll();
+            var persons = _unitOfWork.Persons.GetAll();
             
             movieCreateViewModel.Genres = genres.Select(genre => new SelectListItem
             {
@@ -147,7 +147,7 @@ namespace AMS.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdWithRelations(id);
+            var movie = await _unitOfWork.Movies.GetByIdWithRelations(id);
 
             if (movie == null)
             {
@@ -165,8 +165,8 @@ namespace AMS.MVC.Controllers
                 return Forbid();
             }
 
-            var genres = await _unitOfWork.GenreRepository.GetAll();
-            var persons = await _unitOfWork.PersonRepository.GetAll();
+            var genres = _unitOfWork.Genres.GetAll();
+            var persons = _unitOfWork.Persons.GetAll();
 
             return View(new MovieEditViewModel
             {
@@ -194,7 +194,7 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, MovieEditViewModel movieEditViewModel)
         {
-            var movie = await _unitOfWork.MovieRepository.GetByIdWithRelations(id);
+            var movie = await _unitOfWork.Movies.GetByIdWithRelations(id);
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User,
@@ -266,11 +266,11 @@ namespace AMS.MVC.Controllers
                         });
                     }
                     
-                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _unitOfWork.MovieRepository.Exists(movie.Id))
+                    if (!await _unitOfWork.Movies.Exists(m => m.Id == movie.Id))
                     {
                         return NotFound();
                     }
@@ -283,8 +283,8 @@ namespace AMS.MVC.Controllers
                 return RedirectToAction(nameof(Show), new { id = movie.Id });
             }
 
-            var genres = await _unitOfWork.GenreRepository.GetAll();
-            var persons = await _unitOfWork.PersonRepository.GetAll();
+            var genres = _unitOfWork.Genres.GetAll();
+            var persons = _unitOfWork.Persons.GetAll();
 
             movieEditViewModel.Genres = genres.Select(genre => new SelectListItem
             {
@@ -305,7 +305,7 @@ namespace AMS.MVC.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(id);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == id);
 
             if (movie == null)
             {
@@ -320,15 +320,15 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var movie = await _unitOfWork.MovieRepository.GetById(id);
+            var movie = await _unitOfWork.Movies.GetBy(m => m.Id == id);
 
             if (movie == null)
             {
                 return NotFound();
             }
 
-            _unitOfWork.MovieRepository.Delete(movie);
-            await _unitOfWork.SaveChangesAsync();
+            _unitOfWork.Movies.Delete(movie);
+            await _unitOfWork.Save();
             
             return RedirectToAction(nameof(Index));
         }
