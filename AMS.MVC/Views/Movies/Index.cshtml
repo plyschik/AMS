@@ -1,4 +1,4 @@
-@model IEnumerable<AMS.MVC.Data.Models.Movie>
+@model AMS.MVC.ViewModels.MovieViewModels.MovieIndexViewModel
 
 @{
     ViewData["Title"] = "Movies list";
@@ -15,7 +15,7 @@
 
 <hr class="my-4" />
 
-@if (!Model.Any())
+@if (!Model.Movies.Any())
 {
     <div class="alert alert-info" role="alert">
         Movies list is empty.
@@ -23,7 +23,7 @@
 }
 else
 {
-    @foreach (var movie in Model)
+    @foreach (var movie in Model.Movies)
     {
         var genres = movie.MovieGenres.Select(mg => mg.Genre).ToList();
 
@@ -43,10 +43,13 @@ else
                     </h6>
                 }
                 
-                <p class="card-text">
-                    <i>@Html.DisplayFor(movies => movie.Description)</i>
-                </p>
-                
+                @if (!string.IsNullOrEmpty(movie.Description))
+                {
+                    <p class="card-text">
+                        <i>@Html.DisplayFor(movies => movie.Description)</i>
+                    </p>
+                }
+
                 <a class="card-link" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
                 
                 @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Edit)).Succeeded)

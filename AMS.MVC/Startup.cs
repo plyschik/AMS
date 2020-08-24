@@ -2,6 +2,7 @@ using AMS.MVC.Authorization;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
+using AMS.MVC.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,9 +38,13 @@ namespace AMS.MVC
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            services.AddHttpContextAccessor();
+            
             services.AddFlashMessage();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<IMovieService, MovieService>();
 
             services.AddScoped<IAuthorizationHandler, MovieEditAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, MovieStarCreateAuthorizationHandler>();

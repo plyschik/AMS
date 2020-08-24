@@ -15,6 +15,10 @@ namespace AMS.MVC.Repositories
         public Task<ICollection<Movie>> GetAllWithRelations();
         
         public Task<ICollection<Person>> GetStars(Guid movieId);
+        
+        public Task<ICollection<Movie>> GetMoviesWithGenresOrderedByReleaseDate();
+
+        public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
     }
     
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
@@ -58,6 +62,29 @@ namespace AMS.MVC.Repositories
                 .FirstOrDefaultAsync(m => m.Id == movieId);
 
             return movie.MovieStars.Select(ms => ms.Person).ToList();
+        }
+
+        public async Task<ICollection<Movie>> GetMoviesWithGenresOrderedByReleaseDate()
+        {
+            return await DatabaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
+        }
+
+        public async Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id)
+        {
+            return await DatabaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+                .Include(m => m.MovieDirectors)
+                .ThenInclude(md => md.Person)
+                .Include(mw => mw.MovieWriters)
+                .ThenInclude(mw => mw.Person)
+                .Include(ms => ms.MovieStars)
+                .ThenInclude(ms => ms.Person)
+                .FirstOrDefaultAsync(movie => movie.Id == id);
         }
     }
 }
