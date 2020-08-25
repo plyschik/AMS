@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,8 @@ namespace AMS.MVC.Repositories
         public Task<ICollection<Movie>> GetMoviesWithGenresOrderedByReleaseDate();
 
         public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
+
+        public Task<ICollection<Movie>> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId);
     }
     
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
@@ -85,6 +88,16 @@ namespace AMS.MVC.Repositories
                 .Include(ms => ms.MovieStars)
                 .ThenInclude(ms => ms.Person)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
+        }
+
+        public async Task<ICollection<Movie>> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId)
+        {
+            return await DatabaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+                .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId))
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
         }
     }
 }

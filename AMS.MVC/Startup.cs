@@ -45,6 +45,7 @@ namespace AMS.MVC
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IMovieService, MovieService>();
+            services.AddScoped<IGenreService, GenreService>();
 
             services.AddScoped<IAuthorizationHandler, MovieEditAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, MovieStarCreateAuthorizationHandler>();
