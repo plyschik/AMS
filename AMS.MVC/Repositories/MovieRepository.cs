@@ -22,6 +22,12 @@ namespace AMS.MVC.Repositories
         public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
 
         public Task<ICollection<Movie>> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId);
+
+        public Task<ICollection<Movie>> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId);
+        
+        public Task<ICollection<Movie>> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId);
+        
+        public Task<ICollection<Movie>> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId);
     }
     
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
@@ -96,6 +102,33 @@ namespace AMS.MVC.Repositories
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)
                 .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId))
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<Movie>> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId)
+        {
+            return await DatabaseContext.Movies
+                .Include(m => m.MovieDirectors)
+                .Where(m => m.MovieDirectors.Any(md => md.PersonId == personId))
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<Movie>> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId)
+        {
+            return await DatabaseContext.Movies
+                .Include(m => m.MovieWriters)
+                .Where(m => m.MovieWriters.Any(mw => mw.PersonId == personId))
+                .OrderByDescending(m => m.ReleaseDate)
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<Movie>> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId)
+        {
+            return await DatabaseContext.Movies
+                .Include(m => m.MovieStars)
+                .Where(m => m.MovieStars.Any(ms => ms.PersonId == personId))
                 .OrderByDescending(m => m.ReleaseDate)
                 .ToListAsync();
         }
