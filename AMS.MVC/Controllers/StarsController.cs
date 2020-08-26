@@ -1,6 +1,6 @@
 using System;
-using System.Security.Authentication;
 using System.Threading.Tasks;
+using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Movie;
 using AMS.MVC.Services;
 using AMS.MVC.ViewModels.MovieStarViewModel;
@@ -25,15 +25,15 @@ namespace AMS.MVC.Controllers
         {
             try
             {
-                var viewModel = await _starService.FillCreateViewModelWithAvailableStars(movieId);
+                var viewModel = await _starService.LoadAvailableStarsToCreateViewModel(movieId);
 
                 return View(viewModel);
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }
-            catch (AuthenticationException)
+            catch (AccessDeniedException)
             {
                 return Forbid();
             }
@@ -53,17 +53,17 @@ namespace AMS.MVC.Controllers
 
                     return RedirectToAction("Show", "Movies", new {id = movieId});
                 }
-                catch (MovieNotFound)
+                catch (MovieNotFoundException)
                 {
                     return NotFound();
                 }
-                catch (AuthenticationException)
+                catch (AccessDeniedException)
                 {
                     return Forbid();
                 }
             }
 
-            viewModel = await _starService.FillCreateViewModelWithAvailableStars(movieId, viewModel);
+            viewModel = await _starService.LoadAvailableStarsToCreateViewModel(movieId, viewModel);
 
             return View(viewModel);
         }
@@ -73,15 +73,15 @@ namespace AMS.MVC.Controllers
         {
             try
             {
-                var viewModel = await _starService.GetMovieStarEdit(movieId, personId);
+                var viewModel = await _starService.GetEditViewModel(movieId, personId);
 
                 return View(viewModel);
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }
-            catch (AuthenticationException)
+            catch (AccessDeniedException)
             {
                 return Forbid();
             }
@@ -95,17 +95,17 @@ namespace AMS.MVC.Controllers
             {
                 try
                 {
-                    await _starService.MovieStarEdit(movieId, personId, viewModel);
+                    await _starService.UpdateMovieStar(movieId, personId, viewModel);
                     
                     _flashMessage.Confirmation("Movie character has been updated.");
                 
                     return RedirectToAction("Show", "Movies", new { id = movieId });
                 }
-                catch (MovieNotFound)
+                catch (MovieNotFoundException)
                 {
                     return NotFound();
                 }
-                catch (AuthenticationException)
+                catch (AccessDeniedException)
                 {
                     return Forbid();
                 }
@@ -123,11 +123,11 @@ namespace AMS.MVC.Controllers
 
                 return View(movieStar);
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }
-            catch (AuthenticationException)
+            catch (AccessDeniedException)
             {
                 return Forbid();
             }
@@ -142,11 +142,11 @@ namespace AMS.MVC.Controllers
                 
                 return RedirectToAction("Show", "Movies", new { id = movieId });
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }
-            catch (AuthenticationException)
+            catch (AccessDeniedException)
             {
                 return Forbid();
             }

@@ -4,6 +4,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using AMS.MVC.Authorization;
 using AMS.MVC.Data.Models;
+using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Movie;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieViewModels;
@@ -21,15 +22,15 @@ namespace AMS.MVC.Services
 
         public Task<MovieShowViewModel> GetMovie(Guid id);
 
-        public Task<MovieCreateViewModel> FillCreateViewModelWithGenresAndPersons(MovieCreateViewModel viewModel = null);
+        public Task<MovieCreateViewModel> LoadGenresAndPersonsToCreateViewModel(MovieCreateViewModel viewModel = null);
 
         public Task CreateMovie(MovieCreateViewModel viewModel);
 
-        public Task<MovieEditViewModel> FillEditViewModelWithGenresAndPersons(MovieEditViewModel viewModel);
+        public Task<MovieEditViewModel> LoadGenresAndPersonsToEditViewModel(MovieEditViewModel viewModel);
 
-        public Task<MovieEditViewModel> GetMovieEdit(Guid id);
+        public Task<MovieEditViewModel> GetEditViewModel(Guid id);
 
-        public Task MovieEdit(Guid id, MovieEditViewModel viewModel);
+        public Task UpdateMovie(Guid id, MovieEditViewModel viewModel);
         
         public Task<Movie> GetMovieToConfirmDelete(Guid id);
 
@@ -58,7 +59,7 @@ namespace AMS.MVC.Services
 
         public async Task<MovieIndexViewModel> GetMoviesList()
         {
-            var movies = await _unitOfWork.Movies.GetMoviesWithGenresOrderedByReleaseDate();
+            var movies = await _unitOfWork.Movies.GetMoviesWithGenresOrderedByReleaseDate().ToListAsync();
 
             return new MovieIndexViewModel
             {
@@ -72,7 +73,7 @@ namespace AMS.MVC.Services
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
 
             return new MovieShowViewModel
@@ -85,9 +86,7 @@ namespace AMS.MVC.Services
             };
         }
 
-        public async Task<MovieCreateViewModel> FillCreateViewModelWithGenresAndPersons(
-            MovieCreateViewModel viewModel = null
-        )
+        public async Task<MovieCreateViewModel> LoadGenresAndPersonsToCreateViewModel(MovieCreateViewModel viewModel = null)
         {
             if (viewModel == null)
             {
@@ -151,7 +150,7 @@ namespace AMS.MVC.Services
             await _unitOfWork.Save();
         }
 
-        public async Task<MovieEditViewModel> FillEditViewModelWithGenresAndPersons(MovieEditViewModel viewModel)
+        public async Task<MovieEditViewModel> LoadGenresAndPersonsToEditViewModel(MovieEditViewModel viewModel)
         {
             var genres = await _unitOfWork.Genres.GetAllOrderedByNameAscending().ToListAsync();
             var persons = await _unitOfWork.Persons.GetAllOrderedByLastNameAscending().ToListAsync();
@@ -171,13 +170,13 @@ namespace AMS.MVC.Services
             return viewModel;
         }
 
-        public async Task<MovieEditViewModel> GetMovieEdit(Guid id)
+        public async Task<MovieEditViewModel> GetEditViewModel(Guid id)
         {
             var movie = await _unitOfWork.Movies.GetMovieWithGenresDirectorsWritersAndStars(id);
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -188,7 +187,7 @@ namespace AMS.MVC.Services
             
             if (!isAuthorized.Succeeded)
             {
-                throw new AuthenticationException();
+                throw new AccessDeniedException();
             }
 
             var movieEditViewModel = new MovieEditViewModel
@@ -201,18 +200,18 @@ namespace AMS.MVC.Services
                 SelectedWriters = movie.MovieWriters.Select(mw => mw.PersonId.ToString()).ToArray()
             };
 
-            movieEditViewModel = await FillEditViewModelWithGenresAndPersons(movieEditViewModel);
+            movieEditViewModel = await LoadGenresAndPersonsToEditViewModel(movieEditViewModel);
             
             return movieEditViewModel;
         }
 
-        public async Task MovieEdit(Guid id, MovieEditViewModel viewModel)
+        public async Task UpdateMovie(Guid id, MovieEditViewModel viewModel)
         {
             var movie = await _unitOfWork.Movies.GetMovieWithGenresDirectorsWritersAndStars(id);
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -290,7 +289,7 @@ namespace AMS.MVC.Services
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
 
             return movie;
@@ -302,7 +301,7 @@ namespace AMS.MVC.Services
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
 
             _unitOfWork.Movies.Delete(movie);

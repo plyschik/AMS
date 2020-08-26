@@ -36,7 +36,7 @@ namespace AMS.MVC.Controllers
                 
                 return View(viewModel);
             }
-            catch (PersonNotFound)
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }
@@ -51,18 +51,18 @@ namespace AMS.MVC.Controllers
         [HttpPost]
         [Authorize(Roles = "Manager, Administrator")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PersonCreateViewModel viewModel)
+        public async Task<IActionResult> Create(PersonCreateViewModel personCreateViewModel)
         {
             if (ModelState.IsValid)
             {
-                await _personService.CreatePerson(viewModel);
+                await _personService.CreatePerson(personCreateViewModel);
 
                 _flashMessage.Confirmation("Person has been created.");
                 
                 return RedirectToAction(nameof(Index));
             }
             
-            return View(viewModel);
+            return View(personCreateViewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
@@ -71,11 +71,11 @@ namespace AMS.MVC.Controllers
         {
             try
             {
-                var viewModel = await _personService.GetPersonEdit(id);
+                var viewModel = await _personService.GetEditViewModel(id);
                 
                 return View(viewModel);
             }
-            catch (PersonNotFound)
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }
@@ -90,11 +90,11 @@ namespace AMS.MVC.Controllers
             {
                 try
                 {
-                    await _personService.PersonEdit(id, viewModel);
+                    await _personService.UpdatePerson(id, viewModel);
                     
                     return RedirectToAction(nameof(Index));
                 }
-                catch (PersonNotFound)
+                catch (PersonNotFoundException)
                 {
                     return NotFound();
                 }
@@ -113,7 +113,7 @@ namespace AMS.MVC.Controllers
 
                 return View(person);
             }
-            catch (PersonNotFound)
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }
@@ -130,7 +130,7 @@ namespace AMS.MVC.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
-            catch (PersonNotFound)
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }

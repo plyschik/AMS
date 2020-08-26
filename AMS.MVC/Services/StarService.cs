@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 using AMS.MVC.Authorization;
 using AMS.MVC.Data.Models;
+using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Movie;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieStarViewModel;
@@ -16,16 +16,16 @@ namespace AMS.MVC.Services
 {
     public interface IStarService
     {
-        public Task<MovieStarCreateViewModel> FillCreateViewModelWithAvailableStars(
+        public Task<MovieStarCreateViewModel> LoadAvailableStarsToCreateViewModel(
             Guid movieId,
             MovieStarCreateViewModel viewModel = null
         );
         
         public Task CreateMovieStar(Guid movieId, MovieStarCreateViewModel viewModel);
         
-        public Task<MovieStarEditViewModel> GetMovieStarEdit(Guid movieId, Guid personId);
+        public Task<MovieStarEditViewModel> GetEditViewModel(Guid movieId, Guid personId);
 
-        public Task MovieStarEdit(Guid movieId, Guid personId, MovieStarEditViewModel viewModel);
+        public Task UpdateMovieStar(Guid movieId, Guid personId, MovieStarEditViewModel viewModel);
         
         public Task<MovieStar> GetMovieStarToConfirmDelete(Guid movieId, Guid personId);
 
@@ -49,7 +49,7 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<MovieStarCreateViewModel> FillCreateViewModelWithAvailableStars(
+        public async Task<MovieStarCreateViewModel> LoadAvailableStarsToCreateViewModel(
             Guid movieId,
             MovieStarCreateViewModel viewModel = null
         )
@@ -58,7 +58,7 @@ namespace AMS.MVC.Services
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -69,7 +69,7 @@ namespace AMS.MVC.Services
 
             if (!isAuthorized.Succeeded)
             {
-                throw new AuthenticationException();
+                throw new AccessDeniedException();
             }
             
             if (viewModel == null)
@@ -78,9 +78,9 @@ namespace AMS.MVC.Services
             }
             
             var persons = await _unitOfWork.Persons.GetAllOrderedByLastNameAscending().ToListAsync();
-            var movieStars = await _unitOfWork.Movies.GetStars(movieId);
+            var stars = await _unitOfWork.MovieStar.GetStarsAsPersons(movieId).ToListAsync();
 
-            viewModel.Persons = persons.Except(movieStars).Select(person => new SelectListItem
+            viewModel.Persons = persons.Except(stars).Select(person => new SelectListItem
             {
                 Text = person.FullName,
                 Value = person.Id.ToString()
@@ -95,7 +95,7 @@ namespace AMS.MVC.Services
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -106,7 +106,7 @@ namespace AMS.MVC.Services
 
             if (!isAuthorized.Succeeded)
             {
-                throw new AuthenticationException();
+                throw new AccessDeniedException();
             }
             
             movie.MovieStars.Add(new MovieStar
@@ -118,13 +118,13 @@ namespace AMS.MVC.Services
             await _unitOfWork.Save();
         }
 
-        public async Task<MovieStarEditViewModel> GetMovieStarEdit(Guid movieId, Guid personId)
+        public async Task<MovieStarEditViewModel> GetEditViewModel(Guid movieId, Guid personId)
         {
             var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -135,7 +135,7 @@ namespace AMS.MVC.Services
 
             if (!isAuthorized.Succeeded)
             {
-                throw new AuthenticationException();
+                throw new AccessDeniedException();
             }
 
             var movieStar = await _unitOfWork.MovieStar.GetBy(
@@ -148,13 +148,13 @@ namespace AMS.MVC.Services
             };
         }
 
-        public async Task MovieStarEdit(Guid movieId, Guid personId, MovieStarEditViewModel viewModel)
+        public async Task UpdateMovieStar(Guid movieId, Guid personId, MovieStarEditViewModel viewModel)
         {
             var movie = await _unitOfWork.Movies.GetBy(m => m.Id == movieId);
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
             
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -165,7 +165,7 @@ namespace AMS.MVC.Services
 
             if (!isAuthorized.Succeeded)
             {
-                throw new AuthenticationException();
+                throw new AccessDeniedException();
             }
             
             var movieStar = await _unitOfWork.MovieStar.GetBy(
@@ -183,7 +183,7 @@ namespace AMS.MVC.Services
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
 
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -194,13 +194,11 @@ namespace AMS.MVC.Services
 
             if (!isAuthorized.Succeeded)
             {
-                throw new AuthenticationException();
+                throw new AccessDeniedException();
             }
 
-            var movieStar = await _unitOfWork.MovieStar.GetByWithPerson(
-                ms => ms.MovieId == movieId && ms.PersonId == personId
-            );
-            
+            var movieStar = await _unitOfWork.MovieStar.GetMovieStarWithPersonByMovieIdAndPersonId(movieId, personId);
+
             return movieStar;
         }
 
@@ -210,7 +208,7 @@ namespace AMS.MVC.Services
 
             if (movie == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
 
             var isAuthorized = await _authorizationService.AuthorizeAsync(
@@ -221,7 +219,7 @@ namespace AMS.MVC.Services
 
             if (!isAuthorized.Succeeded)
             {
-                throw new AuthenticationException();
+                throw new AccessDeniedException();
             }
             
             var movieStar = await _unitOfWork.MovieStar.GetBy(
@@ -230,7 +228,7 @@ namespace AMS.MVC.Services
 
             if (movieStar == null)
             {
-                throw new MovieNotFound();
+                throw new MovieNotFoundException();
             }
             
             _unitOfWork.MovieStar.Delete(movieStar);

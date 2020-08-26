@@ -17,7 +17,8 @@ namespace AMS.MVC.Repositories
 
         public IQueryable<Genre> GetAllOrderedByNameAscending()
         {
-            return DatabaseContext.Genres.OrderBy(g => g.Name);
+            return DatabaseContext.Genres
+                .OrderBy(g => g.Name);
         }
     }
 }

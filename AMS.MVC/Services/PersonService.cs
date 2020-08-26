@@ -16,9 +16,9 @@ namespace AMS.MVC.Services
         
         public Task CreatePerson(PersonCreateViewModel viewModel);
 
-        public Task<PersonEditViewModel> GetPersonEdit(Guid id);
+        public Task<PersonEditViewModel> GetEditViewModel(Guid id);
 
-        public Task PersonEdit(Guid id, PersonEditViewModel viewModel);
+        public Task UpdatePerson(Guid id, PersonEditViewModel viewModel);
         
         public Task<Person> GetPersonToConfirmDelete(Guid id);
 
@@ -36,11 +36,11 @@ namespace AMS.MVC.Services
 
         public async Task<PersonIndexViewModel> GetPersonsList()
         {
-            var persons = _unitOfWork.Persons.GetAllOrderedByLastNameAscending();
+            var persons = await _unitOfWork.Persons.GetAllOrderedByLastNameAscending().ToListAsync();
 
             return new PersonIndexViewModel
             {
-                Persons = await persons.ToListAsync()
+                Persons = persons
             };
         }
 
@@ -50,15 +50,15 @@ namespace AMS.MVC.Services
 
             if (person == null)
             {
-                throw new PersonNotFound();
+                throw new PersonNotFoundException();
             }
 
             return new PersonShowViewModel
             {
                 Person = person,
-                MovieDirector = await _unitOfWork.Movies.GetMoviesWherePersonIsDirectorOrderedByReleaseDate(person.Id),
-                MovieWriter = await _unitOfWork.Movies.GetMoviesWherePersonIsWriterOrderedByReleaseDate(person.Id),
-                MovieStar = await _unitOfWork.Movies.GetMoviesWherePersonIsStarOrderedByReleaseDate(person.Id)
+                MovieDirector = await _unitOfWork.Movies.GetMoviesWherePersonIsDirectorOrderedByReleaseDate(person.Id).ToListAsync(),
+                MovieWriter = await _unitOfWork.Movies.GetMoviesWherePersonIsWriterOrderedByReleaseDate(person.Id).ToListAsync(),
+                MovieStar = await _unitOfWork.Movies.GetMoviesWherePersonIsStarOrderedByReleaseDate(person.Id).ToListAsync()
             };
         }
 
@@ -73,13 +73,13 @@ namespace AMS.MVC.Services
             await _unitOfWork.Save();
         }
 
-        public async Task<PersonEditViewModel> GetPersonEdit(Guid id)
+        public async Task<PersonEditViewModel> GetEditViewModel(Guid id)
         {
             var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
 
             if (person == null)
             {
-                throw new PersonNotFound();
+                throw new PersonNotFoundException();
             }
 
             return new PersonEditViewModel
@@ -90,13 +90,13 @@ namespace AMS.MVC.Services
             };
         }
 
-        public async Task PersonEdit(Guid id, PersonEditViewModel viewModel)
+        public async Task UpdatePerson(Guid id, PersonEditViewModel viewModel)
         {
             var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
 
             if (person == null)
             {
-                throw new PersonNotFound();
+                throw new PersonNotFoundException();
             }
 
             person.FirstName = viewModel.FirstName;
@@ -113,7 +113,7 @@ namespace AMS.MVC.Services
 
             if (person == null)
             {
-                throw new PersonNotFound();
+                throw new PersonNotFoundException();
             }
 
             return person;
@@ -125,7 +125,7 @@ namespace AMS.MVC.Services
 
             if (person == null)
             {
-                throw new PersonNotFound();
+                throw new PersonNotFoundException();
             }
 
             _unitOfWork.Persons.Delete(person);

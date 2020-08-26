@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
@@ -10,19 +9,17 @@ namespace AMS.MVC.Repositories
 {
     public interface IMovieRepository : IBaseRepository<Movie>
     {
-        public Task<ICollection<Person>> GetStars(Guid movieId);
-        
-        public Task<ICollection<Movie>> GetMoviesWithGenresOrderedByReleaseDate();
+        public IQueryable<Movie> GetMoviesWithGenresOrderedByReleaseDate();
 
         public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
 
-        public Task<ICollection<Movie>> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId);
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId);
 
-        public Task<ICollection<Movie>> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId);
+        public IQueryable<Movie> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId);
         
-        public Task<ICollection<Movie>> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId);
+        public IQueryable<Movie> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId);
         
-        public Task<ICollection<Movie>> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId);
+        public IQueryable<Movie> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId);
     }
     
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
@@ -31,23 +28,12 @@ namespace AMS.MVC.Repositories
         {
         }
 
-        public async Task<ICollection<Person>> GetStars(Guid movieId)
+        public IQueryable<Movie> GetMoviesWithGenresOrderedByReleaseDate()
         {
-            var movie = await DatabaseContext.Movies
-                .Include(m => m.MovieStars)
-                .ThenInclude(ms => ms.Person)
-                .FirstOrDefaultAsync(m => m.Id == movieId);
-
-            return movie.MovieStars.Select(ms => ms.Person).ToList();
-        }
-
-        public async Task<ICollection<Movie>> GetMoviesWithGenresOrderedByReleaseDate()
-        {
-            return await DatabaseContext.Movies
+            return DatabaseContext.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
+                .OrderByDescending(m => m.ReleaseDate);
         }
 
         public async Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id)
@@ -64,41 +50,37 @@ namespace AMS.MVC.Repositories
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
-        public async Task<ICollection<Movie>> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId)
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId)
         {
-            return await DatabaseContext.Movies
+            return DatabaseContext.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)
                 .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId))
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
+                .OrderByDescending(m => m.ReleaseDate);
         }
 
-        public async Task<ICollection<Movie>> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId)
+        public IQueryable<Movie> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId)
         {
-            return await DatabaseContext.Movies
+            return DatabaseContext.Movies
                 .Include(m => m.MovieDirectors)
                 .Where(m => m.MovieDirectors.Any(md => md.PersonId == personId))
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
+                .OrderByDescending(m => m.ReleaseDate);
         }
 
-        public async Task<ICollection<Movie>> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId)
+        public IQueryable<Movie> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId)
         {
-            return await DatabaseContext.Movies
+            return DatabaseContext.Movies
                 .Include(m => m.MovieWriters)
                 .Where(m => m.MovieWriters.Any(mw => mw.PersonId == personId))
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
+                .OrderByDescending(m => m.ReleaseDate);
         }
 
-        public async Task<ICollection<Movie>> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId)
+        public IQueryable<Movie> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId)
         {
-            return await DatabaseContext.Movies
+            return DatabaseContext.Movies
                 .Include(m => m.MovieStars)
                 .Where(m => m.MovieStars.Any(ms => ms.PersonId == personId))
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
+                .OrderByDescending(m => m.ReleaseDate);
         }
     }
 }

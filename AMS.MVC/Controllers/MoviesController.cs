@@ -1,6 +1,6 @@
 using System;
-using System.Security.Authentication;
 using System.Threading.Tasks;
+using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Movie;
 using AMS.MVC.Services;
 using AMS.MVC.ViewModels.MovieViewModels;
@@ -35,10 +35,10 @@ namespace AMS.MVC.Controllers
             try
             {
                 var viewModel = await _movieService.GetMovie(id);
-
+                
                 return View(viewModel);
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }
@@ -47,7 +47,7 @@ namespace AMS.MVC.Controllers
         [Authorize(Roles = "Manager, Administrator")]
         public async Task<IActionResult> Create()
         {
-            var viewModel = await _movieService.FillCreateViewModelWithGenresAndPersons();
+            var viewModel = await _movieService.LoadGenresAndPersonsToCreateViewModel();
 
             return View(viewModel);
         }
@@ -66,7 +66,7 @@ namespace AMS.MVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var viewModel = await _movieService.FillCreateViewModelWithGenresAndPersons(movieCreateViewModel);
+            var viewModel = await _movieService.LoadGenresAndPersonsToCreateViewModel(movieCreateViewModel);
 
             return View(viewModel);
         }
@@ -77,15 +77,15 @@ namespace AMS.MVC.Controllers
         {
             try
             {
-                var viewModel = await _movieService.GetMovieEdit(id);
+                var viewModel = await _movieService.GetEditViewModel(id);
 
                 return View(viewModel);
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }
-            catch (AuthenticationException)
+            catch (AccessDeniedException)
             {
                 return Forbid();
             }
@@ -98,14 +98,25 @@ namespace AMS.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _movieService.MovieEdit(id, movieEditViewModel);
+                try
+                {
+                    await _movieService.UpdateMovie(id, movieEditViewModel);
 
-                _flashMessage.Confirmation("Movie has been updated.");
-                
-                return RedirectToAction(nameof(Show), new { id });
+                    _flashMessage.Confirmation("Movie has been updated.");
+
+                    return RedirectToAction(nameof(Show), new {id});
+                }
+                catch (MovieNotFoundException)
+                {
+                    return NotFound();
+                }
+                catch (AccessDeniedException)
+                {
+                    return Forbid();
+                }
             }
 
-            movieEditViewModel = await _movieService.FillEditViewModelWithGenresAndPersons(movieEditViewModel);
+            movieEditViewModel = await _movieService.LoadGenresAndPersonsToEditViewModel(movieEditViewModel);
 
             return View(movieEditViewModel);
         }
@@ -120,7 +131,7 @@ namespace AMS.MVC.Controllers
 
                 return View(movie);
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }
@@ -137,7 +148,7 @@ namespace AMS.MVC.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
-            catch (MovieNotFound)
+            catch (MovieNotFoundException)
             {
                 return NotFound();
             }

@@ -1,5 +1,5 @@
 using System;
-using System.Linq.Expressions;
+using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
@@ -9,7 +9,9 @@ namespace AMS.MVC.Repositories
 {
     public interface IMovieStarRepository : IBaseRepository<MovieStar>
     {
-        public Task<MovieStar> GetByWithPerson(Expression<Func<MovieStar, bool>> expression);
+        public Task<MovieStar> GetMovieStarWithPersonByMovieIdAndPersonId(Guid movieId, Guid personId);
+
+        public IQueryable<Person> GetStarsAsPersons(Guid movieId);
     }
 
     public class MovieStarRepository : BaseRepository<MovieStar>, IMovieStarRepository
@@ -17,12 +19,20 @@ namespace AMS.MVC.Repositories
         public MovieStarRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
         }
-        
-        public async Task<MovieStar> GetByWithPerson(Expression<Func<MovieStar, bool>> expression)
+
+        public async Task<MovieStar> GetMovieStarWithPersonByMovieIdAndPersonId(Guid movieId, Guid personId)
         {
             return await DatabaseContext.MovieStars
                 .Include(ms => ms.Person)
-                .FirstOrDefaultAsync(expression);
+                .FirstOrDefaultAsync(ms => ms.MovieId == movieId && ms.PersonId == personId);
+        }
+
+        public IQueryable<Person> GetStarsAsPersons(Guid movieId)
+        {
+            return DatabaseContext.MovieStars
+                .Include(ms => ms.Person)
+                .Where(ms => ms.MovieId == movieId)
+                .Select(ms => ms.Person);
         }
     }
 }

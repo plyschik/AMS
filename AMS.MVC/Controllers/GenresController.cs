@@ -39,7 +39,7 @@ namespace AMS.MVC.Controllers
                 
                 return View(viewModel);
             }
-            catch (GenreNotFound)
+            catch (GenreNotFoundException)
             {
                 return NotFound();
             }
@@ -52,18 +52,18 @@ namespace AMS.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(GenreCreateViewModel viewModel)
+        public async Task<IActionResult> Create(GenreCreateViewModel genreCreateViewModel)
         {
             if (ModelState.IsValid)
             {
-                await _genreService.CreateGenre(viewModel);
+                await _genreService.CreateGenre(genreCreateViewModel);
                 
                 _flashMessage.Confirmation("Genre has been created.");
 
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(viewModel);
+            return View(genreCreateViewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
@@ -71,29 +71,36 @@ namespace AMS.MVC.Controllers
         {
             try
             {
-                var viewModel = await _genreService.GetGenreEdit(id);
+                var viewModel = await _genreService.GetEditViewModel(id);
                 
                 return View(viewModel);
             }
-            catch (GenreNotFound)
+            catch (GenreNotFoundException)
             {
                 return NotFound();
             }
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
-        public async Task<IActionResult> Edit(Guid id, GenreEditViewModel viewModel)
+        public async Task<IActionResult> Edit(Guid id, GenreEditViewModel genreEditViewModel)
         {
             if (ModelState.IsValid)
             {
-                await _genreService.GenreEdit(id, viewModel);
+                try
+                {
+                    await _genreService.UpdateGenre(id, genreEditViewModel);
                                 
-                _flashMessage.Confirmation("Genre has been updated.");
+                    _flashMessage.Confirmation("Genre has been updated.");
                 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (GenreNotFoundException)
+                {
+                    return NotFound();
+                }
             }
             
-            return View(viewModel);
+            return View(genreEditViewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
@@ -105,7 +112,7 @@ namespace AMS.MVC.Controllers
 
                 return View(genre);
             }
-            catch (GenreNotFound)
+            catch (GenreNotFoundException)
             {
                 return NotFound();
             }
@@ -115,9 +122,16 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _genreService.DeleteGenre(id);
+            try
+            {
+                await _genreService.DeleteGenre(id);
 
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (GenreNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }

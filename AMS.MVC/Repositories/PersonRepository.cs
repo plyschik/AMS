@@ -17,7 +17,8 @@ namespace AMS.MVC.Repositories
 
         public IQueryable<Person> GetAllOrderedByLastNameAscending()
         {
-            return DatabaseContext.Persons.OrderBy(p => p.LastName);
+            return DatabaseContext.Persons
+                .OrderBy(p => p.LastName);
         }
     }
 }
