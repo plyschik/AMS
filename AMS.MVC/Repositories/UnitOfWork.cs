@@ -10,6 +10,8 @@ namespace AMS.MVC.Repositories
         IGenreRepository Genres { get; }
         
         IPersonRepository Persons { get; }
+        
+        IMovieStarRepository MovieStar { get; }
 
         Task Save();
     }
@@ -20,6 +22,7 @@ namespace AMS.MVC.Repositories
         private IMovieRepository _movieRepository;
         private IGenreRepository _genreRepository;
         private IPersonRepository _personRepository;
+        private IMovieStarRepository _movieStarRepository;
 
         public IMovieRepository Movies
         {
@@ -57,6 +60,19 @@ namespace AMS.MVC.Repositories
                 }
 
                 return _personRepository;
+            }
+        }
+        
+        public IMovieStarRepository MovieStar
+        {
+            get
+            {
+                if (_movieStarRepository == null)
+                {
+                    _movieStarRepository = new MovieStarRepository(_databaseContext);
+                }
+
+                return _movieStarRepository;
             }
         }
 
