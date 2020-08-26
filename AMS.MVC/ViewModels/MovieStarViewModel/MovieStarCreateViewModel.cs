@@ -12,6 +12,7 @@ namespace AMS.MVC.ViewModels.MovieStarViewModel
         [StringLength(30, MinimumLength = 2)]
         public string Character { get; set; }
         
+        [Display(Name = "Person")]
         public string SelectedPerson { get; set; }
     }
 }

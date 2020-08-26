@@ -1,28 +1,24 @@
-@model AMS.MVC.Data.Models.Movie
+@model AMS.MVC.ViewModels.MovieViewModels.MovieShowViewModel
 
 @{
     ViewData["Title"] = "Movie details";
 
-    var canCreate = (await AuthorizationService.AuthorizeAsync(User, Model, MovieStarOperations.Create)).Succeeded;
-    var canEdit = (await AuthorizationService.AuthorizeAsync(User, Model, MovieStarOperations.Edit)).Succeeded;
-    var canDelete = (await AuthorizationService.AuthorizeAsync(User, Model, MovieStarOperations.Delete)).Succeeded;
-    
-    var genres = Model.MovieGenres.Select(mg => mg.Genre).ToList();
-    var directors = Model.MovieDirectors.Select(md => md.Person).ToList();
-    var writers = Model.MovieWriters.Select(mw => mw.Person).ToList();
+    var canCreate = (await AuthorizationService.AuthorizeAsync(User, Model.Movie, MovieStarOperations.Create)).Succeeded;
+    var canEdit = (await AuthorizationService.AuthorizeAsync(User, Model.Movie, MovieStarOperations.Edit)).Succeeded;
+    var canDelete = (await AuthorizationService.AuthorizeAsync(User, Model.Movie, MovieStarOperations.Delete)).Succeeded;
 }
 
 <div class="d-flex justify-content-between align-items-center">
     <h2 class="mb-0">Movie details</h2>
     <div>
-        @if ((await AuthorizationService.AuthorizeAsync(User, Model, MovieOperations.Edit)).Succeeded)
+        @if ((await AuthorizationService.AuthorizeAsync(User, Model.Movie, MovieOperations.Edit)).Succeeded)
         {
-            <a class="btn btn-success" asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>   
+            <a class="btn btn-success" asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.Movie.Id">Edit</a>   
         }
         
         @if (User.IsInRole("Administrator"))
         {
-            <a class="btn btn-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@Model.Id">Delete</a>   
+            <a class="btn btn-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@Model.Movie.Id">Delete</a>   
         }
     </div>
 </div>
@@ -31,57 +27,57 @@
 
 <dl class="row">
     <dt class="col-sm-2">
-        @Html.DisplayNameFor(movie => movie.Id)
+        @Html.DisplayNameFor(model => model.Movie.Id)
     </dt>
     <dd class="col-sm-10">
-        @Html.DisplayFor(movie => movie.Id)
+        @Html.DisplayFor(model => model.Movie.Id)
     </dd>
     <dt class="col-sm-2">
-        @Html.DisplayNameFor(movie => movie.Title)
+        @Html.DisplayNameFor(model => model.Movie.Title)
     </dt>
     <dd class="col-sm-10">
-        @Html.DisplayFor(movie => movie.Title)
+        @Html.DisplayFor(model => model.Movie.Title)
     </dd>
     <dt class="col-sm-2">
-        @Html.DisplayNameFor(movie => movie.Description)
+        @Html.DisplayNameFor(model => model.Movie.Description)
     </dt>
     <dd class="col-sm-10">
-        @Html.DisplayFor(movie => movie.Description)
+        @Html.DisplayFor(model => model.Movie.Description)
     </dd>
     <dt class="col-sm-2">
-        @Html.DisplayNameFor(movie => movie.ReleaseDate)
+        @Html.DisplayNameFor(model => model.Movie.ReleaseDate)
     </dt>
     <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.ReleaseDate)
+        @Html.DisplayFor(model => model.Movie.ReleaseDate)
     </dd>
     
-    @if (genres.Any())
+    @if (Model.Genres.Any())
     {
         <dt class="col-sm-2">
             Genres
         </dt>
         <dd class="col-sm-10">
-            @string.Join(", ", genres.Select(genre => genre.Name))
+            @string.Join(", ", Model.Genres.Select(genre => genre.Name))
         </dd>
     }
     
-    @if (directors.Any())
+    @if (Model.Directors.Any())
     {
         <dt class="col-sm-2">
             Directors
         </dt>
         <dd class="col-sm-10">
-            @string.Join(", ", directors.Select(person => person.FullName))
+            @string.Join(", ", Model.Directors.Select(person => person.FullName))
         </dd>
     }
     
-    @if (writers.Any())
+    @if (Model.Writers.Any())
     {
         <dt class="col-sm-2">
             Writers
         </dt>
         <dd class="col-sm-10">
-            @string.Join(", ", writers.Select(person => person.FullName))
+            @string.Join(", ", Model.Writers.Select(person => person.FullName))
         </dd>
     }
 </dl>
@@ -92,13 +88,13 @@
     
     @if (canCreate)
     {
-        <a class="btn btn-success" asp-controller="Stars" asp-action="Create" asp-route-id="@Model.Id">Create</a>
+        <a class="btn btn-success" asp-controller="Stars" asp-action="Create" asp-route-id="@Model.Movie.Id">Create</a>
     }
 </div>
 
 <hr class="my-4" />
 
-@if (!Model.MovieStars.Any())
+@if (!Model.Stars.Any())
 {
     <div class="alert alert-info" role="alert">
         Stars list is empty.
@@ -119,7 +115,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var star in Model.MovieStars)
+            @foreach (var star in Model.Stars)
             {
                 <tr class="d-flex">
                     <td class="@((canEdit || canDelete) ? "col-5" : "col-6") d-flex align-items-center">@star.Person.FullName</td>

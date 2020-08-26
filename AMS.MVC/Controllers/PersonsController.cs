@@ -1,76 +1,45 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using AMS.MVC.Data;
-using AMS.MVC.Data.Models;
-using AMS.MVC.Repositories;
+using AMS.MVC.Exceptions.Person;
+using AMS.MVC.Services;
 using AMS.MVC.ViewModels.PersonViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
 {
     public class PersonsController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly DatabaseContext _databaseContext;
+        private readonly IPersonService _personService;
         private readonly IFlashMessage _flashMessage;
 
-        public PersonsController(
-            IUnitOfWork unitOfWork,
-            DatabaseContext databaseContext,
-            IFlashMessage flashMessage
-        )
+        public PersonsController(IPersonService personService, IFlashMessage flashMessage)
         {
-            _unitOfWork = unitOfWork;
-            _databaseContext = databaseContext;
+            _personService = personService;
             _flashMessage = flashMessage;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var persons = _unitOfWork.Persons.GetAll().ToList();
+            var viewModel = await _personService.GetPersonsList();
             
-            return View(persons);
+            return View(viewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult> Show(Guid id)
         {
-            var person = await _databaseContext.Persons.FirstOrDefaultAsync(p => p.Id == id);
-
-            if (person == null)
+            try
+            {
+                var viewModel = await _personService.GetPerson(id);
+                
+                return View(viewModel);
+            }
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }
-
-            var director = await _databaseContext.Movies
-                .Include(m => m.MovieDirectors)
-                .Where(m => m.MovieDirectors.Any(md => md.PersonId == id))
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
-            
-            var writer = await _databaseContext.Movies
-                .Include(m => m.MovieWriters)
-                .Where(m => m.MovieWriters.Any(mw => mw.PersonId == id))
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
-            
-            var star = await _databaseContext.Movies
-                .Include(m => m.MovieStars)
-                .Where(m => m.MovieStars.Any(ms => ms.PersonId == id))
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
-
-            return View(new PersonShowViewModel
-            {
-                Person = person,
-                MovieDirector = director,
-                MovieWriter = writer,
-                MovieStar = star
-            });
         }
 
         [Authorize(Roles = "Manager, Administrator")]
@@ -82,45 +51,34 @@ namespace AMS.MVC.Controllers
         [HttpPost]
         [Authorize(Roles = "Manager, Administrator")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PersonCreateViewModel viewModel)
+        public async Task<IActionResult> Create(PersonCreateViewModel personCreateViewModel)
         {
             if (ModelState.IsValid)
             {
-                var person = new Person
-                {
-                    FirstName = viewModel.FirstName,
-                    LastName = viewModel.LastName,
-                    DateOfBirth = viewModel.DateOfBirth
-                };
-            
-                await _unitOfWork.Persons.Create(person);
-                await _unitOfWork.Save();
+                await _personService.CreatePerson(personCreateViewModel);
 
                 _flashMessage.Confirmation("Person has been created.");
                 
                 return RedirectToAction(nameof(Index));
             }
             
-            return View(viewModel);
+            return View(personCreateViewModel);
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
         [Authorize(Roles = "Manager, Administrator")]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
-
-            if (person == null)
+            try
+            {
+                var viewModel = await _personService.GetEditViewModel(id);
+                
+                return View(viewModel);
+            }
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }
-
-            return View(new PersonEditViewModel
-            {
-                FirstName = person.FirstName,
-                LastName = person.LastName,
-                DateOfBirth = person.DateOfBirth
-            });
         }
         
         [HttpPost]
@@ -130,21 +88,16 @@ namespace AMS.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
-
-                if (person == null)
+                try
+                {
+                    await _personService.UpdatePerson(id, viewModel);
+                    
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (PersonNotFoundException)
                 {
                     return NotFound();
                 }
-
-                person.FirstName = viewModel.FirstName;
-                person.LastName = viewModel.LastName;
-                person.DateOfBirth = viewModel.DateOfBirth;
-                
-                _unitOfWork.Persons.Update(person);
-                await _unitOfWork.Save();
-
-                return RedirectToAction(nameof(Index));
             }
 
             return View(viewModel);
@@ -154,14 +107,16 @@ namespace AMS.MVC.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
-            var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
+            try
+            {
+                var person = await _personService.GetPersonToConfirmDelete(id);
 
-            if (person == null)
+                return View(person);
+            }
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }
-
-            return View(person);
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
@@ -169,17 +124,16 @@ namespace AMS.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var person = await _unitOfWork.Persons.GetBy(p => p.Id == id);
-
-            if (person == null)
+            try
+            {
+                await _personService.DeletePerson(id);
+                
+                return RedirectToAction(nameof(Index));
+            }
+            catch (PersonNotFoundException)
             {
                 return NotFound();
             }
-
-            _unitOfWork.Persons.Delete(person);
-            await _unitOfWork.Save();
-
-            return RedirectToAction(nameof(Index));
         }
     }
 }

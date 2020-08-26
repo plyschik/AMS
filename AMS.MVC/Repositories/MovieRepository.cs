@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMS.MVC.Data;
@@ -10,11 +9,17 @@ namespace AMS.MVC.Repositories
 {
     public interface IMovieRepository : IBaseRepository<Movie>
     {
-        public Task<Movie> GetByIdWithRelations(Guid id);
+        public IQueryable<Movie> GetMoviesWithGenresOrderedByReleaseDate();
+
+        public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
+
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId);
+
+        public IQueryable<Movie> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId);
         
-        public Task<ICollection<Movie>> GetAllWithRelations();
+        public IQueryable<Movie> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId);
         
-        public Task<ICollection<Person>> GetStars(Guid movieId);
+        public IQueryable<Movie> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId);
     }
     
     public class MovieRepository : BaseRepository<Movie>, IMovieRepository
@@ -23,7 +28,15 @@ namespace AMS.MVC.Repositories
         {
         }
 
-        public async Task<Movie> GetByIdWithRelations(Guid id)
+        public IQueryable<Movie> GetMoviesWithGenresOrderedByReleaseDate()
+        {
+            return DatabaseContext.Movies
+                .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+                .OrderByDescending(m => m.ReleaseDate);
+        }
+
+        public async Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id)
         {
             return await DatabaseContext.Movies
                 .Include(m => m.MovieGenres)
@@ -36,28 +49,38 @@ namespace AMS.MVC.Repositories
                 .ThenInclude(ms => ms.Person)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
-        
-        public async Task<ICollection<Movie>> GetAllWithRelations()
+
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId)
         {
-            return await DatabaseContext.Movies
+            return DatabaseContext.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)
-                .Include(m => m.MovieDirectors)
-                .ThenInclude(md => md.Person)
-                .Include(mw => mw.MovieWriters)
-                .ThenInclude(mw => mw.Person)
-                .OrderByDescending(m => m.ReleaseDate)
-                .ToListAsync();
+                .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId))
+                .OrderByDescending(m => m.ReleaseDate);
         }
-        
-        public async Task<ICollection<Person>> GetStars(Guid movieId)
-        {
-            var movie = await DatabaseContext.Movies
-                .Include(m => m.MovieStars)
-                .ThenInclude(ms => ms.Person)
-                .FirstOrDefaultAsync(m => m.Id == movieId);
 
-            return movie.MovieStars.Select(ms => ms.Person).ToList();
+        public IQueryable<Movie> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId)
+        {
+            return DatabaseContext.Movies
+                .Include(m => m.MovieDirectors)
+                .Where(m => m.MovieDirectors.Any(md => md.PersonId == personId))
+                .OrderByDescending(m => m.ReleaseDate);
+        }
+
+        public IQueryable<Movie> GetMoviesWherePersonIsWriterOrderedByReleaseDate(Guid personId)
+        {
+            return DatabaseContext.Movies
+                .Include(m => m.MovieWriters)
+                .Where(m => m.MovieWriters.Any(mw => mw.PersonId == personId))
+                .OrderByDescending(m => m.ReleaseDate);
+        }
+
+        public IQueryable<Movie> GetMoviesWherePersonIsStarOrderedByReleaseDate(Guid personId)
+        {
+            return DatabaseContext.Movies
+                .Include(m => m.MovieStars)
+                .Where(m => m.MovieStars.Any(ms => ms.PersonId == personId))
+                .OrderByDescending(m => m.ReleaseDate);
         }
     }
 }

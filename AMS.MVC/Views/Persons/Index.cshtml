@@ -1,4 +1,4 @@
-@model ICollection<AMS.MVC.Data.Models.Person>
+@model AMS.MVC.ViewModels.PersonViewModels.PersonIndexViewModel
 
 @{
     ViewData["Title"] = "Persons list";
@@ -15,7 +15,7 @@
 
 <hr class="my-4" />
 
-@if (!Model.Any())
+@if (!Model.Persons.Any())
 {
     <div class="alert alert-info" role="alert">
         Persons list is empty.
@@ -27,16 +27,16 @@ else
         <thead class="thead-dark">
             <tr>
                 <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.First().Id)
+                    @Html.DisplayNameFor(model => model.Persons.First().Id)
                 </th>
                 <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.First().FirstName)
+                    @Html.DisplayNameFor(model => model.Persons.First().FirstName)
                 </th>
                 <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.First().LastName)
+                    @Html.DisplayNameFor(model => model.Persons.First().LastName)
                 </th>
                 <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.First().DateOfBirth)
+                    @Html.DisplayNameFor(model => model.Persons.First().DateOfBirth)
                 </th>
                 
                 @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
@@ -46,7 +46,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var person in Model)
+            @foreach (var person in Model.Persons)
             {
                 <tr>
                     <td class="align-middle">
