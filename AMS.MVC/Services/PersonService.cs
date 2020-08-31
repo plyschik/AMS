@@ -4,6 +4,7 @@ using AMS.MVC.Data.Models;
 using AMS.MVC.Exceptions.Person;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.PersonViewModels;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace AMS.MVC.Services
@@ -27,10 +28,12 @@ namespace AMS.MVC.Services
     
     public class PersonService : IPersonService
     {
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PersonService(IUnitOfWork unitOfWork)
+        public PersonService(IUnitOfWork unitOfWork, IMapper mapper)
         {
+            _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
@@ -64,12 +67,9 @@ namespace AMS.MVC.Services
 
         public async Task CreatePerson(PersonCreateViewModel viewModel)
         {
-            await _unitOfWork.Persons.Create(new Person
-            {
-                FirstName = viewModel.FirstName,
-                LastName = viewModel.LastName,
-                DateOfBirth = viewModel.DateOfBirth
-            });
+            var person = _mapper.Map<Person>(viewModel);
+            
+            await _unitOfWork.Persons.Create(person);
             await _unitOfWork.Save();
         }
 
@@ -82,12 +82,7 @@ namespace AMS.MVC.Services
                 throw new PersonNotFoundException();
             }
 
-            return new PersonEditViewModel
-            {
-                FirstName = person.FirstName,
-                LastName = person.LastName,
-                DateOfBirth = person.DateOfBirth
-            };
+            return _mapper.Map<PersonEditViewModel>(person);
         }
 
         public async Task UpdatePerson(Guid id, PersonEditViewModel viewModel)
@@ -99,10 +94,8 @@ namespace AMS.MVC.Services
                 throw new PersonNotFoundException();
             }
 
-            person.FirstName = viewModel.FirstName;
-            person.LastName = viewModel.LastName;
-            person.DateOfBirth = viewModel.DateOfBirth;
-                
+            _mapper.Map(viewModel, person);
+
             _unitOfWork.Persons.Update(person);
             await _unitOfWork.Save();
         }

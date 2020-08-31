@@ -3,6 +3,7 @@ using AMS.MVC.Data;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Repositories;
 using AMS.MVC.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,6 +43,8 @@ namespace AMS.MVC
             
             services.AddFlashMessage();
 
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+            
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IMovieService, MovieService>();

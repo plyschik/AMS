@@ -8,6 +8,7 @@ using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Movie;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieViewModels;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -42,18 +43,21 @@ namespace AMS.MVC.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
         public MovieService(
             IHttpContextAccessor httpContextAccessor,
             UserManager<ApplicationUser> userManager,
             IAuthorizationService authorizationService,
+            IMapper mapper,
             IUnitOfWork unitOfWork
         )
         {
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _authorizationService = authorizationService;
+            _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
@@ -113,14 +117,14 @@ namespace AMS.MVC.Services
 
         public async Task CreateMovie(MovieCreateViewModel viewModel)
         {
-            var movie = new Movie
+            var movie = _mapper.Map<Movie>(viewModel, options =>
             {
-                Title = viewModel.Title,
-                Description = viewModel.Description,
-                ReleaseDate = viewModel.ReleaseDate,
-                User = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User)
-            };
-
+                options.AfterMap(async (source, destination) =>
+                {
+                    destination.User = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+                });
+            });
+            
             await _unitOfWork.Movies.Create(movie);
                 
             foreach (var genreId in viewModel.SelectedGenres)
@@ -190,16 +194,21 @@ namespace AMS.MVC.Services
                 throw new AccessDeniedException();
             }
 
-            var movieEditViewModel = new MovieEditViewModel
+            var movieEditViewModel = _mapper.Map<MovieEditViewModel>(movie, options =>
             {
-                Title = movie.Title,
-                Description = movie.Description,
-                ReleaseDate = movie.ReleaseDate,
-                SelectedGenres = movie.MovieGenres.Select(mg => mg.GenreId.ToString()).ToArray(),
-                SelectedDirectors = movie.MovieDirectors.Select(md => md.PersonId.ToString()).ToArray(),
-                SelectedWriters = movie.MovieWriters.Select(mw => mw.PersonId.ToString()).ToArray()
-            };
-
+                options.AfterMap((source, destination) =>
+                {
+                    destination.SelectedGenres = movie.MovieGenres
+                        .Select(mg => mg.GenreId.ToString()).ToArray();
+                    
+                    destination.SelectedDirectors = movie.MovieDirectors
+                        .Select(md => md.PersonId.ToString()).ToArray();
+                    
+                    destination.SelectedWriters = movie.MovieWriters
+                        .Select(mw => mw.PersonId.ToString()).ToArray();
+                });
+            });
+            
             movieEditViewModel = await LoadGenresAndPersonsToEditViewModel(movieEditViewModel);
             
             return movieEditViewModel;
@@ -224,11 +233,9 @@ namespace AMS.MVC.Services
             {
                 throw new AuthenticationException();
             }
-            
-            movie.Title = viewModel.Title;
-            movie.Description = viewModel.Description;
-            movie.ReleaseDate = viewModel.ReleaseDate;
-            
+
+            _mapper.Map(viewModel, movie);
+
             var attachedGenreIds = movie.MovieGenres.Select(mg => mg.GenreId.ToString()).ToArray();
             var selectedGenreIds = viewModel.SelectedGenres ??= new string[] {};
             var genresIdsToAttach = selectedGenreIds.Except(attachedGenreIds).ToArray();

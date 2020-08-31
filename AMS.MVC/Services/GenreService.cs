@@ -4,6 +4,7 @@ using AMS.MVC.Data.Models;
 using AMS.MVC.Exceptions.Genre;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.GenreViewModels;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace AMS.MVC.Services
@@ -27,10 +28,12 @@ namespace AMS.MVC.Services
     
     public class GenreService : IGenreService
     {
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-
-        public GenreService(IUnitOfWork unitOfWork)
+        
+        public GenreService(IMapper mapper, IUnitOfWork unitOfWork)
         {
+            _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
@@ -64,10 +67,9 @@ namespace AMS.MVC.Services
 
         public async Task CreateGenre(GenreCreateViewModel viewModel)
         {
-            await _unitOfWork.Genres.Create(new Genre
-            {
-                Name = viewModel.Name
-            });
+            var genre = _mapper.Map<Genre>(viewModel);
+            
+            await _unitOfWork.Genres.Create(genre);
             await _unitOfWork.Save();
         }
 
@@ -80,10 +82,7 @@ namespace AMS.MVC.Services
                 throw new GenreNotFoundException();
             }
 
-            return new GenreEditViewModel
-            {
-                Name = genre.Name
-            };
+            return _mapper.Map<GenreEditViewModel>(genre);
         }
 
         public async Task UpdateGenre(Guid id, GenreEditViewModel viewModel)
@@ -95,8 +94,8 @@ namespace AMS.MVC.Services
                 throw new GenreNotFoundException();
             }
 
-            genre.Name = viewModel.Name;
-
+            _mapper.Map(viewModel, genre);
+            
             _unitOfWork.Genres.Update(genre);
             await _unitOfWork.Save();
         }

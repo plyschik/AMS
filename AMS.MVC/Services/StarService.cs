@@ -7,6 +7,7 @@ using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Movie;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieStarViewModel;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -36,16 +37,19 @@ namespace AMS.MVC.Services
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
         public StarService(
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
+            IMapper mapper,
             IUnitOfWork unitOfWork
         )
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
@@ -108,12 +112,10 @@ namespace AMS.MVC.Services
             {
                 throw new AccessDeniedException();
             }
+
+            var movieStar = _mapper.Map<MovieStar>(viewModel);
             
-            movie.MovieStars.Add(new MovieStar
-            {
-                PersonId = Guid.Parse(viewModel.SelectedPerson),
-                Character = viewModel.Character
-            });
+            movie.MovieStars.Add(movieStar);
 
             await _unitOfWork.Save();
         }
@@ -142,10 +144,7 @@ namespace AMS.MVC.Services
                 ms => ms.MovieId == movieId && ms.PersonId == personId
             );
 
-            return new MovieStarEditViewModel
-            {
-                Character = movieStar.Character 
-            };
+            return _mapper.Map<MovieStarEditViewModel>(movieStar);
         }
 
         public async Task UpdateMovieStar(Guid movieId, Guid personId, MovieStarEditViewModel viewModel)
@@ -171,8 +170,8 @@ namespace AMS.MVC.Services
             var movieStar = await _unitOfWork.MovieStar.GetBy(
                 ms => ms.MovieId == movieId && ms.PersonId == personId    
             );
-            
-            movieStar.Character = viewModel.Character;
+
+            _mapper.Map(viewModel, movieStar);
             
             await _unitOfWork.Save();
         }
