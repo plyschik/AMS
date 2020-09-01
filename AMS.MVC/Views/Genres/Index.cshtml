@@ -1,4 +1,5 @@
 @model AMS.MVC.ViewModels.GenreViewModels.GenreIndexViewModel
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Genres list";
@@ -64,5 +65,7 @@ else
                 </tr>
             }
         </tbody>
-    </table>    
+    </table>
+    
+    <vc:pager paging-list="@Model.Genres" />
 }

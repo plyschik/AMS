@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using AMS.MVC.Data.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.ViewModels.PersonViewModels
 {
     public class PersonIndexViewModel
     {
-        public ICollection<Person> Persons { get; set; }
+        public PagingList<Person> Persons { get; set; }
     }
 }

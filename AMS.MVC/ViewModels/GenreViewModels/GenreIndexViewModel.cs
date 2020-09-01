@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using AMS.MVC.Data.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.ViewModels.GenreViewModels
 {
     public class GenreIndexViewModel
     {
-        public ICollection<Genre> Genres { get; set; }
+        public PagingList<Genre> Genres { get; set; }
     }
 }

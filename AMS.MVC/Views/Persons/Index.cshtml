@@ -1,4 +1,5 @@
 @model AMS.MVC.ViewModels.PersonViewModels.PersonIndexViewModel
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Persons list";
@@ -25,54 +26,56 @@ else
 {
     <table class="table">
         <thead class="thead-dark">
-            <tr>
-                <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.Persons.First().Id)
-                </th>
-                <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.Persons.First().FirstName)
-                </th>
-                <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.Persons.First().LastName)
-                </th>
-                <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.Persons.First().DateOfBirth)
-                </th>
+        <tr>
+            <th class="align-middle">
+                @Html.DisplayNameFor(model => model.Persons.First().Id)
+            </th>
+            <th class="align-middle">
+                @Html.DisplayNameFor(model => model.Persons.First().FirstName)
+            </th>
+            <th class="align-middle">
+                @Html.DisplayNameFor(model => model.Persons.First().LastName)
+            </th>
+            <th class="align-middle">
+                @Html.DisplayNameFor(model => model.Persons.First().DateOfBirth)
+            </th>
                 
-                @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
-                {
-                    <th></th>   
-                }
-            </tr>
+            @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
+            {
+                <th></th>   
+            }
+        </tr>
         </thead>
         <tbody>
-            @foreach (var person in Model.Persons)
-            {
-                <tr>
-                    <td class="align-middle">
-                        <a asp-controller="Persons" asp-action="Show" asp-route-id="@person.Id">
-                            @Html.DisplayFor(model => person.Id)
-                        </a>
-                    </td>
-                    <td class="align-middle">
-                        @Html.DisplayFor(model => person.FirstName)
-                    </td>
-                    <td class="align-middle">
-                        @Html.DisplayFor(model => person.LastName)
-                    </td>
-                    <td class="align-middle">
-                        @Html.DisplayFor(model => person.DateOfBirth)
-                    </td>
+        @foreach (var person in Model.Persons)
+        {
+            <tr>
+                <td class="align-middle">
+                    <a asp-controller="Persons" asp-action="Show" asp-route-id="@person.Id">
+                        @Html.DisplayFor(model => person.Id)
+                    </a>
+                </td>
+                <td class="align-middle">
+                    @Html.DisplayFor(model => person.FirstName)
+                </td>
+                <td class="align-middle">
+                    @Html.DisplayFor(model => person.LastName)
+                </td>
+                <td class="align-middle">
+                    @Html.DisplayFor(model => person.DateOfBirth)
+                </td>
                     
-                    @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
-                    {
-                        <td class="align-middle">
-                            <a class="btn btn-primary" asp-controller="Persons" asp-action="Edit" asp-route-id="@person.Id">Edit</a>
-                            <a class="btn btn-danger" asp-controller="Persons" asp-action="ConfirmDelete" asp-route-id="@person.Id">Delete</a>
-                        </td>   
-                    }
-                </tr>
-            }
+                @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
+                {
+                    <td class="align-middle">
+                        <a class="btn btn-primary" asp-controller="Persons" asp-action="Edit" asp-route-id="@person.Id">Edit</a>
+                        <a class="btn btn-danger" asp-controller="Persons" asp-action="ConfirmDelete" asp-route-id="@person.Id">Delete</a>
+                    </td>   
+                }
+            </tr>
+        }
         </tbody>
     </table>
+    
+    <vc:pager paging-list="@Model.Persons" />
 }

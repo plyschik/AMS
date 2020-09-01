@@ -22,9 +22,9 @@ namespace AMS.MVC.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public IActionResult Index(int page = 1)
         {
-            var viewModel = await _genreService.GetGenresList();
+            var viewModel = _genreService.GetGenresList(page);
             
             return View(viewModel);
         }

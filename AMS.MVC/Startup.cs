@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReflectionIT.Mvc.Paging;
 using Vereyon.Web;
 
 namespace AMS.MVC
@@ -44,6 +45,12 @@ namespace AMS.MVC
             services.AddFlashMessage();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
+            
+            services.AddPaging(options =>
+            {
+                options.PageParameterName = "page";
+                options.ViewName = "Bootstrap4";
+            });
             
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

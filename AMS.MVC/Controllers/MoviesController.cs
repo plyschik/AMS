@@ -21,9 +21,9 @@ namespace AMS.MVC.Controllers
             _flashMessage = flashMessage;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(int page = 1)
         {
-            var viewModel = await _movieService.GetMoviesList();
+            var viewModel = _movieService.GetMoviesList(page);
             
             return View(viewModel);
         }

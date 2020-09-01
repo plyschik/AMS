@@ -6,12 +6,13 @@ using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.PersonViewModels;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.Services
 {
     public interface IPersonService
     {
-        public Task<PersonIndexViewModel> GetPersonsList();
+        public PersonIndexViewModel GetPersonsList(int page);
 
         public Task<PersonShowViewModel> GetPerson(Guid id);
         
@@ -37,13 +38,15 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PersonIndexViewModel> GetPersonsList()
+        public PersonIndexViewModel GetPersonsList(int page)
         {
-            var persons = await _unitOfWork.Persons.GetAllOrderedByLastNameAscending().ToListAsync();
-
             return new PersonIndexViewModel
             {
-                Persons = persons
+                Persons = PagingList.Create(
+                    _unitOfWork.Persons.GetAllOrderedByLastNameAscending(),
+                    5,
+                    page
+                )
             };
         }
 

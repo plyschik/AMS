@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using AMS.MVC.Data.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.ViewModels.MovieViewModels
 {
     public class MovieIndexViewModel
     {
-        public ICollection<Movie> Movies { get; set; }
+        public PagingList<Movie> Movies { get; set; }
     }
 }

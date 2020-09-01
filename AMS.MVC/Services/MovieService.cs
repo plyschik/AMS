@@ -14,12 +14,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.Services
 {
     public interface IMovieService
     {
-        public Task<MovieIndexViewModel> GetMoviesList();
+        public MovieIndexViewModel GetMoviesList(int page);
 
         public Task<MovieShowViewModel> GetMovie(Guid id);
 
@@ -61,13 +62,15 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<MovieIndexViewModel> GetMoviesList()
+        public MovieIndexViewModel GetMoviesList(int page = 1)
         {
-            var movies = await _unitOfWork.Movies.GetMoviesWithGenresOrderedByReleaseDate().ToListAsync();
-
             return new MovieIndexViewModel
             {
-                Movies = movies
+                Movies = PagingList.Create(
+                    _unitOfWork.Movies.GetMoviesWithGenresOrderedByReleaseDate(),
+                    5,
+                    page
+                )
             };
         }
 
