@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Person;
 using AMS.MVC.Services;
 using AMS.MVC.ViewModels.PersonViewModels;
@@ -20,11 +21,18 @@ namespace AMS.MVC.Controllers
             _flashMessage = flashMessage;
         }
 
-        public IActionResult Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var viewModel = _personService.GetPersonsList(page);
-            
-            return View(viewModel);
+            try
+            {
+                var viewModel = await _personService.GetPersonsList(page);
+
+                return View(viewModel);
+            }
+            catch (PageNumberOutOfRangeException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]

@@ -1,10 +1,10 @@
 using AMS.MVC.Data.Models;
-using ReflectionIT.Mvc.Paging;
+using AMS.MVC.Helpers;
 
 namespace AMS.MVC.ViewModels.MovieViewModels
 {
     public class MovieIndexViewModel
     {
-        public PagingList<Movie> Movies { get; set; }
+        public Paginator<Movie> Paginator { get; set; }
     }
 }

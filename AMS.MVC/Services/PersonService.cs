@@ -2,17 +2,17 @@ using System;
 using System.Threading.Tasks;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Exceptions.Person;
+using AMS.MVC.Helpers;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.PersonViewModels;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.Services
 {
     public interface IPersonService
     {
-        public PersonIndexViewModel GetPersonsList(int page);
+        public Task<PersonIndexViewModel> GetPersonsList(int page);
 
         public Task<PersonShowViewModel> GetPerson(Guid id);
         
@@ -38,14 +38,14 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public PersonIndexViewModel GetPersonsList(int page)
+        public async Task<PersonIndexViewModel> GetPersonsList(int page)
         {
             return new PersonIndexViewModel
             {
-                Persons = PagingList.Create(
+                Paginator = await new Paginator<Person>().Create(
                     _unitOfWork.Persons.GetAllOrderedByLastNameAscending(),
-                    5,
-                    page
+                    page,
+                    5
                 )
             };
         }

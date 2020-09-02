@@ -1,5 +1,4 @@
 @model AMS.MVC.ViewModels.PersonViewModels.PersonIndexViewModel
-@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Persons list";
@@ -16,7 +15,7 @@
 
 <hr class="my-4" />
 
-@if (!Model.Persons.Any())
+@if (!Model.Paginator.Elements.Any())
 {
     <div class="alert alert-info" role="alert">
         Persons list is empty.
@@ -28,16 +27,16 @@ else
         <thead class="thead-dark">
         <tr>
             <th class="align-middle">
-                @Html.DisplayNameFor(model => model.Persons.First().Id)
+                @Html.DisplayNameFor(model => model.Paginator.Elements.First().Id)
             </th>
             <th class="align-middle">
-                @Html.DisplayNameFor(model => model.Persons.First().FirstName)
+                @Html.DisplayNameFor(model => model.Paginator.Elements.First().FirstName)
             </th>
             <th class="align-middle">
-                @Html.DisplayNameFor(model => model.Persons.First().LastName)
+                @Html.DisplayNameFor(model => model.Paginator.Elements.First().LastName)
             </th>
             <th class="align-middle">
-                @Html.DisplayNameFor(model => model.Persons.First().DateOfBirth)
+                @Html.DisplayNameFor(model => model.Paginator.Elements.First().DateOfBirth)
             </th>
                 
             @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
@@ -47,7 +46,7 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var person in Model.Persons)
+        @foreach (var person in Model.Paginator.Elements)
         {
             <tr>
                 <td class="align-middle">
@@ -77,5 +76,21 @@ else
         </tbody>
     </table>
     
-    <vc:pager paging-list="@Model.Persons" />
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            @if (Model.Paginator.HasPreviousPage)
+            {
+                <a asp-controller="Persons" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage - 1)" class="btn btn-primary">Previous</a>
+            }
+        </div>
+        <div>
+            Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
+        </div>
+        <div>
+            @if (Model.Paginator.HasNextPage)
+            {
+                <a asp-controller="Persons" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage + 1)" class="btn btn-primary">Next</a>
+            }            
+        </div>
+    </div>
 }

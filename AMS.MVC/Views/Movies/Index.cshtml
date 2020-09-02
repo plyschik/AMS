@@ -1,5 +1,4 @@
 @model AMS.MVC.ViewModels.MovieViewModels.MovieIndexViewModel
-@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Movies list";
@@ -16,7 +15,7 @@
 
 <hr class="my-4" />
 
-@if (!Model.Movies.Any())
+@if (!Model.Paginator.Elements.Any())
 {
     <div class="alert alert-info" role="alert">
         Movies list is empty.
@@ -24,7 +23,7 @@
 }
 else
 {
-    @foreach (var movie in Model.Movies)
+    @foreach (var movie in Model.Paginator.Elements)
     {
         var genres = movie.MovieGenres.Select(mg => mg.Genre).ToList();
 
@@ -66,5 +65,21 @@ else
         </div>   
     }
     
-    <vc:pager paging-list="@Model.Movies" />
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            @if (Model.Paginator.HasPreviousPage)
+            {
+                <a asp-controller="Movies" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage - 1)" class="btn btn-primary">Previous</a>
+            }
+        </div>
+        <div>
+            Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
+        </div>
+        <div>
+            @if (Model.Paginator.HasNextPage)
+            {
+                <a asp-controller="Movies" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage + 1)" class="btn btn-primary">Next</a>
+            }            
+        </div>
+    </div>
 }

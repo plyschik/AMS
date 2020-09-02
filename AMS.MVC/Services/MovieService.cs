@@ -6,6 +6,7 @@ using AMS.MVC.Authorization;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Exceptions;
 using AMS.MVC.Exceptions.Movie;
+using AMS.MVC.Helpers;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.MovieViewModels;
 using AutoMapper;
@@ -14,13 +15,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.Services
 {
     public interface IMovieService
     {
-        public MovieIndexViewModel GetMoviesList(int page);
+        public Task<MovieIndexViewModel> GetMoviesList(int page);
 
         public Task<MovieShowViewModel> GetMovie(Guid id);
 
@@ -62,14 +62,14 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public MovieIndexViewModel GetMoviesList(int page = 1)
+        public async Task<MovieIndexViewModel> GetMoviesList(int page)
         {
             return new MovieIndexViewModel
             {
-                Movies = PagingList.Create(
+                Paginator = await new Paginator<Movie>().Create(
                     _unitOfWork.Movies.GetMoviesWithGenresOrderedByReleaseDate(),
-                    5,
-                    page
+                    page,
+                    5
                 )
             };
         }

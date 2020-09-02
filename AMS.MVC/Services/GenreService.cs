@@ -2,17 +2,17 @@ using System;
 using System.Threading.Tasks;
 using AMS.MVC.Data.Models;
 using AMS.MVC.Exceptions.Genre;
+using AMS.MVC.Helpers;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.GenreViewModels;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ReflectionIT.Mvc.Paging;
 
 namespace AMS.MVC.Services
 {
     public interface IGenreService
     {
-        public GenreIndexViewModel GetGenresList(int page);
+        public Task<GenreIndexViewModel> GetGenresList(int page);
 
         public Task<GenreShowViewModel> GetGenreWithMovies(Guid id);
 
@@ -38,14 +38,14 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public GenreIndexViewModel GetGenresList(int page)
+        public async Task<GenreIndexViewModel> GetGenresList(int page)
         {
             return new GenreIndexViewModel
             {
-                Genres = PagingList.Create(
+                Paginator = await new Paginator<Genre>().Create(
                     _unitOfWork.Genres.GetAllOrderedByNameAscending(),
-                    5,
-                    page
+                    page,
+                    5
                 )
             };
         }
