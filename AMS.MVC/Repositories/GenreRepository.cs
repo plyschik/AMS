@@ -6,7 +6,7 @@ namespace AMS.MVC.Repositories
 {
     public interface IGenreRepository : IBaseRepository<Genre>
     {
-        public IQueryable<Genre> GetAllOrderedByNameAscending();
+        public IQueryable<Genre> GetAllOrderedBy(string sort, string order);
     }
 
     public class GenreRepository : BaseRepository<Genre>, IGenreRepository
@@ -15,10 +15,25 @@ namespace AMS.MVC.Repositories
         {
         }
 
-        public IQueryable<Genre> GetAllOrderedByNameAscending()
+        public IQueryable<Genre> GetAllOrderedBy(string sort, string order)
         {
-            return DatabaseContext.Genres
-                .OrderBy(g => g.Name);
+            IQueryable<Genre> queryable = DatabaseContext.Genres;
+
+            switch (sort)
+            {
+                case "name":
+                    queryable = order == "asc"
+                        ? queryable.OrderBy(g => g.Name)
+                        : queryable.OrderByDescending(g => g.Name);
+                    
+                    break;
+                default:
+                    queryable = queryable.OrderBy(g => g.Name);
+                    
+                    break;
+            }
+
+            return queryable;
         }
     }
 }

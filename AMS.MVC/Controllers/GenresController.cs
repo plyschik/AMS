@@ -23,11 +23,15 @@ namespace AMS.MVC.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, string sort = "name", string order = "asc")
         {
             try
             {
-                var viewModel = await _genreService.GetGenresList(page);
+                ViewData["page"] = page;
+                ViewData["sort"] = sort;
+                ViewData["order"] = order;
+                
+                var viewModel = await _genreService.GetGenresList(page, sort, order);
 
                 return View(viewModel);
             }

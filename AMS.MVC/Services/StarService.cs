@@ -81,7 +81,7 @@ namespace AMS.MVC.Services
                 viewModel = new MovieStarCreateViewModel();
             }
             
-            var persons = await _unitOfWork.Persons.GetAllOrderedByLastNameAscending().ToListAsync();
+            var persons = await _unitOfWork.Persons.GetAllOrderedBy("last_name", "asc").ToListAsync();
             var stars = await _unitOfWork.MovieStar.GetStarsAsPersons(movieId).ToListAsync();
 
             viewModel.Persons = persons.Except(stars).Select(person => new SelectListItem

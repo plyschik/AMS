@@ -12,7 +12,7 @@ namespace AMS.MVC.Services
 {
     public interface IGenreService
     {
-        public Task<GenreIndexViewModel> GetGenresList(int page);
+        public Task<GenreIndexViewModel> GetGenresList(int page, string sort, string order);
 
         public Task<GenreShowViewModel> GetGenreWithMovies(Guid id);
 
@@ -38,12 +38,12 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<GenreIndexViewModel> GetGenresList(int page)
+        public async Task<GenreIndexViewModel> GetGenresList(int page, string sort, string order)
         {
             return new GenreIndexViewModel
             {
                 Paginator = await new Paginator<Genre>().Create(
-                    _unitOfWork.Genres.GetAllOrderedByNameAscending(),
+                    _unitOfWork.Genres.GetAllOrderedBy(sort, order),
                     page,
                     5
                 )

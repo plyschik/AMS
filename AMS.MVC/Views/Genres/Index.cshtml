@@ -2,6 +2,20 @@
 
 @{
     ViewData["Title"] = "Genres list";
+    
+    string nameOrder;
+    var nameArrow = "";
+
+    if ((string) ViewData["sort"] == "name")
+    {
+        nameOrder = (string) ViewData["order"] == "asc" ? "desc" : "asc";
+        nameArrow = (string) ViewData["order"] == "asc" ? "▲" : "▼";
+    }
+    else
+    {
+        nameOrder = "asc";
+    }
+
 }
 
 <div class="d-flex justify-content-between align-items-center">
@@ -30,7 +44,9 @@ else
                     @Html.DisplayNameFor(model => Model.Paginator.Elements.First().Id)
                 </th>
                 <th class="align-middle">
-                    @Html.DisplayNameFor(model => model.Paginator.Elements.First().Name)
+                    <a asp-controller="Genres" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-sort="name" asp-route-order="@nameOrder" class="text-decoration-none text-white">
+                        @Html.DisplayNameFor(model => model.Paginator.Elements.First().Name) @nameArrow    
+                    </a>
                 </th>
                 
                 @if (User.IsInRole("Administrator"))
@@ -70,7 +86,7 @@ else
         <div>
             @if (Model.Paginator.HasPreviousPage)
             {
-                <a asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage - 1)" class="btn btn-primary">Previous</a>
+                <a asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage - 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" class="btn btn-primary">Previous</a>
             }
         </div>
         <div>
@@ -79,7 +95,7 @@ else
         <div>
             @if (Model.Paginator.HasNextPage)
             {
-                <a asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage + 1)" class="btn btn-primary">Next</a>
+                <a asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage + 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" class="btn btn-primary">Next</a>
             }            
         </div>
     </div>

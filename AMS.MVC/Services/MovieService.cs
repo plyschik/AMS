@@ -20,7 +20,7 @@ namespace AMS.MVC.Services
 {
     public interface IMovieService
     {
-        public Task<MovieIndexViewModel> GetMoviesList(int page);
+        public Task<MovieIndexViewModel> GetMoviesList(int page, string sort, string order);
 
         public Task<MovieShowViewModel> GetMovie(Guid id);
 
@@ -62,12 +62,12 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<MovieIndexViewModel> GetMoviesList(int page)
+        public async Task<MovieIndexViewModel> GetMoviesList(int page, string sort, string order)
         {
             return new MovieIndexViewModel
             {
                 Paginator = await new Paginator<Movie>().Create(
-                    _unitOfWork.Movies.GetMoviesWithGenresOrderedByReleaseDate(),
+                    _unitOfWork.Movies.GetMoviesWithGenresOrderedBy(sort, order),
                     page,
                     5
                 )
@@ -100,8 +100,8 @@ namespace AMS.MVC.Services
                 viewModel = new MovieCreateViewModel();
             }
             
-            var genres = await _unitOfWork.Genres.GetAllOrderedByNameAscending().ToListAsync();
-            var persons = await _unitOfWork.Persons.GetAllOrderedByLastNameAscending().ToListAsync();
+            var genres = await _unitOfWork.Genres.GetAllOrderedBy("name", "desc").ToListAsync();
+            var persons = await _unitOfWork.Persons.GetAllOrderedBy("last_name", "asc").ToListAsync();
 
             viewModel.Genres = genres.Select(genre => new SelectListItem
             {
@@ -159,8 +159,8 @@ namespace AMS.MVC.Services
 
         public async Task<MovieEditViewModel> LoadGenresAndPersonsToEditViewModel(MovieEditViewModel viewModel)
         {
-            var genres = await _unitOfWork.Genres.GetAllOrderedByNameAscending().ToListAsync();
-            var persons = await _unitOfWork.Persons.GetAllOrderedByLastNameAscending().ToListAsync();
+            var genres = await _unitOfWork.Genres.GetAllOrderedBy("name", "desc").ToListAsync();
+            var persons = await _unitOfWork.Persons.GetAllOrderedBy("last_name", "asc").ToListAsync();
 
             viewModel.Genres = genres.Select(genre => new SelectListItem
             {
