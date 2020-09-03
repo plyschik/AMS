@@ -13,7 +13,7 @@ namespace AMS.MVC.Repositories
 
         public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
 
-        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId);
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedBy(Guid genreId, string sort, string order);
 
         public IQueryable<Movie> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId);
         
@@ -48,6 +48,10 @@ namespace AMS.MVC.Repositories
                         : queryable.OrderByDescending(m => m.ReleaseDate);
                     
                     break;
+                default:
+                    queryable = queryable.OrderByDescending(m => m.ReleaseDate);
+                    
+                    break;
             }
 
             return queryable;
@@ -67,13 +71,34 @@ namespace AMS.MVC.Repositories
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
-        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedByReleaseDate(Guid genreId)
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedBy(Guid genreId, string sort, string order)
         {
-            return DatabaseContext.Movies
+            IQueryable<Movie> queryable = DatabaseContext.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)
-                .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId))
-                .OrderByDescending(m => m.ReleaseDate);
+                .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId));
+
+            switch (sort)
+            {
+                case "title":
+                    queryable = order == "asc"
+                        ? queryable.OrderBy(m => m.Title)
+                        : queryable.OrderByDescending(m => m.Title);
+                    
+                    break;
+                case "release_date":
+                    queryable = order == "asc"
+                        ? queryable.OrderBy(m => m.ReleaseDate)
+                        : queryable.OrderByDescending(m => m.ReleaseDate);
+                    
+                    break;
+                default:
+                    queryable = queryable.OrderByDescending(m => m.ReleaseDate);
+                    
+                    break;
+            }
+            
+            return queryable;
         }
 
         public IQueryable<Movie> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId)

@@ -8,7 +8,7 @@ namespace AMS.MVC.Data.Models
     public class Person
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Display(Name = "#")]
+        [Display(Name = "GUID")]
         public Guid Id { get; set; }
         
         [Required]

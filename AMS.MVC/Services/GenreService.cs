@@ -14,7 +14,7 @@ namespace AMS.MVC.Services
     {
         public Task<GenreIndexViewModel> GetGenresList(int page, string sort, string order);
 
-        public Task<GenreShowViewModel> GetGenreWithMovies(Guid id);
+        public Task<GenreShowViewModel> GetGenreWithMovies(Guid id, int page, string sort, string order);
 
         public Task CreateGenre(GenreCreateViewModel viewModel);
 
@@ -50,7 +50,7 @@ namespace AMS.MVC.Services
             };
         }
 
-        public async Task<GenreShowViewModel> GetGenreWithMovies(Guid id)
+        public async Task<GenreShowViewModel> GetGenreWithMovies(Guid id, int page, string sort, string order)
         {
             var genre = await _unitOfWork.Genres.GetBy(g => g.Id == id);
 
@@ -58,13 +58,15 @@ namespace AMS.MVC.Services
             {
                 throw new GenreNotFoundException();
             }
-
-            var movies = await _unitOfWork.Movies.GetMoviesWithGenresFromGenreOrderedByReleaseDate(genre.Id).ToListAsync();
-
+            
             return new GenreShowViewModel
             {
                 Genre = genre,
-                Movies = movies
+                Paginator = await new Paginator<Movie>().Create(
+                    _unitOfWork.Movies.GetMoviesWithGenresFromGenreOrderedBy(genre.Id, sort, order),
+                    page,
+                    5
+                )
             };
         }
 

@@ -2,13 +2,53 @@
 
 @{
     ViewData["Title"] = "Genre movies";
+    
+    var titleActive = false;
+    var titleOrder = "asc";
+    var titleArrow = "";
+    
+    if ((string) ViewData["sort"] == "title")
+    {
+        titleActive = true;
+        titleOrder = (string) ViewData["order"] == "asc" ? "desc" : "asc";
+        titleArrow = (string) ViewData["order"] == "asc" ? "▲" : "▼";
+    }
+
+    var releaseDateActive = false;
+    var releaseDateOrder = "asc";
+    var releaseDateArrow = "";
+    
+    if ((string) ViewData["sort"] == "release_date")
+    {
+        releaseDateActive = true;
+        releaseDateOrder = (string) ViewData["order"] == "asc" ? "desc" : "asc";
+        releaseDateArrow = (string) ViewData["order"] == "asc" ? "▲" : "▼";
+    }
+    
+    var isFirstDisabled = Model.Paginator.CurrentPage == 1;
+    var isPreviousDisabled = Model.Paginator.CurrentPage - 1 < 1;
+    var isNextDisabled = Model.Paginator.CurrentPage + 1 > Model.Paginator.TotalPages;
+    var isLastDisabled = Model.Paginator.CurrentPage == Model.Paginator.TotalPages;
 }
 
 <h2 class="mb-0">Movies from genre: @Model.Genre.Name</h2>
 
 <hr class="my-4" />
 
-@if (!Model.Movies.Any())
+<div class="mb-4 d-flex align-items-center">
+    <span class="mr-2">Sort by:</span>
+    <ul class="mb-0 list-inline">
+        <li class="list-inline-item">
+            <a class="@(titleActive ? "font-weight-bold" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@ViewData["page"]" asp-route-sort="title" asp-route-order="@titleOrder">Title @titleArrow</a>
+        </li>
+        <li class="list-inline-item">
+            <a class="@(releaseDateActive ? "font-weight-bold" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@ViewData["page"]" asp-route-sort="release_date" asp-route-order="@releaseDateOrder">Release date @releaseDateArrow</a>
+        </li>
+    </ul>
+</div>
+
+
+@if (!Model.Paginator.Elements.Any())
 {
     <div class="alert alert-info" role="alert">
         Movies list is empty.
@@ -16,22 +56,22 @@
 }
 else
 {
-    @foreach (var movie in Model.Movies)
+    @foreach (var movie in Model.Paginator.Elements)
     {
         var genres = movie.MovieGenres.Select(mg => mg.Genre).ToList();
 
-        <div class="card mb-4">
+        <div class="mb-4 card">
             <div class="card-body">
-                <h5 class="card-title mb-3 text">
-                    @Html.DisplayFor(movies => movie.Title)
+                <h5 class="mb-3 card-title">
+                    @Html.DisplayFor(movies => movie.Title) (@Html.DisplayFor(movies => movie.ReleaseDate.Year))
                 </h5>
                 
                 @if (genres.Any())
                 {
-                    <h6 class="card-subtitle mb-3">
+                    <h6 class="mb-3 card-subtitle">
                         @foreach (var genre in genres)
                         {
-                            <a asp-controller="Genres" asp-action="Show" asp-route-genreId="@genre.Id" class="badge badge-primary">@genre.Name</a>
+                            <a class="badge badge-primary" asp-controller="Genres" asp-action="Show" asp-route-genreId="@genre.Id">@genre.Name</a>
                         }
                     </h6>
                 }
@@ -51,6 +91,23 @@ else
                 {
                     <a class="card-link" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
                 }
+            </div>
+        </div>   
+    }
+    
+    @if (Model.Paginator.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            <div>
+                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="1" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">First</a>
+                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@(Model.Paginator.CurrentPage - 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Previous</a>
+            </div>
+            <div class="mx-2">
+                Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
+            </div>
+            <div>
+                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@(Model.Paginator.CurrentPage + 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Next</a>
+                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@Model.Paginator.TotalPages" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Last</a>
             </div>
         </div>   
     }

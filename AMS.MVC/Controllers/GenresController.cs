@@ -43,15 +43,23 @@ namespace AMS.MVC.Controllers
 
         [HttpGet("[controller]/[action]/{id:guid}")]
         [Authorize]
-        public async Task<IActionResult> Show(Guid id)
+        public async Task<IActionResult> Show(Guid id, int page = 1, string sort = "release_date", string order = "desc")
         {
             try
             {
-                var viewModel = await _genreService.GetGenreWithMovies(id);
-                
+                ViewData["page"] = page;
+                ViewData["sort"] = sort;
+                ViewData["order"] = order;
+
+                var viewModel = await _genreService.GetGenreWithMovies(id, page, sort, order);
+
                 return View(viewModel);
             }
             catch (GenreNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (PageNumberOutOfRangeException)
             {
                 return NotFound();
             }
