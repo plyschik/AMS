@@ -29,10 +29,10 @@
             
             @if (Model.MovieDirector.Any())
             {
-                <ul class="list-group mb-3">
+                <ul class="mb-3 list-group">
                     @foreach (var movie in Model.MovieDirector)
                     {
-                        <a asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id" class="list-group-item list-group-item-action">
+                        <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
                             @movie.Title
                         </a>
                     }
@@ -52,7 +52,7 @@
                 <ul class="list-group mb-3">
                     @foreach (var movie in Model.MovieWriter)
                     {
-                        <a asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id" class="list-group-item list-group-item-action">
+                        <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
                             @movie.Title
                         </a>   
                     }
@@ -72,12 +72,11 @@
                 <ul class="list-group">
                     @foreach (var movie in Model.MovieStar)
                     {
-                        <a asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id" class="list-group-item list-group-item-action">
+                        <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
                             @movie.Title
                         </a>
                     }
                 </ul>
-                
             }
             else
             {

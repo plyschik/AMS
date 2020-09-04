@@ -40,7 +40,6 @@ namespace AMS.MVC.Controllers
         }
         
         [HttpGet("[controller]/[action]/{id:guid}")]
-        [Authorize]
         public async Task<IActionResult> Show(Guid id)
         {
             try

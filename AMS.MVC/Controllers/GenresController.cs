@@ -10,7 +10,6 @@ using Vereyon.Web;
 
 namespace AMS.MVC.Controllers
 {
-    [Authorize(Roles = "Administrator")]
     public class GenresController : Controller
     {
         private readonly IGenreService _genreService;
@@ -21,8 +20,7 @@ namespace AMS.MVC.Controllers
             _genreService = genreService;
             _flashMessage = flashMessage;
         }
-
-        [AllowAnonymous]
+        
         public async Task<IActionResult> Index(int page = 1, string sort = "name", string order = "asc")
         {
             try
@@ -65,12 +63,14 @@ namespace AMS.MVC.Controllers
             }
         }
         
+        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GenreCreateViewModel genreCreateViewModel)
         {
@@ -87,6 +87,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(Guid id)
         {
             try
@@ -102,6 +103,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(Guid id, GenreEditViewModel genreEditViewModel)
         {
             if (ModelState.IsValid)
@@ -124,6 +126,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpGet("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> ConfirmDelete(Guid id)
         {
             try
@@ -139,6 +142,7 @@ namespace AMS.MVC.Controllers
         }
 
         [HttpPost("[controller]/[action]/{id:guid}")]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {

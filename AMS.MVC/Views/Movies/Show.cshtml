@@ -138,7 +138,9 @@ else
             @foreach (var star in Model.Stars)
             {
                 <tr class="d-flex">
-                    <td class="@((canEdit || canDelete) ? "col-5" : "col-6") d-flex align-items-center">@star.Person.FullName</td>
+                    <td class="@((canEdit || canDelete) ? "col-5" : "col-6") d-flex align-items-center">
+                        <a asp-controller="Persons" asp-action="Show" asp-route-id="@star.PersonId">@star.Person.FullName</a>
+                    </td>
                     <td class="@((canEdit || canDelete) ? "col-5" : "col-6") d-flex align-items-center">@star.Character</td>
                     
                     @if (canEdit || canDelete)
