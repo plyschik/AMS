@@ -57,6 +57,15 @@
 }
 else
 {
+    <div class="mb-4 d-flex justify-content-end">
+        <form class="form-inline" asp-controller="Persons" asp-action="Index" method="GET">
+            <div class="d-flex align-items-center">
+                <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
     <table class="mb-4 table table-hover">
         <thead class="thead-dark">
             <tr class="d-flex">
@@ -64,17 +73,17 @@ else
                     @Html.DisplayNameFor(model => model.Paginator.Elements.First().Id)
                 </th>
                 <th class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3")">
-                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-sort="first_name" asp-route-order="@firstNameOrder">
+                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="first_name" asp-route-order="@firstNameOrder" asp-route-page="@ViewData["page"]">
                         @Html.DisplayNameFor(model => model.Paginator.Elements.First().FirstName) @firstNameArrow
                     </a>
                 </th>
                 <th class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3")">
-                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-sort="last_name" asp-route-order="@lastNameOrder">
+                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="last_name" asp-route-order="@lastNameOrder" asp-route-page="@ViewData["page"]">
                         @Html.DisplayNameFor(model => model.Paginator.Elements.First().LastName) @lastNameArrow
                     </a>
                 </th>
                 <th class="col-2">
-                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-sort="date_of_birth" asp-route-order="@dateOfBirthOrder">
+                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="date_of_birth" asp-route-order="@dateOfBirthOrder" asp-route-page="@ViewData["page"]">
                         @Html.DisplayNameFor(model => model.Paginator.Elements.First().DateOfBirth) @dateOfBirthArrow
                     </a>
                 </th>
@@ -124,16 +133,27 @@ else
     {
         <div class="d-flex justify-content-center align-items-center">
             <div>
-                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-action="Index" asp-route-page="1" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">First</a>
-                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage - 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Previous</a>
+                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="1">First</a>
+                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage - 1)">Previous</a>
             </div>
             <div class="mx-2">
                 Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
             </div>
             <div>
-                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage + 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Next</a>
-                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-page="@Model.Paginator.TotalPages" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Last</a>
+                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage + 1)">Next</a>
+                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@Model.Paginator.TotalPages">Last</a>
             </div>
         </div>   
     }
+}
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/lib/mark.js/mark.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            const mark = new Mark(document.querySelectorAll('tbody > tr > td:nth-child(n + 2):nth-child(-n + 3)'));
+            mark.mark("@ViewData["search"]");
+        })();
+    </script>
 }

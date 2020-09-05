@@ -6,7 +6,7 @@ namespace AMS.MVC.Repositories
 {
     public interface IPersonRepository : IBaseRepository<Person>
     {
-        public IQueryable<Person> GetAllOrderedBy(string sort, string order);
+        public IQueryable<Person> GetAllOrderedBy(string search, string sort, string order);
     }
     
     public class PersonRepository : BaseRepository<Person>, IPersonRepository
@@ -15,9 +15,18 @@ namespace AMS.MVC.Repositories
         {
         }
 
-        public IQueryable<Person> GetAllOrderedBy(string sort, string order)
+        public IQueryable<Person> GetAllOrderedBy(string search, string sort, string order)
         {
             IQueryable<Person> queryable = DatabaseContext.Persons;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.ToLower();
+                
+                queryable = queryable.Where(p => 
+                    p.FirstName.ToLower().Contains(search) || p.LastName.ToLower().Contains(search)
+                );
+            }
             
             switch (sort)
             {

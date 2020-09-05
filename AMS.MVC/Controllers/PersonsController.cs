@@ -21,15 +21,21 @@ namespace AMS.MVC.Controllers
             _flashMessage = flashMessage;
         }
 
-        public async Task<IActionResult> Index(int page = 1, string sort = "last_name", string order = "asc")
+        public async Task<IActionResult> Index(
+            string search,
+            string sort = "last_name",
+            string order = "asc",
+            int page = 1
+        )
         {
             try
             {
-                ViewData["page"] = page;
+                ViewData["search"] = search;
                 ViewData["sort"] = sort;
                 ViewData["order"] = order;
+                ViewData["page"] = page;
                 
-                var viewModel = await _personService.GetPersonsList(page, sort, order);
+                var viewModel = await _personService.GetPersonsList(search, sort, order, page);
 
                 return View(viewModel);
             }

@@ -12,7 +12,7 @@ namespace AMS.MVC.Services
 {
     public interface IPersonService
     {
-        public Task<PersonIndexViewModel> GetPersonsList(int page, string sort, string order);
+        public Task<PersonIndexViewModel> GetPersonsList(string search, string sort, string order, int page);
 
         public Task<PersonShowViewModel> GetPerson(Guid id);
         
@@ -38,12 +38,12 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PersonIndexViewModel> GetPersonsList(int page, string sort, string order)
+        public async Task<PersonIndexViewModel> GetPersonsList(string search, string sort, string order, int page)
         {
             return new PersonIndexViewModel
             {
                 Paginator = await new Paginator<Person>().Create(
-                    _unitOfWork.Persons.GetAllOrderedBy(sort, order),
+                    _unitOfWork.Persons.GetAllOrderedBy(search, sort, order),
                     page,
                     5
                 )

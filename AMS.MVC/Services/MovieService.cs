@@ -20,7 +20,7 @@ namespace AMS.MVC.Services
 {
     public interface IMovieService
     {
-        public Task<MovieIndexViewModel> GetMoviesList(int page, string sort, string order);
+        public Task<MovieIndexViewModel> GetMoviesList(string search, string sort, string order, int page);
 
         public Task<MovieShowViewModel> GetMovie(Guid id);
 
@@ -62,12 +62,12 @@ namespace AMS.MVC.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<MovieIndexViewModel> GetMoviesList(int page, string sort, string order)
+        public async Task<MovieIndexViewModel> GetMoviesList(string search, string sort, string order, int page)
         {
             return new MovieIndexViewModel
             {
                 Paginator = await new Paginator<Movie>().Create(
-                    _unitOfWork.Movies.GetMoviesWithGenresOrderedBy(sort, order),
+                    _unitOfWork.Movies.GetMoviesWithGenresOrderedBy(search, sort, order),
                     page,
                     5
                 )
@@ -101,7 +101,7 @@ namespace AMS.MVC.Services
             }
             
             var genres = await _unitOfWork.Genres.GetAllOrderedBy("name", "desc").ToListAsync();
-            var persons = await _unitOfWork.Persons.GetAllOrderedBy("last_name", "asc").ToListAsync();
+            var persons = await _unitOfWork.Persons.GetAllOrderedBy(null, "last_name", "asc").ToListAsync();
 
             viewModel.Genres = genres.Select(genre => new SelectListItem
             {
@@ -160,7 +160,7 @@ namespace AMS.MVC.Services
         public async Task<MovieEditViewModel> LoadGenresAndPersonsToEditViewModel(MovieEditViewModel viewModel)
         {
             var genres = await _unitOfWork.Genres.GetAllOrderedBy("name", "desc").ToListAsync();
-            var persons = await _unitOfWork.Persons.GetAllOrderedBy("last_name", "asc").ToListAsync();
+            var persons = await _unitOfWork.Persons.GetAllOrderedBy(null, "last_name", "asc").ToListAsync();
 
             viewModel.Genres = genres.Select(genre => new SelectListItem
             {

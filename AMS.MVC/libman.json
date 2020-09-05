@@ -38,6 +38,13 @@
       "files": [
         "jquery.validate.unobtrusive.min.js"
       ]
+    },
+    {
+      "library": "mark.js@8.11.1",
+      "destination": "wwwroot/lib/mark.js",
+      "files": [
+        "mark.min.js"
+      ]
     }
   ]
 }

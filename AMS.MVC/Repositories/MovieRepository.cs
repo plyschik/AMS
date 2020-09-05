@@ -9,7 +9,7 @@ namespace AMS.MVC.Repositories
 {
     public interface IMovieRepository : IBaseRepository<Movie>
     {
-        public IQueryable<Movie> GetMoviesWithGenresOrderedBy(string sort, string order);
+        public IQueryable<Movie> GetMoviesWithGenresOrderedBy(string search, string sort, string order);
 
         public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
 
@@ -28,12 +28,21 @@ namespace AMS.MVC.Repositories
         {
         }
 
-        public IQueryable<Movie> GetMoviesWithGenresOrderedBy(string sort, string order)
+        public IQueryable<Movie> GetMoviesWithGenresOrderedBy(string search, string sort, string order)
         {
             IQueryable<Movie> queryable = DatabaseContext.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre);
 
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.ToLower();
+                
+                queryable = queryable.Where(m => 
+                    m.Title.ToLower().Contains(search) || m.Description.ToLower().Contains(search)
+                );
+            }
+            
             switch (sort)
             {
                 case "title":
