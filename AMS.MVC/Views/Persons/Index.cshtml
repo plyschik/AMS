@@ -49,23 +49,37 @@
 
 <hr class="my-4" />
 
+<div class="mb-4 d-flex justify-content-end">
+    <form class="form-inline" asp-controller="Persons" asp-action="Index" method="GET">
+        <div class="d-flex align-items-center">
+            <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
+            <button class="btn btn-primary" type="submit">Submit</button>
+            
+            @if (!string.IsNullOrEmpty((string) @ViewData["search"]))
+            {
+                <a class="ml-2 btn btn-danger" asp-controller="Persons" asp-action="Index">Reset</a>
+            }
+        </div>
+    </form>
+</div>
+
 @if (!Model.Paginator.Elements.Any())
 {
-    <div class="alert alert-info" role="alert">
-        Persons list is empty.
-    </div>
+    @if (!string.IsNullOrEmpty((string) ViewData["search"]))
+    {
+        <div class="alert alert-info" role="alert">
+            No results found.
+        </div>   
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Persons list is empty.
+        </div>
+    }
 }
 else
 {
-    <div class="mb-4 d-flex justify-content-end">
-        <form class="form-inline" asp-controller="Persons" asp-action="Index" method="GET">
-            <div class="d-flex align-items-center">
-                <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
-                <button class="btn btn-primary" type="submit">Submit</button>
-            </div>
-        </form>
-    </div>
-
     <table class="mb-4 table table-hover">
         <thead class="thead-dark">
             <tr class="d-flex">

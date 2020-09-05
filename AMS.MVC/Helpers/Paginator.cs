@@ -18,7 +18,15 @@ namespace AMS.MVC.Helpers
         public async Task<Paginator<T>> Create(IQueryable<T> queryable, int currentPage, int elementsPerPage)
         {
             var elementsCount = await queryable.CountAsync();
-            TotalPages = (int) Math.Ceiling(elementsCount / (double) elementsPerPage);
+
+            if (elementsCount == 0)
+            {
+                TotalPages = 1;
+            }
+            else
+            {
+                TotalPages = (int) Math.Ceiling(elementsCount / (double) elementsPerPage);   
+            }
 
             if (currentPage < 1 || currentPage > TotalPages)
             {

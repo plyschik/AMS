@@ -42,15 +42,8 @@
 
 <hr class="my-4" />
 
-@if (!Model.Paginator.Elements.Any())
-{
-    <div class="alert alert-info" role="alert">
-        Movies list is empty.
-    </div>
-}
-else
-{
-    <div class="mb-4 d-flex justify-content-between align-items-center">
+<div class="mb-4 d-flex @(Model.Paginator.Elements.Any() ? "justify-content-between" : "justify-content-end") align-items-center">
+    @if (Model.Paginator.Elements.Any()) {
         <div class="d-flex align-items-center">
             <span class="mr-2">Sort by:</span>
             <ul class="mb-0 list-inline">
@@ -62,16 +55,40 @@ else
                 </li>
             </ul>
         </div>
-        <div>
-            <form class="form-inline" asp-controller="Movies" asp-action="Index" method="GET">
-                <div class="d-flex align-items-center">
-                    <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    }
     
+    <div>
+        <form class="form-inline" asp-controller="Movies" asp-action="Index" method="GET">
+            <div class="d-flex align-items-center">
+                <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
+                <button class="btn btn-primary" type="submit">Submit</button>
+                
+                @if (!string.IsNullOrEmpty((string) @ViewData["search"]))
+                {
+                    <a class="ml-2 btn btn-danger" asp-controller="Movies" asp-action="Index">Reset</a>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Paginator.Elements.Any())
+{
+    @if (!string.IsNullOrEmpty((string) ViewData["search"]))
+    {
+        <div class="alert alert-info" role="alert">
+            No results found.
+        </div>   
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Movies list is empty.
+        </div>
+    }
+}
+else
+{
     @foreach (var movie in Model.Paginator.Elements)
     {
         var genres = movie.MovieGenres.Select(mg => mg.Genre).ToList();
