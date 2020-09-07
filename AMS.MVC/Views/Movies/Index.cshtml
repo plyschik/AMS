@@ -116,16 +116,16 @@ else
                     </p>
                 }
 
-                <a class="card-link" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
+                <a class="card-link btn btn-outline-secondary" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
                 
                 @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Edit)).Succeeded)
                 {
-                    <a class="card-link" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
+                    <a class="ml-2 card-link btn btn-outline-primary" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
                 }
                 
                 @if (User.IsInRole("Administrator"))
                 {
-                    <a class="card-link" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
+                    <a class="ml-2 card-link btn btn-outline-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
                 }
             </div>
         </div>   

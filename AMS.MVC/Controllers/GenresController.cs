@@ -41,15 +41,22 @@ namespace AMS.MVC.Controllers
 
         [HttpGet("[controller]/[action]/{id:guid}")]
         [Authorize]
-        public async Task<IActionResult> Show(Guid id, int page = 1, string sort = "release_date", string order = "desc")
+        public async Task<IActionResult> Show(
+            Guid id,
+            string search,
+            string sort = "release_date",
+            string order = "desc",
+            int page = 1
+        )
         {
             try
             {
-                ViewData["page"] = page;
+                ViewData["search"] = search;
                 ViewData["sort"] = sort;
                 ViewData["order"] = order;
+                ViewData["page"] = page;
 
-                var viewModel = await _genreService.GetGenreWithMovies(id, page, sort, order);
+                var viewModel = await _genreService.GetGenreWithMovies(id, search, sort, order, page);
 
                 return View(viewModel);
             }

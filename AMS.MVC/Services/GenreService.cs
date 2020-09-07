@@ -6,7 +6,6 @@ using AMS.MVC.Helpers;
 using AMS.MVC.Repositories;
 using AMS.MVC.ViewModels.GenreViewModels;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 
 namespace AMS.MVC.Services
 {
@@ -14,7 +13,7 @@ namespace AMS.MVC.Services
     {
         public Task<GenreIndexViewModel> GetGenresList(int page, string sort, string order);
 
-        public Task<GenreShowViewModel> GetGenreWithMovies(Guid id, int page, string sort, string order);
+        public Task<GenreShowViewModel> GetGenreWithMovies(Guid id, string search, string sort, string order, int page);
 
         public Task CreateGenre(GenreCreateViewModel viewModel);
 
@@ -50,7 +49,7 @@ namespace AMS.MVC.Services
             };
         }
 
-        public async Task<GenreShowViewModel> GetGenreWithMovies(Guid id, int page, string sort, string order)
+        public async Task<GenreShowViewModel> GetGenreWithMovies(Guid id, string search, string sort, string order, int page)
         {
             var genre = await _unitOfWork.Genres.GetBy(g => g.Id == id);
 
@@ -63,7 +62,7 @@ namespace AMS.MVC.Services
             {
                 Genre = genre,
                 Paginator = await new Paginator<Movie>().Create(
-                    _unitOfWork.Movies.GetMoviesWithGenresFromGenreOrderedBy(genre.Id, sort, order),
+                    _unitOfWork.Movies.GetMoviesWithGenresFromGenreOrderedBy(genre.Id, search, sort, order),
                     page,
                     5
                 )

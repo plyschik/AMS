@@ -13,7 +13,7 @@ namespace AMS.MVC.Repositories
 
         public Task<Movie> GetMovieWithGenresDirectorsWritersAndStars(Guid id);
 
-        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedBy(Guid genreId, string sort, string order);
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedBy(Guid genreId, string search, string sort, string order);
 
         public IQueryable<Movie> GetMoviesWherePersonIsDirectorOrderedByReleaseDate(Guid personId);
         
@@ -80,13 +80,22 @@ namespace AMS.MVC.Repositories
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
-        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedBy(Guid genreId, string sort, string order)
+        public IQueryable<Movie> GetMoviesWithGenresFromGenreOrderedBy(Guid genreId, string search, string sort, string order)
         {
             IQueryable<Movie> queryable = DatabaseContext.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)
                 .Where(m => m.MovieGenres.Any(mg => mg.GenreId == genreId));
 
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.ToLower();
+                
+                queryable = queryable.Where(m => 
+                    m.Title.ToLower().Contains(search) || m.Description.ToLower().Contains(search)
+                );
+            }
+            
             switch (sort)
             {
                 case "title":

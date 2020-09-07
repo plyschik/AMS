@@ -35,24 +35,50 @@
 
 <hr class="my-4" />
 
-<div class="mb-4 d-flex align-items-center">
-    <span class="mr-2">Sort by:</span>
-    <ul class="mb-0 list-inline">
-        <li class="list-inline-item">
-            <a class="@(titleActive ? "font-weight-bold" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@ViewData["page"]" asp-route-sort="title" asp-route-order="@titleOrder">Title @titleArrow</a>
-        </li>
-        <li class="list-inline-item">
-            <a class="@(releaseDateActive ? "font-weight-bold" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@ViewData["page"]" asp-route-sort="release_date" asp-route-order="@releaseDateOrder">Release date @releaseDateArrow</a>
-        </li>
-    </ul>
+<div class="mb-4 d-flex @(Model.Paginator.Elements.Any() ? "justify-content-between" : "justify-content-end") align-items-center">
+    @if (Model.Paginator.Elements.Any()) {
+        <div class="d-flex align-items-center">
+            <span class="mr-2">Sort by:</span>
+            <ul class="mb-0 list-inline">
+                <li class="list-inline-item">
+                    <a class="@(titleActive ? "font-weight-bold" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-search="@ViewData["search"]" asp-route-sort="title" asp-route-order="@titleOrder" asp-route-page="@ViewData["page"]">Title @titleArrow</a>
+                </li>
+                <li class="list-inline-item">
+                    <a class="@(releaseDateActive ? "font-weight-bold" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-search="@ViewData["search"]" asp-route-sort="release_date" asp-route-order="@releaseDateOrder" asp-route-page="@ViewData["page"]">Release date @releaseDateArrow</a>
+                </li>
+            </ul>
+        </div>
+    }
+    
+    <div>
+        <form class="form-inline" asp-controller="Genres" asp-action="Show" method="GET">
+            <div class="d-flex align-items-center">
+                <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
+                <button class="btn btn-primary" type="submit">Submit</button>
+                
+                @if (!string.IsNullOrEmpty((string) @ViewData["search"]))
+                {
+                    <a class="ml-2 btn btn-danger" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id">Reset</a>
+                }
+            </div>
+        </form>
+    </div>
 </div>
-
 
 @if (!Model.Paginator.Elements.Any())
 {
-    <div class="alert alert-info" role="alert">
-        Movies list is empty.
-    </div>
+    @if (!string.IsNullOrEmpty((string) ViewData["search"]))
+    {
+        <div class="alert alert-info" role="alert">
+            No results found.
+        </div>   
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Movies list is empty.
+        </div>
+    }
 }
 else
 {
@@ -68,28 +94,31 @@ else
                 
                 @if (genres.Any())
                 {
-                    <h6 class="mb-3 card-subtitle">
+                    <h6 class="card-subtitle mb-3">
                         @foreach (var genre in genres)
                         {
-                            <a class="badge badge-primary" asp-controller="Genres" asp-action="Show" asp-route-genreId="@genre.Id">@genre.Name</a>
+                            <a asp-controller="Genres" asp-action="Show" asp-route-id="@genre.Id" class="badge badge-primary">@genre.Name</a>
                         }
                     </h6>
                 }
                 
-                <p class="card-text">
-                    <i>@Html.DisplayFor(movies => movie.Description)</i>
-                </p>
-                
-                <a class="card-link" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
+                @if (!string.IsNullOrEmpty(movie.Description))
+                {
+                    <p class="card-text">
+                        <i>@Html.DisplayFor(movies => movie.Description)</i>
+                    </p>
+                }
+
+                <a class="card-link btn btn-outline-secondary" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">Details</a>
                 
                 @if ((await AuthorizationService.AuthorizeAsync(User, movie, MovieOperations.Edit)).Succeeded)
                 {
-                    <a class="card-link" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
+                    <a class="ml-2 card-link btn btn-outline-primary" asp-controller="Movies" asp-action="Edit" asp-route-id="@movie.Id">Edit</a>
                 }
                 
                 @if (User.IsInRole("Administrator"))
                 {
-                    <a class="card-link" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
+                    <a class="ml-2 card-link btn btn-outline-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@movie.Id">Delete</a>   
                 }
             </div>
         </div>   
@@ -99,16 +128,27 @@ else
     {
         <div class="d-flex justify-content-center align-items-center">
             <div>
-                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="1" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">First</a>
-                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@(Model.Paginator.CurrentPage - 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Previous</a>
+                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="1">First</a>
+                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage - 1)">Previous</a>
             </div>
             <div class="mx-2">
                 Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
             </div>
             <div>
-                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@(Model.Paginator.CurrentPage + 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Next</a>
-                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-page="@Model.Paginator.TotalPages" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Last</a>
+                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage + 1)">Next</a>
+                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Show" asp-route-id="@Model.Genre.Id" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@Model.Paginator.TotalPages">Last</a>
             </div>
         </div>   
     }
+}
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/lib/mark.js/mark.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            const mark = new Mark(document.querySelectorAll('.card-title, .card-text'));
+            mark.mark("@ViewData["search"]");
+        })();
+    </script>
 }
