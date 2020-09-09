@@ -45,10 +45,13 @@ else
                 <th class="col-4">
                     @Html.DisplayNameFor(model => Model.Paginator.Elements.First().Id)
                 </th>
-                <th class="@(authorizedUserHasAdministratorRole ? "col-6" : "col-8" )">
+                <th class="@(authorizedUserHasAdministratorRole ? "col-4" : "col-6" )">
                     <a class="text-white text-decoration-none" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-sort="name" asp-route-order="@nameOrder">
                         @Html.DisplayNameFor(model => model.Paginator.Elements.First().Name) @nameArrow    
                     </a>
+                </th>
+                <th class="col-2">
+                    Movies count
                 </th>
                 
                 @if (authorizedUserHasAdministratorRole)
@@ -66,8 +69,11 @@ else
                             @Html.DisplayFor(genres => genre.Id)
                         </a>
                     </td>
-                    <td class="@(authorizedUserHasAdministratorRole ? "col-6" : "col-8" ) d-flex align-items-center">
+                    <td class="@(authorizedUserHasAdministratorRole ? "col-4" : "col-6" ) d-flex align-items-center">
                         @Html.DisplayFor(genres => genre.Name)
+                    </td>
+                    <td class="col-2 d-flex align-items-center">
+                        @genre.MovieGenres.Count
                     </td>
                     
                     @if (authorizedUserHasAdministratorRole)
