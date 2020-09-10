@@ -1,10 +1,10 @@
 @model AMS.MVC.ViewModels.MovieViewModels.MovieCreateViewModel
 
 @{
-    ViewData["Title"] = "Create new movie";
+    ViewData["Title"] = "Create movie";
 }
 
-<h2 class="mb-0">Create new movie</h2>
+<h2 class="mb-0">Create movie</h2>
 
 <hr class="my-4" />
 
@@ -56,8 +56,8 @@
     
     <div class="row form-group">
         <div class="col-sm-12">
-            <input class="btn btn-primary" type="submit" value="Create" />
-            <a class="btn btn-danger" asp-controller="Movies" asp-action="Index">Cancel</a>
+            <input class="btn btn-primary" type="submit" value="Create"/>
+            <a class="ml-2 btn btn-danger" asp-controller="Movies" asp-action="Index">Cancel</a>
         </div>
     </div>
 </form>

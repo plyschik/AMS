@@ -1,10 +1,10 @@
 @model AMS.MVC.ViewModels.PersonViewModels.PersonCreateViewModel
 
 @{
-    ViewData["Title"] = "Create new person";
+    ViewData["Title"] = "Create person";
 }
 
-<h2 class="mb-0">Create new person</h2>
+<h2 class="mb-0">Create person</h2>
 
 <hr class="my-4" />
 
@@ -36,7 +36,7 @@
     <div class="row form-group">
         <div class="col-sm-12">
             <input class="btn btn-primary" type="submit" value="Create" />
-            <a class="btn btn-danger" asp-controller="Persons" asp-action="Index">Cancel</a>
+            <a class="ml-2 btn btn-danger" asp-controller="Persons" asp-action="Index">Cancel</a>
         </div>
     </div>
 </form>

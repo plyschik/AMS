@@ -1,10 +1,10 @@
 @model AMS.MVC.ViewModels.GenreViewModels.GenreCreateViewModel
 
 @{
-    ViewData["Title"] = "Create new genre";
+    ViewData["Title"] = "Create genre";
 }
 
-<h2 class="mb-0">Create new genre</h2>
+<h2 class="mb-0">Create genre</h2>
 
 <hr class="my-4" />
 
@@ -20,7 +20,7 @@
     <div class="row form-group">
         <div class="col-sm-12">
             <input class="btn btn-primary" type="submit" value="Create" />
-            <a class="btn btn-danger" asp-controller="Genres" asp-action="Index">Cancel</a>
+            <a class="ml-2 btn btn-danger" asp-controller="Genres" asp-action="Index">Cancel</a>
         </div>
     </div>
 </form>

@@ -14,5 +14,5 @@
 
 <form asp-controller="Stars" asp-action="Delete" asp-route-movieId="@Model.MovieId" asp-route-personId="@Model.PersonId">
     <input class="btn btn-danger" type="submit" value="Delete" />
-    <a class="btn btn-primary" asp-controller="Movies" asp-action="Show" asp-route-id="@Model.MovieId">Cancel</a>
+    <a class="ml-2 btn btn-primary" asp-controller="Movies" asp-action="Show" asp-route-id="@Model.MovieId">Cancel</a>
 </form>

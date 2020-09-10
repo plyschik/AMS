@@ -2,9 +2,25 @@
 
 @{
     ViewData["Title"] = "Person details";
+    
+    var userHasManagerOrAdministratorRole = User.IsInRole("Manager") || User.IsInRole("Administrator");
 }
 
-<h2 class="mb-0">Person details</h2>
+<div class="d-flex @(userHasManagerOrAdministratorRole ? "justify-content-between" : "justify-content-start") align-items-center">
+    <h2 class="mb-0">Person details</h2>
+    
+    @if (userHasManagerOrAdministratorRole)
+    {
+        <div>
+            <a class="btn btn-primary" asp-controller="Persons" asp-action="Edit" asp-route-id="@Model.Person.Id">Edit</a>
+        
+            @if (User.IsInRole("Administrator"))
+            {
+                <a class="ml-2 btn btn-danger" asp-controller="Persons" asp-action="ConfirmDelete" asp-route-id="@Model.Person.Id">Delete</a>   
+            }
+        </div>
+    }
+</div>
 
 <hr class="my-4" />
 

@@ -43,7 +43,7 @@
     
     @if (userHasManagerOrAdministratorRole)
     {
-        <a class="btn btn-success" asp-controller="Persons" asp-action="Create">Create movie</a>
+        <a class="btn btn-success" asp-controller="Persons" asp-action="Create">Create person</a>
     }
 </div>
 
@@ -130,11 +130,11 @@ else
                     @if (userHasManagerOrAdministratorRole)
                     {
                         <td class="col-2 d-flex justify-content-end align-items-center">
-                            <a class="mr-2 btn btn-primary" asp-controller="Persons" asp-action="Edit" asp-route-id="@person.Id">Edit</a>
+                            <a class="btn btn-primary" asp-controller="Persons" asp-action="Edit" asp-route-id="@person.Id">Edit</a>
                             
                             @if (User.IsInRole("Administrator"))
                             {
-                                <a class="btn btn-danger" asp-controller="Persons" asp-action="ConfirmDelete" asp-route-id="@person.Id">Delete</a>   
+                                <a class="ml-2 btn btn-danger" asp-controller="Persons" asp-action="ConfirmDelete" asp-route-id="@person.Id">Delete</a>   
                             }
                         </td>   
                     }

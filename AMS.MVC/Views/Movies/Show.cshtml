@@ -13,12 +13,12 @@
     <div>
         @if ((await AuthorizationService.AuthorizeAsync(User, Model.Movie, MovieOperations.Edit)).Succeeded)
         {
-            <a class="btn btn-primary" asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.Movie.Id">Edit</a>   
+            <a class="btn btn-primary" asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.Movie.Id">Edit</a>
         }
-        
+
         @if (User.IsInRole("Administrator"))
         {
-            <a class="btn btn-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@Model.Movie.Id">Delete</a>   
+            <a class="ml-2 btn btn-danger" asp-controller="Movies" asp-action="ConfirmDelete" asp-route-id="@Model.Movie.Id">Delete</a>
         }
     </div>
 </div>
@@ -108,7 +108,7 @@
     
     @if (canCreate)
     {
-        <a class="btn btn-success" asp-controller="Stars" asp-action="Create" asp-route-id="@Model.Movie.Id">Create</a>
+        <a class="btn btn-success" asp-controller="Stars" asp-action="Create" asp-route-id="@Model.Movie.Id">Add star</a>
     }
 </div>
 
@@ -138,22 +138,22 @@ else
             @foreach (var star in Model.Stars)
             {
                 <tr class="d-flex">
-                    <td class="@((canEdit || canDelete) ? "col-5" : "col-6") d-flex align-items-center">
+                    <td class="@(canEdit || canDelete ? "col-5" : "col-6") d-flex align-items-center">
                         <a asp-controller="Persons" asp-action="Show" asp-route-id="@star.PersonId">@star.Person.FullName</a>
                     </td>
-                    <td class="@((canEdit || canDelete) ? "col-5" : "col-6") d-flex align-items-center">@star.Character</td>
+                    <td class="@(canEdit || canDelete ? "col-5" : "col-6") d-flex align-items-center">@star.Character</td>
                     
                     @if (canEdit || canDelete)
                     {
                         <td class="col-2 d-flex align-items-center justify-content-end">
                             @if (canEdit)
                             {
-                                <a asp-controller="Stars" asp-action="Edit" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId" class="btn btn-primary mr-1">Edit</a>    
+                                <a class="btn btn-primary" asp-controller="Stars" asp-action="Edit" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId">Edit</a>
                             }
                         
                             @if (canDelete)
                             {
-                                <a asp-controller="Stars" asp-action="ConfirmDelete" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId" class="btn btn-danger">Delete</a>   
+                                <a class="ml-2 btn btn-danger" asp-controller="Stars" asp-action="ConfirmDelete" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId">Delete</a>
                             }
                         </td>
                     }

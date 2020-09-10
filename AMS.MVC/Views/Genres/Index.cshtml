@@ -79,8 +79,8 @@ else
                     @if (authorizedUserHasAdministratorRole)
                     {
                         <td class="col-2 d-flex justify-content-end align-items-center">
-                            <a class="mr-2 btn btn-primary" asp-controller="Genres" asp-action="Edit" asp-route-id="@genre.Id">Edit</a>
-                            <a class="btn btn-danger" asp-controller="Genres" asp-action="ConfirmDelete" asp-route-id="@genre.Id">Delete</a>
+                            <a class="btn btn-primary" asp-controller="Genres" asp-action="Edit" asp-route-id="@genre.Id">Edit</a>
+                            <a class="ml-2 btn btn-danger" asp-controller="Genres" asp-action="ConfirmDelete" asp-route-id="@genre.Id">Delete</a>
                         </td>
                     }
                 </tr>
