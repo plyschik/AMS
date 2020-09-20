@@ -92,7 +92,7 @@
         </dt>
         <dd class="col-sm-10">
             <ul class="mb-0 list-inline">
-                @foreach (var writer in Model.Directors)
+                @foreach (var writer in Model.Writers)
                 {
                     <li class="list-inline-item">
                         <a asp-controller="Persons" asp-action="Show" asp-route-id="@writer.Id">@writer.FullName</a>
