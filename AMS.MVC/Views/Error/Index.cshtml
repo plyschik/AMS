@@ -1,0 +1,17 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["code"]: @ViewData["description"] - AMS.MVC</title>
+        <link rel="stylesheet" href="~/lib/twitter-bootstrap/css/bootstrap.min.css"/>
+    </head>
+    <body class="vh-100 d-flex flex-column justify-content-center align-items-center">
+        <h3 class="mb-4">@ViewData["code"]: @ViewData["description"]</h3>
+        <a asp-controller="Movies" asp-action="Index">Go to home page</a>
+    </body>
+</html>

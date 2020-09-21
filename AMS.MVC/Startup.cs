@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -66,9 +67,10 @@ namespace AMS.MVC
             }
             else
             {
-                application.UseExceptionHandler("/Home/Error");
                 application.UseHsts();
             }
+
+            application.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             application.UseHttpsRedirection();
             application.UseStaticFiles();
