@@ -122,43 +122,45 @@
 }
 else
 {
-    <table class="table">
-        <thead class="thead-dark">
-            <tr class="d-flex">
-                <th class="@((canEdit || canDelete) ? "col-5" : "col-6")">Actor</th>    
-                <th class="@((canEdit || canDelete) ? "col-5" : "col-6")">Character</th>
-                
-                @if (canEdit || canDelete)
-                {
-                    <th class="col-2"></th>   
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var star in Model.Stars)
-            {
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
                 <tr class="d-flex">
-                    <td class="@(canEdit || canDelete ? "col-5" : "col-6") d-flex align-items-center">
-                        <a asp-controller="Persons" asp-action="Show" asp-route-id="@star.PersonId">@star.Person.FullName</a>
-                    </td>
-                    <td class="@(canEdit || canDelete ? "col-5" : "col-6") d-flex align-items-center">@star.Character</td>
+                    <th class="@((canEdit || canDelete) ? "col-5" : "col-6")">Actor</th>    
+                    <th class="@((canEdit || canDelete) ? "col-5" : "col-6")">Character</th>
                     
                     @if (canEdit || canDelete)
                     {
-                        <td class="col-2 d-flex align-items-center justify-content-end">
-                            @if (canEdit)
-                            {
-                                <a class="btn btn-primary" asp-controller="Stars" asp-action="Edit" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId">Edit</a>
-                            }
-                        
-                            @if (canDelete)
-                            {
-                                <a class="ml-2 btn btn-danger" asp-controller="Stars" asp-action="ConfirmDelete" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId">Delete</a>
-                            }
-                        </td>
+                        <th class="col-2">Actions</th>   
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var star in Model.Stars)
+                {
+                    <tr class="d-flex">
+                        <td class="@(canEdit || canDelete ? "col-5" : "col-6") d-flex align-items-center">
+                            <a asp-controller="Persons" asp-action="Show" asp-route-id="@star.PersonId">@star.Person.FullName</a>
+                        </td>
+                        <td class="@(canEdit || canDelete ? "col-5" : "col-6") d-flex align-items-center">@star.Character</td>
+                        
+                        @if (canEdit || canDelete)
+                        {
+                            <td class="col-2 d-flex align-items-center">
+                                @if (canEdit)
+                                {
+                                    <a class="mr-1 flex-fill btn btn-primary" asp-controller="Stars" asp-action="Edit" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId">Edit</a>
+                                }
+                            
+                                @if (canDelete)
+                                {
+                                    <a class="ml-1 flex-fill btn btn-danger" asp-controller="Stars" asp-action="ConfirmDelete" asp-route-movieId="@star.MovieId" asp-route-personId="@star.PersonId">Delete</a>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

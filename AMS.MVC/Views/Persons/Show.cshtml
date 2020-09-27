@@ -6,7 +6,7 @@
     var userHasManagerOrAdministratorRole = User.IsInRole("Manager") || User.IsInRole("Administrator");
 }
 
-<div class="d-flex @(userHasManagerOrAdministratorRole ? "justify-content-between" : "justify-content-start") align-items-center">
+<div class="d-flex flex-nowrap @(userHasManagerOrAdministratorRole ? "justify-content-between" : "justify-content-start") align-items-center">
     <h2 class="mb-0">Person details</h2>
     
     @if (userHasManagerOrAdministratorRole)
@@ -25,8 +25,8 @@
 <hr class="my-4" />
 
 <div class="container">
-    <div class="row">
-        <div class="col-4">
+    <div class="row no-gutters">
+        <div class="col-12 col-lg-4">
             <dl>
                 <dt>@Html.DisplayNameFor(model => model.Person.FirstName):</dt>
                 <dd>@Html.DisplayFor(model => model.Person.FirstName)</dd>
@@ -40,7 +40,7 @@
                 <dd>@Html.DisplayFor(model => model.Person.DateOfBirth)</dd>
             </dl>
         </div>
-        <div class="col-8">
+        <div class="col-12 col-lg-8">
             <h3>Director:</h3>
             
             @if (Model.MovieDirector.Any())

@@ -49,18 +49,20 @@
 
 <hr class="my-4" />
 
-<div class="mb-4 d-flex justify-content-end">
-    <form class="form-inline" asp-controller="Persons" asp-action="Index" method="GET">
-        <div class="d-flex align-items-center">
-            <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
-            <button class="btn btn-primary" type="submit">Submit</button>
-            
-            @if (!string.IsNullOrEmpty((string) @ViewData["search"]))
-            {
-                <a class="ml-2 btn btn-danger" asp-controller="Persons" asp-action="Index">Reset</a>
-            }
-        </div>
-    </form>
+<div class="mb-4 row justify-content-lg-end">
+    <div class="col-12 col-lg-4">
+        <form asp-controller="Persons" asp-action="Index" method="GET">
+            <div class="p-1 d-flex border rounded">
+                <input class="mr-1 p-1 flex-grow-1 border-0" style="min-width: 75px;" type="text" name="search" placeholder="Search..." value="@ViewData["search"]"/>
+                <button class="btn btn-sm btn-primary" type="submit">Submit</button>
+    
+                @if (!string.IsNullOrEmpty((string) @ViewData["search"]))
+                {
+                    <a class="ml-1 btn btn-sm btn-danger" asp-controller="Persons" asp-action="Index">&#215;</a>
+                }
+            </div>
+        </form>
+    </div>
 </div>
 
 @if (!Model.Paginator.Elements.Any())
@@ -80,82 +82,84 @@
 }
 else
 {
-    <table class="mb-4 table table-hover">
-        <thead class="thead-dark">
-            <tr class="d-flex">
-                <th class="col-4">
-                    @Html.DisplayNameFor(model => model.Paginator.Elements.First().Id)
-                </th>
-                <th class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3")">
-                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="first_name" asp-route-order="@firstNameOrder" asp-route-page="@ViewData["page"]">
-                        @Html.DisplayNameFor(model => model.Paginator.Elements.First().FirstName) @firstNameArrow
-                    </a>
-                </th>
-                <th class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3")">
-                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="last_name" asp-route-order="@lastNameOrder" asp-route-page="@ViewData["page"]">
-                        @Html.DisplayNameFor(model => model.Paginator.Elements.First().LastName) @lastNameArrow
-                    </a>
-                </th>
-                <th class="col-2">
-                    <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="date_of_birth" asp-route-order="@dateOfBirthOrder" asp-route-page="@ViewData["page"]">
-                        @Html.DisplayNameFor(model => model.Paginator.Elements.First().DateOfBirth) @dateOfBirthArrow
-                    </a>
-                </th>
-                
-                @if (userHasManagerOrAdministratorRole)
-                {
-                    <th class="col-2"></th>   
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var person in Model.Paginator.Elements)
-            {
+    <div class="table-responsive mb-4">
+        <table class="table table-hover">
+            <thead class="thead-dark">
                 <tr class="d-flex">
-                    <td class="col-4 d-flex align-items-center">
-                        <a asp-controller="Persons" asp-action="Show" asp-route-id="@person.Id">
-                            @Html.DisplayFor(model => person.Id)
+                    <th class="col-4 d-flex align-items-center">
+                        @Html.DisplayNameFor(model => model.Paginator.Elements.First().Id)
+                    </th>
+                    <th class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3") d-flex align-items-center">
+                        <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="first_name" asp-route-order="@firstNameOrder" asp-route-page="@ViewData["page"]">
+                            @Html.DisplayNameFor(model => model.Paginator.Elements.First().FirstName) @firstNameArrow
                         </a>
-                    </td>
-                    <td class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3") d-flex align-items-center">
-                        @Html.DisplayFor(model => person.FirstName)
-                    </td>
-                    <td class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3") d-flex align-items-center">
-                        @Html.DisplayFor(model => person.LastName)
-                    </td>
-                    <td class="col-2 d-flex align-items-center">
-                        @Html.DisplayFor(model => person.DateOfBirth)
-                    </td>
+                    </th>
+                    <th class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3") d-flex align-items-center">
+                        <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="last_name" asp-route-order="@lastNameOrder" asp-route-page="@ViewData["page"]">
+                            @Html.DisplayNameFor(model => model.Paginator.Elements.First().LastName) @lastNameArrow
+                        </a>
+                    </th>
+                    <th class="col-2 d-flex align-items-center">
+                        <a class="text-white text-decoration-none" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="date_of_birth" asp-route-order="@dateOfBirthOrder" asp-route-page="@ViewData["page"]">
+                            @Html.DisplayNameFor(model => model.Paginator.Elements.First().DateOfBirth) @dateOfBirthArrow
+                        </a>
+                    </th>
                     
                     @if (userHasManagerOrAdministratorRole)
                     {
-                        <td class="col-2 d-flex justify-content-end align-items-center">
-                            <a class="btn btn-primary" asp-controller="Persons" asp-action="Edit" asp-route-id="@person.Id">Edit</a>
-                            
-                            @if (User.IsInRole("Administrator"))
-                            {
-                                <a class="ml-2 btn btn-danger" asp-controller="Persons" asp-action="ConfirmDelete" asp-route-id="@person.Id">Delete</a>   
-                            }
-                        </td>   
+                        <th class="col-2 d-flex align-items-center"></th>   
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
-    
+            </thead>
+            <tbody>
+                @foreach (var person in Model.Paginator.Elements)
+                {
+                    <tr class="d-flex">
+                        <td class="col-4 d-flex align-items-center">
+                            <a asp-controller="Persons" asp-action="Show" asp-route-id="@person.Id">
+                                @Html.DisplayFor(model => person.Id)
+                            </a>
+                        </td>
+                        <td class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3") d-flex align-items-center">
+                            @Html.DisplayFor(model => person.FirstName)
+                        </td>
+                        <td class="@(userHasManagerOrAdministratorRole ? "col-2" : "col-3") d-flex align-items-center">
+                            @Html.DisplayFor(model => person.LastName)
+                        </td>
+                        <td class="col-2 d-flex align-items-center">
+                            @Html.DisplayFor(model => person.DateOfBirth)
+                        </td>
+                        
+                        @if (userHasManagerOrAdministratorRole)
+                        {
+                            <td class="col-2 d-flex align-items-center">
+                                <a class="flex-fill btn btn-primary" asp-controller="Persons" asp-action="Edit" asp-route-id="@person.Id">Edit</a>
+                                
+                                @if (User.IsInRole("Administrator"))
+                                {
+                                    <a class="ml-2 flex-fill btn btn-danger" asp-controller="Persons" asp-action="ConfirmDelete" asp-route-id="@person.Id">Delete</a>   
+                                }
+                            </td>   
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
     @if (Model.Paginator.TotalPages > 1)
     {
         <div class="d-flex justify-content-center align-items-center">
             <div>
-                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="1">First</a>
-                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage - 1)">Previous</a>
+                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="1">&#171;</a>
+                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage - 1)">&#8249;</a>
             </div>
             <div class="mx-2">
                 Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
             </div>
             <div>
-                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage + 1)">Next</a>
-                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@Model.Paginator.TotalPages">Last</a>
+                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage + 1)">&#8250;</a>
+                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Persons" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@Model.Paginator.TotalPages">&#187;</a>
             </div>
         </div>   
     }

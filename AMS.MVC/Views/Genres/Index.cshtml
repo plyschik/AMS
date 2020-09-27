@@ -39,68 +39,70 @@
 }
 else
 {
-    <table class="mb-4 table table-hover">
-        <thead class="thead-dark">
-            <tr class="d-flex">
-                <th class="col-4">
-                    @Html.DisplayNameFor(model => Model.Paginator.Elements.First().Id)
-                </th>
-                <th class="@(authorizedUserHasAdministratorRole ? "col-4" : "col-6" )">
-                    <a class="text-white text-decoration-none" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-sort="name" asp-route-order="@nameOrder">
-                        @Html.DisplayNameFor(model => model.Paginator.Elements.First().Name) @nameArrow    
-                    </a>
-                </th>
-                <th class="col-2">
-                    Movies count
-                </th>
-                
-                @if (authorizedUserHasAdministratorRole)
-                {
-                    <th class="col-2"></th>   
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var genre in Model.Paginator.Elements)
-            {
+    <div class="mb-4 table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-dark">
                 <tr class="d-flex">
-                    <td class="col-4 d-flex align-items-center">
-                        <a asp-controller="Genres" asp-action="Show" asp-route-id="@genre.Id">
-                            @Html.DisplayFor(genres => genre.Id)
+                    <th class="col-4 d-flex align-items-center">
+                        @Html.DisplayNameFor(model => Model.Paginator.Elements.First().Id)
+                    </th>
+                    <th class="@(authorizedUserHasAdministratorRole ? "col-4" : "col-6") d-flex align-items-center">
+                        <a class="text-white text-decoration-none" asp-action="Index" asp-route-page="@ViewData["page"]" asp-route-sort="name" asp-route-order="@nameOrder">
+                            @Html.DisplayNameFor(model => model.Paginator.Elements.First().Name) @nameArrow    
                         </a>
-                    </td>
-                    <td class="@(authorizedUserHasAdministratorRole ? "col-4" : "col-6" ) d-flex align-items-center">
-                        @Html.DisplayFor(genres => genre.Name)
-                    </td>
-                    <td class="col-2 d-flex align-items-center">
-                        @genre.MovieGenres.Count
-                    </td>
+                    </th>
+                    <th class="col-2 d-flex align-items-center">
+                        Movies count
+                    </th>
                     
                     @if (authorizedUserHasAdministratorRole)
                     {
-                        <td class="col-2 d-flex justify-content-end align-items-center">
-                            <a class="btn btn-primary" asp-controller="Genres" asp-action="Edit" asp-route-id="@genre.Id">Edit</a>
-                            <a class="ml-2 btn btn-danger" asp-controller="Genres" asp-action="ConfirmDelete" asp-route-id="@genre.Id">Delete</a>
-                        </td>
+                        <th class="col-2 d-flex align-items-center"></th>   
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
-    
+            </thead>
+            <tbody>
+                @foreach (var genre in Model.Paginator.Elements)
+                {
+                    <tr class="d-flex">
+                        <td class="col-4 d-flex align-items-center">
+                            <a asp-controller="Genres" asp-action="Show" asp-route-id="@genre.Id">
+                                @Html.DisplayFor(genres => genre.Id)
+                            </a>
+                        </td>
+                        <td class="@(authorizedUserHasAdministratorRole ? "col-4" : "col-6" ) d-flex align-items-center">
+                            @Html.DisplayFor(genres => genre.Name)
+                        </td>
+                        <td class="col-2 d-flex align-items-center">
+                            @genre.MovieGenres.Count
+                        </td>
+                        
+                        @if (authorizedUserHasAdministratorRole)
+                        {
+                            <td class="col-2 d-flex align-items-center">
+                                <a class="mr-1 flex-fill btn btn-primary" asp-controller="Genres" asp-action="Edit" asp-route-id="@genre.Id">Edit</a>
+                                <a class="ml-1 flex-fill btn btn-danger" asp-controller="Genres" asp-action="ConfirmDelete" asp-route-id="@genre.Id">Delete</a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
     @if (Model.Paginator.TotalPages > 1)
     {
         <div class="d-flex justify-content-center align-items-center">
             <div>
-                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="1" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">First</a>
-                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage - 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Previous</a>
+                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="1" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">&#171;</a>
+                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage - 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">&#8249;</a>
             </div>
             <div class="mx-2">
                 Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
             </div>
             <div>
-                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage + 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Next</a>
-                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="@Model.Paginator.TotalPages" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">Last</a>
+                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="@(Model.Paginator.CurrentPage + 1)" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">&#8250;</a>
+                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Genres" asp-action="Index" asp-route-page="@Model.Paginator.TotalPages" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]">&#187;</a>
             </div>
         </div>   
     }

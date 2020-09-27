@@ -42,30 +42,32 @@
 
 <hr class="my-4" />
 
-<div class="mb-4 d-flex @(Model.Paginator.Elements.Any() ? "justify-content-between" : "justify-content-end") align-items-center">
+<div class="mb-4 row align-items-lg-center justify-content-lg-between">
     @if (Model.Paginator.Elements.Any()) {
-        <div class="d-flex align-items-center">
-            <span class="mr-2">Sort by:</span>
-            <ul class="mb-0 list-inline">
-                <li class="list-inline-item">
-                    <a class="@(titleActive ? "font-weight-bold" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="title" asp-route-order="@titleOrder" asp-route-page="@ViewData["page"]">Title @titleArrow</a>
-                </li>
-                <li class="list-inline-item">
-                    <a class="@(releaseDateActive ? "font-weight-bold" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="release_date" asp-route-order="@releaseDateOrder" asp-route-page="@ViewData["page"]">Release date @releaseDateArrow</a>
-                </li>
-            </ul>
+        <div class="pb-4 pb-lg-0 col-12 col-lg-8">
+            <div class="d-flex align-items-center">
+                <span class="mr-2">Sort by:</span>
+                <ul class="mb-0 list-inline">
+                    <li class="list-inline-item">
+                        <a class="@(titleActive ? "font-weight-bold" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="title" asp-route-order="@titleOrder" asp-route-page="@ViewData["page"]">Title @titleArrow</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a class="@(releaseDateActive ? "font-weight-bold" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="release_date" asp-route-order="@releaseDateOrder" asp-route-page="@ViewData["page"]">Release date @releaseDateArrow</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     }
     
-    <div>
-        <form class="form-inline" asp-controller="Movies" asp-action="Index" method="GET">
-            <div class="d-flex align-items-center">
-                <input class="mx-2 form-control" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
-                <button class="btn btn-primary" type="submit">Submit</button>
+    <div class="col-12 col-lg-4@(!Model.Paginator.Elements.Any() ? " offset-lg-8" : "")">
+        <form asp-controller="Movies" asp-action="Index" method="GET">
+            <div class="p-1 d-flex border rounded">
+                <input class="mr-1 p-1 flex-grow-1 border-0" style="min-width: 75px;" type="text" name="search" placeholder="Search..." value="@ViewData["search"]" />
+                <button class="btn btn-sm btn-primary" type="submit">Submit</button>
                 
                 @if (!string.IsNullOrEmpty((string) @ViewData["search"]))
                 {
-                    <a class="ml-2 btn btn-danger" asp-controller="Movies" asp-action="Index">Reset</a>
+                    <a class="ml-1 btn btn-sm btn-danger" asp-controller="Movies" asp-action="Index">&#215;</a>
                 }
             </div>
         </form>
@@ -135,15 +137,15 @@ else
     {
         <div class="d-flex justify-content-center align-items-center">
             <div>
-                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="1">First</a>
-                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage - 1)">Previous</a>
+                <a class="btn btn-primary @(isFirstDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="1">&#171;</a>
+                <a class="btn btn-primary @(isPreviousDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage - 1)">&#8249;</a>
             </div>
             <div class="mx-2">
                 Page @Model.Paginator.CurrentPage from @Model.Paginator.TotalPages
             </div>
             <div>
-                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage + 1)">Next</a>
-                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@Model.Paginator.TotalPages">Last</a>
+                <a class="btn btn-primary @(isNextDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@(Model.Paginator.CurrentPage + 1)">&#8250;</a>
+                <a class="btn btn-primary @(isLastDisabled ? "disabled" : "")" asp-controller="Movies" asp-action="Index" asp-route-search="@ViewData["search"]" asp-route-sort="@ViewData["sort"]" asp-route-order="@ViewData["order"]" asp-route-page="@Model.Paginator.TotalPages">&#187;</a>
             </div>
         </div>   
     }
