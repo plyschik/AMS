@@ -41,65 +41,114 @@
             </dl>
         </div>
         <div class="col-12 col-lg-8">
-            <h3>Director:</h3>
-            
-            @if (Model.MovieDirector.Any())
-            {
-                <ul class="mb-3 list-group">
-                    @foreach (var movie in Model.MovieDirector)
+            <div class="card mb-3">
+                <a class="text-reset text-decoration-none" data-toggle="collapse" href="#collapse-director">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Movies directed by @Html.DisplayFor(model => model.Person.FullName)</span>
+                        <span id="collapse-director-arrow">▼</span>
+                    </div>
+                </a>
+                <div class="collapse" id="collapse-director">
+                    @if (Model.MovieDirector.Any())
                     {
-                        <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
-                            @movie.Title
-                        </a>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var movie in Model.MovieDirector)
+                            {
+                                <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
+                                    @movie.Title
+                                </a>
+                            }
+                        </ul>
                     }
-                </ul>   
-            }
-            else
-            {
-                <div class="alert alert-info" role="alert">
-                    List is empty.
-                </div>
-            }
-            
-            <h3>Writer:</h3>
-            
-            @if (Model.MovieWriter.Any())
-            {
-                <ul class="list-group mb-3">
-                    @foreach (var movie in Model.MovieWriter)
+                    else
                     {
-                        <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
-                            @movie.Title
-                        </a>   
+                        <div class="card-body">No movies.</div>
                     }
-                </ul>    
-            }
-            else
-            {
-                <div class="alert alert-info" role="alert">
-                    List is empty.
                 </div>
-            }
-            
-            <h3>Star:</h3>
-            
-            @if (Model.MovieStar.Any())
-            {
-                <ul class="list-group">
-                    @foreach (var movie in Model.MovieStar)
+            </div>
+
+            <div class="card mb-3">
+                <a class="text-reset text-decoration-none" data-toggle="collapse" href="#collapse-writer">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Movies written by @Html.DisplayFor(model => model.Person.FullName)</span>
+                        <span id="collapse-writer-arrow">▼</span>
+                    </div>
+                </a>
+                <div class="collapse" id="collapse-writer">
+                    @if (Model.MovieWriter.Any())
                     {
-                        <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
-                            @movie.Title
-                        </a>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var movie in Model.MovieWriter)
+                            {
+                                <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
+                                    @movie.Title
+                                </a>
+                            }
+                        </ul>
                     }
-                </ul>
-            }
-            else
-            {
-                <div class="alert alert-info" role="alert">
-                    List is empty.
+                    else
+                    {
+                        <div class="card-body">No movies.</div>
+                    }
                 </div>
-            }
+            </div>
+            
+            <div class="card mb-3">
+                <a class="text-reset text-decoration-none" data-toggle="collapse" href="#collapse-star">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Movies acted by @Html.DisplayFor(model => model.Person.FullName)</span>
+                        <span id="collapse-star-arrow">▼</span>
+                    </div>
+                </a>
+                <div class="collapse" id="collapse-star">
+                    @if (Model.MovieStar.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var movie in Model.MovieStar)
+                            {
+                                <a class="list-group-item list-group-item-action" asp-controller="Movies" asp-action="Show" asp-route-id="@movie.Id">
+                                    @movie.Title
+                                </a>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="card-body">No movies.</div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#collapse-director')
+                .on('show.bs.collapse', function () {
+                    $('#collapse-director-arrow').text('▲');
+                })
+                .on('hide.bs.collapse', function () {
+                    $('#collapse-director-arrow').text('▼');
+                });
+            
+            $('#collapse-writer')
+                .on('show.bs.collapse', function () {
+                    $('#collapse-writer-arrow').text('▲');
+                })
+                .on('hide.bs.collapse', function () {
+                    $('#collapse-writer-arrow').text('▼');
+                });
+            
+            $('#collapse-star')
+                .on('show.bs.collapse', function () {
+                    $('#collapse-star-arrow').text('▲');
+                })
+                .on('hide.bs.collapse', function () {
+                    $('#collapse-star-arrow').text('▼');
+                });
+        });
+    </script>
+}
